@@ -1,0 +1,153 @@
+@mixin font-h1 {
+  $fhd-base-size: 5.2 * $base-font-size;
+  $mobile-base-size: 2.7 * $base-font-size;
+
+  font-size: $mobile-base-size;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+
+  @media (min-width: $breakpoint-small) {
+    line-height: 1.1;
+
+    font-size: responsive-value(
+      $mobile-base-size,
+      $fhd-base-size,
+      $breakpoint-small,
+      $fhd-width,
+      'w'
+    );
+  }
+}
+
+@mixin font-h2 {
+  $fhd-base-size: 3.4 * $base-font-size;
+  $mobile-base-size: 2.2 * $base-font-size;
+
+  font-size: $mobile-base-size;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+
+  @media (min-width: $breakpoint-small) {
+    line-height: 1.15;
+    font-size: responsive-value(
+      $mobile-base-size,
+      $fhd-base-size,
+      $breakpoint-small,
+      $fhd-width,
+      'w'
+    );
+  }
+}
+
+@mixin font-h3 {
+  $fhd-base-size: 3 * $base-font-size;
+  $tablet-base-size: $fhd-base-size * 0.7;
+
+  font-size: 1.7rem;
+  line-height: 1.48;
+  letter-spacing: 0.01em;
+
+  @media (min-width: $breakpoint-small) {
+    font-size: responsive-value(
+      $tablet-base-size,
+      $fhd-base-size,
+      $breakpoint-small,
+      $fhd-width,
+      'w'
+    );
+  }
+}
+
+@mixin font-lead {
+  $fhd-base-size: 2.3 * $base-font-size;
+  $tablet-base-size: $fhd-base-size * 0.6;
+
+  font-size: 1.7rem;
+  line-height: 1.48;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+
+  @media (min-width: $breakpoint-small) {
+    font-size: responsive-value(
+      $tablet-base-size,
+      $fhd-base-size,
+      $breakpoint-small,
+      $fhd-width,
+      'w'
+    );
+  }
+}
+
+@mixin font-body {
+  $fhd-base-size: 2.2 * $base-font-size;
+  $mobile-base-size: 1.7 * $base-font-size;
+
+  font-size: $mobile-base-size;
+  line-height: 1.3;
+  font-weight: 400;
+  letter-spacing: 0em;
+
+  @media (min-width: $breakpoint-small) {
+    font-size: responsive-value(
+      $mobile-base-size,
+      $fhd-base-size,
+      $breakpoint-small,
+      $fhd-width,
+      'w'
+    );
+  }
+}
+
+@mixin font-small {
+  $fhd-base-size: 1.6 * $base-font-size;
+  $tablet-base-size: $fhd-base-size * 0.8;
+
+  font-size: 1.4rem;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: 0;
+
+  @media (min-width: $breakpoint-small) {
+    font-size: responsive-value(
+      $tablet-base-size,
+      $fhd-base-size,
+      $breakpoint-small,
+      $fhd-width,
+      'w'
+    );
+  }
+}
+
+@mixin font-button {
+  $fhd-base-size: 1.6 * $base-font-size;
+  $tablet-base-size: $fhd-base-size * 0.8;
+
+  font-size: 1.6rem;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: -0.01;
+
+  @media (min-width: $breakpoint-medium) {
+    font-size: calc(
+      #{responsive-value(
+          $tablet-base-size,
+          $fhd-base-size,
+          $breakpoint-medium,
+          $fhd-width,
+          'w'
+        )}
+    );
+  }
+}
+
+@mixin transition-fix {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  rotate: 0.0001deg;
+}
+
+@mixin block-rounded {
+  padding: $block-padding;
+  background: $color-gray-2;
+  border-radius: $border-radius;
+}

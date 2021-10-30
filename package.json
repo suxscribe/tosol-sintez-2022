@@ -1,0 +1,45 @@
+{
+  "name": "tosolsintez22",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode production && prettier --parser html --write dist/*.html",
+    "start": "webpack serve --mode development --env development --open-app-name firefox"
+  },
+  "keywords": [],
+  "author": "Sergey Birukoff",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "@webdiscus/pug-loader": "^1.0.1",
+    "autoprefixer": "^10.3.6",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^9.0.1",
+    "css-loader": "^6.3.0",
+    "css-minimizer-webpack-plugin": "^3.0.2",
+    "cssnano": "^5.0.8",
+    "file-loader": "^6.2.0",
+    "html-loader": "^2.1.2",
+    "html-webpack-plugin": "^5.3.2",
+    "image-webpack-loader": "^8.0.1",
+    "mini-css-extract-plugin": "^2.3.0",
+    "node-sass": "^6.0.1",
+    "postcss-loader": "^6.1.1",
+    "prettier": "^2.4.1",
+    "pug": "^3.0.2",
+    "raw-loader": "^4.0.2",
+    "sass-loader": "^12.1.0",
+    "svg-sprite-loader": "^6.0.9",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.56.0",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.3.0"
+  },
+  "dependencies": {
+    "dat.gui": "^0.7.7",
+    "three": "^0.133.1"
+  }
+}

@@ -1,0 +1,53 @@
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
+}
+
+/*
+  $minSize,
+  $maxSize,
+  $minView,
+  $maxView,
+  $dimension - w or h for vw or vh
+
+*/
+@function responsive-value(
+  $minSize,
+  $maxSize,
+  $minView: $mobile-min-width,
+  $maxView: $fhd-width,
+  $dimension: 'w'
+) {
+  @return calc(
+    #{$minSize} + (#{strip-unit($maxSize)} - #{strip-unit($minSize)}) * (
+        100v#{$dimension} - #{$minView}
+      ) / (#{strip-unit($maxView)} - #{strip-unit($minView)})
+  );
+}
+
+// calculate fraction of size against fullhd width or height
+@function percent-view($size, $maxView: $fhd-width, $dimension: 'w') {
+  $result: strip-unit($size) / strip-unit($maxView) * 100;
+  @return $result + v + $dimension;
+}
+
+// calculate size between min and max. Max is based on fullhd width and height. Min is based on mobile max width and height
+@function responsive-fhd($minSize, $maxSize) {
+  @return calc(
+    #{responsive-value(
+        $minSize / 2,
+        $maxSize / 2,
+        $mobile-min-width,
+        $fhd-width,
+        'w'
+      )} + #{responsive-value(
+        $minSize / 2,
+        $maxSize / 2,
+        $mobile-min-height,
+        $fhd-height,
+        'h'
+      )}
+  );
+}

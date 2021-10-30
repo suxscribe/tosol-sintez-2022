@@ -1,0 +1,105 @@
+
+$easing: cubic-bezier(0.77, 0, 0.175, 1);
+
+$font-family: 'Suisse Intl', sans-serif;
+$base-font-size: 10px;
+
+// COLORS
+
+$color-white: #fff;
+$color-inhale: #4ea2e2;
+$color-exhale: #e36966;
+
+$color-black: #434047;
+$color-green: #95962d;
+$color-yellow: #e0e339;
+$color-dark: #266696;
+
+$color-gray: rgba(67, 64, 71, 0.4);
+$color-gray-2: #f7f7f9;
+
+:root {
+  --box-shadow: 0 10px 40px #{$color-gray};
+  --transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+// MEDIA SIZES AND BREAKPOINTS
+
+$breakpoint-small: 640px !default;
+$breakpoint-medium: 1024px !default;
+$breakpoint-large: 1200px !default;
+$breakpoint-xlarge: 1600px !default;
+
+$tablet-width: 768px; // used for tablet columns
+$mobile-min-width: 375px;
+$mobile-min-height: 667px;
+
+$fhd-width: 1920px;
+$fhd-height: 992px;
+
+
+// CONTAINERS
+
+$container-width: 800px;
+$container-width-small: 600px;
+
+$container-margin: responsive-value(8px, 48px); // left right container margin
+$container-margin-medium: 48px;
+$container-margin-small: 8px;
+
+// COLUMNS
+
+$column-width: percent-view(220px, $fhd-width, 'w'); // 8 columns
+$column-width-medium: percent-view(112px, $tablet-width); // 6 columns
+$column-width-small: percent-view(106px, $mobile-min-width, 'w'); // 3 columns
+
+$column-margin-px-small: 8px;
+$column-margin-px: 32px;
+
+$column-margin: responsive-value(
+  $column-margin-px-small,
+  $column-margin-px,
+  $mobile-min-width,
+  $fhd-width,
+  'w'
+);
+
+
+// BLOCKS
+// CONTAINERS > BLOCKS
+$block-padding: responsive-value(
+  12px,
+  24px
+);
+$block-margin: responsive-value(24px, 48px); // top bottom margin between blocks
+
+
+$grid-gap: responsive-value(16px, 32px);
+
+$border-radius: 16px;
+
+// BUTTONS 
+$button-border-radius: responsive-value(24px, 32px);
+$button-height: responsive-value(152px, 168px);
+$button-s-height: responsive-value(48px, 64px);
+
+// MISC
+$input-border-radius: responsive-value(18px, 32px);
+
+$chevron-down: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 15.6 8.5' style='enable-background:new 0 0 15.6 8.5;' xml:space='preserve'%3E%3Cpolygon points='15.6,0.7 14.8,0 7.8,7.1 0.7,0 0,0.7 7.1,7.8 7.1,7.8 7.8,8.5 7.8,8.5 7.8,8.5 8.5,7.8 8.5,7.8 '/%3E%3C/svg%3E%0A");
+
+$base-list-padding-left: 30px !default;
+
+$content-paragraph-margin: percent-view(32px);
+
+$breathe-block-height: 200px;
+$ball-size: 26px;
+
+// export vars to js
+:export {
+  breatheBlockHeight: $breathe-block-height;
+  ballSize: $ball-size;
+  colorInhale: $color-inhale;
+  colorExhale: $color-exhale;
+  colorGray: $color-gray;
+}
