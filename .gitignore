@@ -108,7 +108,7 @@ dist
 package-lock.json
 sftp-config.json
 .code-workspace
-/old
-/dist
-/assets/models/
-/assets/envMap/
+
+dist
+src/assets/models/
+src/assets/envMaps/
