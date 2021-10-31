@@ -27,7 +27,7 @@ export default class Camera {
       1000
     );
 
-    this.instance.position.set(8, 3, 7);
+    this.instance.position.set(20, 10, 8);
 
     // Debug
     if (this.debug) {

@@ -3,14 +3,14 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import UpdateMaterials from './UpdateMaterials.js';
 
-export default class HummerCar {
+export default class Car {
   constructor(_options) {
     this.container = new THREE.Object3D();
     this.object = _options.object;
     // this.position = _options.position;
-    // this.source = _options.source;
     this.scene = _options.scene;
     this.debug = _options.debug;
+    this.loadingManager = _options.loadingManager;
 
     this.updateMaterials = new UpdateMaterials({ scene: this.container });
 
@@ -61,7 +61,7 @@ export default class HummerCar {
   }
 
   async loadModel() {
-    this.loader = new GLTFLoader();
+    this.loader = new GLTFLoader(this.loadingManager);
 
     const modelData = await this.loader.loadAsync(this.object.source);
 

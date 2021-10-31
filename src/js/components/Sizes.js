@@ -28,9 +28,9 @@ export default class Sizes extends EventEmitter {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
-    console.log('resize');
-
-    // this.trigger('resize');
+    // Trigger resize event
+    this.trigger('resize');
+    // console.log('resize');
     // Update everything on resize
   }
 }

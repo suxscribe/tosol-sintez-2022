@@ -16,11 +16,11 @@ export default class Navigation {
 
     this.view.spherical = {};
     this.view.spherical.value = new THREE.Spherical(
-      30,
-      Math.PI * 0.35,
-      -Math.PI * 0.25
-    );
-    // this.view.spherical.value.radius = 5
+      25,
+      Math.PI * 0.4,
+      Math.PI * 0.3
+    ); // initial camera position
+
     this.view.spherical.smoothed = this.view.spherical.value.clone();
     this.view.spherical.smoothing = 0.005;
     this.view.spherical.limits = {};

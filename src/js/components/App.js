@@ -120,6 +120,8 @@ export default class App {
   setLoadingManager() {
     this.loadingManager = new THREE.LoadingManager();
 
+    this.loadingScreen = document.querySelector('.preloader');
+
     this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
       console.log(
         'Started loading ' +
@@ -130,14 +132,14 @@ export default class App {
           itemsTotal +
           ' total'
       );
+      this.loadingScreen.classList.add('preloader--active');
     };
     this.loadingManager.onLoad = () => {
       console.log('load complete');
+      this.loadingScreen.classList.remove('preloader--active');
     };
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-      console.log(
-        'Loading ' + parseInt((itemsLoaded / itemsTotal) * 100) + '%'
-      );
+      console.log('Loading ' + itemsLoaded + ' of ' + itemsTotal + ' total');
     };
     this.loadingManager.onError = (url) => {
       console.log('Error loading ' + url);
@@ -439,11 +441,6 @@ export default class App {
 
     // this.updateAllMaterials();
     // this.updateMaterials.updateAllMaterials();
-  }
-
-  loadBoxCar() {
-    this.boxCar = new BoxCar();
-    this.scene.add(this.boxCar.container);
   }
 
   setDebug() {

@@ -110,5 +110,5 @@ sftp-config.json
 .code-workspace
 /old
 /dist
-/assets/models
-/assets/envMaps
+/assets/models/
+/assets/envMap/
