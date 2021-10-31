@@ -79,6 +79,8 @@ export default class App {
     this.initConfig();
     this.setDebug();
 
+    this.setLoadingManager();
+
     this.setRenderer();
 
     this.setEnvMaps();
@@ -113,6 +115,33 @@ export default class App {
     this.config.height = this.sizes.height;
     this.config.smallestSide = Math.min(this.config.width, this.config.height);
     this.config.largestSide = Math.max(this.config.width, this.config.height);
+  }
+
+  setLoadingManager() {
+    this.loadingManager = new THREE.LoadingManager();
+
+    this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
+      console.log(
+        'Started loading ' +
+          url +
+          '. Loaded ' +
+          itemsLoaded +
+          ' of ' +
+          itemsTotal +
+          ' total'
+      );
+    };
+    this.loadingManager.onLoad = () => {
+      console.log('load complete');
+    };
+    this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+      console.log(
+        'Loading ' + parseInt((itemsLoaded / itemsTotal) * 100) + '%'
+      );
+    };
+    this.loadingManager.onError = (url) => {
+      console.log('Error loading ' + url);
+    };
   }
 
   setRenderer() {
@@ -172,6 +201,7 @@ export default class App {
       camera: this.camera,
       time: this.time,
       config: this.config,
+      canvas: this.canvas,
     });
 
     this.time.on('tick', () => {
@@ -330,14 +360,13 @@ export default class App {
   }
 
   setEvents() {
-    window.addEventListener('resize', () => {
+    // window.addEventListener('resize', () => {
+    this.sizes.on('resize', () => {
       this.camera.instance.aspect = this.sizes.width / this.sizes.height;
       this.camera.instance.updateProjectionMatrix();
 
       this.renderer.setSize(this.sizes.width, this.sizes.height);
       // this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      console.log(this.sizes);
     });
   }
 
@@ -379,6 +408,7 @@ export default class App {
       object: this.objects.cars[this.config.car],
       scene: this.scene,
       debug: this.debug,
+      loadingManager: this.loadingManager,
     });
     this.scene.add(this.car.container);
   }
@@ -388,6 +418,7 @@ export default class App {
       object: this.objects.girls[this.config.girl],
       scene: this.scene,
       debug: this.debug,
+      loadingManager: this.loadingManager,
     });
     this.scene.add(this.girl.container);
   }

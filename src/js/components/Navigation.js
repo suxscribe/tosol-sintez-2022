@@ -6,13 +6,12 @@ export default class Navigation {
     this.camera = _options.camera;
     this.time = _options.time;
     this.config = _options.config;
+    this.canvas = _options.canvas;
 
     this.setView();
   }
 
   setView() {
-    console.log('setView');
-
     this.view = {};
 
     this.view.spherical = {};
@@ -94,8 +93,6 @@ export default class Navigation {
 
       this.view.down(_event.clientX, _event.clientY);
 
-      console.log(this.view.drag);
-
       window.addEventListener('mouseup', this.view.onMouseUp);
       window.addEventListener('mousemove', this.view.onMouseMove);
     };
@@ -115,7 +112,7 @@ export default class Navigation {
       window.removeEventListener('mousemove', this.view.onMouseMove);
     };
 
-    document.addEventListener('mousedown', this.view.onMouseDown);
+    this.canvas.addEventListener('mousedown', this.view.onMouseDown);
 
     /**
      * Touch events
