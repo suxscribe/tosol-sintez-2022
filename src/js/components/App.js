@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as dat from 'dat.gui';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 
@@ -7,6 +6,7 @@ import { isEmptyObject } from './Utils';
 import Time from '../utils/Time';
 import UpdateMaterials from './UpdateMaterials.js';
 import Camera from './Camera.js'; // camera constructor
+import Navigation from './Navigation';
 import Sizes from './Sizes.js';
 
 import { debugObject } from './data/debug';
@@ -76,15 +76,16 @@ export default class App {
       },
     };
 
-    this.config = {};
-
     this.initConfig();
     this.setDebug();
 
-    this.setEnvMaps();
-
     this.setRenderer();
+
+    this.setEnvMaps();
+    this.setUpdateMaterials();
+
     this.setCamera();
+    this.setNavigation();
     this.setHelpers();
     this.setEvents();
 
@@ -99,27 +100,33 @@ export default class App {
 
     this.tick = this.tick.bind(this); // dont know why but it works
     this.tick();
+  }
 
-    console.log('debug object');
-    console.log(debugObject);
+  initConfig() {
+    this.config = {};
+
+    this.config.car = 'porsche';
+    this.config.girl = 'girl1';
+
+    // needed for navigation
+    this.config.width = this.sizes.width;
+    this.config.height = this.sizes.height;
+    this.config.smallestSide = Math.min(this.config.width, this.config.height);
+    this.config.largestSide = Math.max(this.config.width, this.config.height);
   }
 
   setRenderer() {
+    // Scene
     this.scene = new THREE.Scene();
     // this.scene.background = new THREE.Color('#eeeeee');
-    this.scene.background = this.environmentMap;
-    this.scene.environment = this.environmentMap;
-
-    this.updateMaterials = new UpdateMaterials({
-      scene: this.scene,
-      environmentMap: this.environmentMap,
-    });
 
     // Renderer
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
     });
-    this.renderer.setPixelRatio(2); // Math.min(window.devicePixelRatio,
+    this.renderer.setPixelRatio(
+      Math.min(Math.max(window.devicePixelRatio, 2), 2)
+    );
     this.renderer.setSize(this.sizes.width, this.sizes.height);
 
     this.renderer.physicallyCorrectLights = true;
@@ -130,6 +137,19 @@ export default class App {
 
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    this.time.on('tick', () => {
+      this.renderer.render(this.scene, this.camera.instance);
+
+      this.renderer.toneMappingExposure = debugObject.exposure;
+    });
+  }
+
+  setUpdateMaterials() {
+    this.updateMaterials = new UpdateMaterials({
+      scene: this.scene,
+      environmentMap: this.environmentMap,
+    });
   }
 
   setCamera() {
@@ -142,19 +162,32 @@ export default class App {
     });
     this.scene.add(this.camera.instance);
 
-    this.camera.instance.position.set(20, 4, 9);
+    // this.camera.instance.position.set(20, 4, 9);
+    this.camera.instance.position.set(2, 4, 26);
     // this.camera.instance.lookAt(20, 10, 5); // not working with controls enabled
+  }
+
+  setNavigation() {
+    this.navigation = new Navigation({
+      camera: this.camera,
+      time: this.time,
+      config: this.config,
+    });
+
+    this.time.on('tick', () => {
+      this.navigation.update();
+    });
   }
 
   setLights() {
     // Ligting
     const ambientLight = new THREE.AmbientLight({
       color: '#ffffff',
-      intensity: 1,
+      intensity: 0.1,
     });
     this.scene.add(ambientLight);
 
-    this.directionalLight = new THREE.DirectionalLight(0xffffff, 5);
+    this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     this.directionalLight.position.set(6.5, 9.1, 7.8);
     this.directionalLightTarget = new THREE.Object3D(0, 0, 0);
     this.directionalLight.target = this.directionalLightTarget;
@@ -162,7 +195,7 @@ export default class App {
     // this.directionalLight.target.set(0, 0, 0);
 
     this.directionalLight.castShadow = true;
-    this.directionalLight.shadow.mapSize.set(2048, 2048);
+    this.directionalLight.shadow.mapSize.set(1024, 1024);
     this.directionalLight.shadow.camera.far = 30;
 
     this.directionalLight.shadow.camera.left = -10;
@@ -221,62 +254,69 @@ export default class App {
     // environment map
     const cubeTextureLoader = new THREE.CubeTextureLoader();
 
-    this.environmentMap = cubeTextureLoader.load([
-      '/assets/envMaps/bridge/posx.jpg',
-      '/assets/envMaps/bridge/negx.jpg',
-      '/assets/envMaps/bridge/posy.jpg',
-      '/assets/envMaps/bridge/negy.jpg',
-      '/assets/envMaps/bridge/posz.jpg',
-      '/assets/envMaps/bridge/negz.jpg',
-    ]);
+    // debugObject.environmentMap = cubeTextureLoader.load([
+    //   '/assets/envMaps/bridge/posx.jpg',
+    //   '/assets/envMaps/bridge/negx.jpg',
+    //   '/assets/envMaps/bridge/posy.jpg',
+    //   '/assets/envMaps/bridge/negy.jpg',
+    //   '/assets/envMaps/bridge/posz.jpg',
+    //   '/assets/envMaps/bridge/negz.jpg',
+    // ]);
 
-    this.environmentMap.encoding = THREE.sRGBEncoding;
+    // debugObject.environmentMap.encoding = THREE.sRGBEncoding;
 
-    this.debugObject.envMapIntensity = 1;
+    // LOAD EXR
+    THREE.DefaultLoadingManager.onLoad = function () {
+      pmremGenerator.dispose();
+    };
+
+    const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+    pmremGenerator.compileEquirectangularShader();
+
+    let exrEnvMapLoader = new EXRLoader();
+    exrEnvMapLoader.setDataType(THREE.UnsignedByteType);
+
+    let exrBackground;
+    let envMap;
+    let exrCubeRenderTarget;
+
+    let exrEnvMap = exrEnvMapLoader.load(
+      '/assets/envMaps/room.exr',
+      function (texture) {
+        exrCubeRenderTarget = pmremGenerator.fromEquirectangular(texture);
+        exrBackground = exrCubeRenderTarget.texture;
+        envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
+
+        debugObject.environmentMap = envMap;
+        console.log(debugObject.environmentMap);
+
+        // loadObjectAndAndEnvMap(); // Add envmap once the texture has been loaded
+
+        texture.dispose();
+      }
+    );
+
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
+
+    // this.scene.environment = debugObject.environmentMap;
+    // this.scene.background = debugObject.environmentMap;
+
+    debugObject.envMapIntensity = 1;
 
     if (this.debug) {
       this.debug
         .add(debugObject, 'envMapIntensity')
         .min(0)
-        .max(10)
+        .max(3)
         .step(0.01)
         .onChange(() => {
           // this.updateAllMaterials();
           this.updateMaterials.updateAllMaterials();
         });
+
+      this.debug.add(debugObject, 'exposure').min(0).max(3).step(0.1);
     }
-
-    // LOAD EXR
-    // const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-    // pmremGenerator.compileEquirectangularShader();
-
-    // const exrEnvMapLoader = new EXRLoader();
-
-    // exrEnvMapLoader.setDataType(THREE.UnsignedByteType);
-
-    // this.exrBackground = '';
-    // this.envMap = '';
-
-    // const exrEnvMap = exrEnvMapLoader.load(
-    //   '/assets/envMaps/room.exr',
-    //   function (texture) {
-    //     var exrCubeRenderTarget = pmremGenerator.fromEquirectangular(texture);
-    //     this.exrBackground = exrCubeRenderTarget.texture;
-    //     this.envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
-
-    //     // loadObjectAndAndEnvMap(); // Add envmap once the texture has been loaded
-
-    //     texture.dispose();
-    //   }
-    // );
-
-    // this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    // this.renderer.outputEncoding = THREE.sRGBEncoding;
-
-    // // this.scene.background = exrEnvMap;
-    // console.log(exrEnvMap);
-
-    // this.scene.environment = this.envMap;
   }
 
   setHelpers() {
@@ -285,9 +325,8 @@ export default class App {
   }
 
   tick() {
-    // this.controls.update();
-    this.renderer.render(this.scene, this.camera.instance);
-    window.requestAnimationFrame(this.tick);
+    // this.navigation.update();
+    // window.requestAnimationFrame(this.tick);
   }
 
   setEvents() {
@@ -303,11 +342,6 @@ export default class App {
   }
 
   ////////////
-
-  initConfig() {
-    this.config.car = 'hummer';
-    this.config.girl = 'girl1';
-  }
 
   removeCar() {
     if (!isEmptyObject(this.car)) {

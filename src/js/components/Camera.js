@@ -15,10 +15,11 @@ export default class Camera {
     this.container.matrixAutoUpdate = false;
 
     this.setInstance();
-    this.setOrbitControls();
+    // this.setOrbitControls();
   }
 
   setInstance() {
+    // Set Camera instance
     this.instance = new THREE.PerspectiveCamera(
       this.fov,
       this.sizes,
@@ -28,6 +29,7 @@ export default class Camera {
 
     this.instance.position.set(8, 3, 7);
 
+    // Debug
     if (this.debug) {
       this.debug
         .add(this.instance.position, 'x')
@@ -57,14 +59,42 @@ export default class Camera {
     // Note. This overrides Camera.lookAt
     this.controls = new OrbitControls(this.instance, this.renderer.domElement);
     this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.06; // lower smoother
+    // this.controls.autoRotate = true;
+    this.controls.rotateSpeed = 0.5; // 0.1
+    this.controls.panSpeed = 0.5; // 0.1
+    this.controls.zoomSpeed = 0.5; // 0.3
+    this.controls.maxAzimuthAngle = Math.PI * 0.8;
+    this.controls.minAzimuthAngle = Math.PI * 0.25;
+    this.controls.maxPolarAngle = Math.PI * 0.55;
+    this.controls.minPolarAngle = Math.PI * 0.33;
+    this.controls.maxDistance = 40;
+    this.controls.minDistance = 15;
+    // this.controls.enablePan = false;
 
     // set initial camera target
     this.controls.target.set(3, 5, 1);
 
+    // Panning limit
+    var minPan = new THREE.Vector3(-10, -10, -10); // min panning
+    var maxPan = new THREE.Vector3(10, 10, 10); //max panning
+    var _v = new THREE.Vector3();
+
+    this.controlsPanLimit = () => {
+      _v.copy(this.controls.target);
+      this.controls.target.clamp(minPan, maxPan);
+      _v.sub(this.controls.target);
+      this.instance.position.sub(_v);
+    };
+
+    this.controls.addEventListener('change', this.controlsPanLimit.bind(this));
+
+    // Update controls
     this.time.on('tick', () => {
       this.controls.update(); // needed for controls transitions on mouse up
     });
 
+    // Debug
     if (this.debug) {
       this.debug
         .add(this.controls.target, 'x')

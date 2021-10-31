@@ -119,10 +119,10 @@ const config = {
           from: './src/fonts',
           to: './fonts',
         },
-        // {
-        //   from: './src/favicon',
-        //   to: './favicon',
-        // },
+        {
+          from: './src/static',
+          to: './',
+        },
         {
           from: './src/assets',
           to: './assets',

@@ -14,9 +14,6 @@ export default class HummerCar {
 
     this.updateMaterials = new UpdateMaterials({ scene: this.container });
 
-    console.log('options');
-    console.log(this.object);
-
     this.loadCarModel();
     this.setDebug();
   }
@@ -60,7 +57,7 @@ export default class HummerCar {
 
     this.updateMaterials.updateAllMaterials();
 
-    console.log(this.model);
+    // console.log(this.model);
   }
 
   async loadModel() {
@@ -104,8 +101,6 @@ export default class HummerCar {
       .name(this.object.name + ' position z')
       .listen();
     this.debugFolder.close();
-
-    console.log(this.debug);
   }
 
   removeObject() {
