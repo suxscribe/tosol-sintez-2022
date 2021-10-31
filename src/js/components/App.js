@@ -9,29 +9,13 @@ import Camera from './Camera.js'; // camera constructor
 import Navigation from './Navigation';
 import Sizes from './Sizes.js';
 
-import { debugObject } from './data/debug';
-
-// import BoxCar from './BoxCar.js';
 import Car from './Car.js';
-
-// gsap.registerPlugin(CustomEase);
 
 export default class App {
   constructor(_options) {
     this.canvas = document.querySelector('.webgl');
     this.time = new Time();
     this.sizes = new Sizes();
-    this.model = [];
-
-    this.debugObject = {
-      removeCar: () => {
-        this.removeCar();
-      },
-      reloadCar: () => {
-        this.removeCar();
-        this.loadCar();
-      },
-    };
 
     this.objects = {
       environment: {},
@@ -43,8 +27,8 @@ export default class App {
           scale: new THREE.Vector3(0.08, 0.08, 0.08),
           rotation: new THREE.Euler(0, Math.PI * -0.5, 0),
         },
-        car2: {
-          name: 'car2',
+        cruiser: {
+          name: 'cruiser',
           source: '/assets/models/landcruiser/landcruiser.glb',
           position: new THREE.Vector3(0, 0, 0),
           scale: new THREE.Vector3(2, 2, 2),
@@ -76,15 +60,26 @@ export default class App {
       },
     };
 
+    this.customizer = {
+      location1: {
+        cars: ['hummer', 'cruiser'],
+        girls: ['girl1'],
+      },
+      location2: {
+        cars: ['hummer', 'porsche'],
+        girls: ['girl1'],
+      },
+    };
+
     this.initConfig();
     this.setDebug();
 
     this.setLoadingManager();
 
     this.setRenderer();
+    this.setUpdateMaterials();
 
     this.setEnvMaps();
-    this.setUpdateMaterials();
 
     this.setCamera();
     this.setNavigation();
@@ -94,7 +89,6 @@ export default class App {
     this.setLights();
 
     this.loadCar();
-    // this.loadCar2();
     this.loadGirl();
 
     this.loadEnvironment();
@@ -136,6 +130,9 @@ export default class App {
     };
     this.loadingManager.onLoad = () => {
       console.log('load complete');
+
+      this.updateMaterials.updateAllMaterials(); // update materials after everything was loaded
+
       this.loadingScreen.classList.remove('preloader--active');
     };
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
@@ -168,18 +165,12 @@ export default class App {
 
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-    this.time.on('tick', () => {
-      this.renderer.render(this.scene, this.camera.instance);
-
-      this.renderer.toneMappingExposure = debugObject.exposure;
-    });
   }
 
   setUpdateMaterials() {
     this.updateMaterials = new UpdateMaterials({
       scene: this.scene,
-      environmentMap: this.environmentMap,
+      debugObject: this.debugObject,
     });
   }
 
@@ -193,7 +184,6 @@ export default class App {
     });
     this.scene.add(this.camera.instance);
 
-    // this.camera.instance.position.set(20, 4, 9);
     this.camera.instance.position.set(2, 4, 26);
     // this.camera.instance.lookAt(20, 10, 5); // not working with controls enabled
   }
@@ -314,13 +304,13 @@ export default class App {
 
     let exrEnvMap = exrEnvMapLoader.load(
       '/assets/envMaps/room.exr',
-      function (texture) {
+      (texture) => {
         exrCubeRenderTarget = pmremGenerator.fromEquirectangular(texture);
         exrBackground = exrCubeRenderTarget.texture;
         envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
 
-        debugObject.environmentMap = envMap;
-        console.log(debugObject.environmentMap);
+        this.debugObject.environmentMap = envMap;
+        console.log(this.debugObject.environmentMap);
 
         // loadObjectAndAndEnvMap(); // Add envmap once the texture has been loaded
 
@@ -334,20 +324,17 @@ export default class App {
     // this.scene.environment = debugObject.environmentMap;
     // this.scene.background = debugObject.environmentMap;
 
-    debugObject.envMapIntensity = 1;
-
     if (this.debug) {
       this.debug
-        .add(debugObject, 'envMapIntensity')
+        .add(this.debugObject, 'envMapIntensity')
         .min(0)
         .max(3)
         .step(0.01)
         .onChange(() => {
-          // this.updateAllMaterials();
           this.updateMaterials.updateAllMaterials();
         });
 
-      this.debug.add(debugObject, 'exposure').min(0).max(3).step(0.1);
+      this.debug.add(this.debugObject, 'exposure').min(0).max(3).step(0.1);
     }
   }
 
@@ -369,6 +356,12 @@ export default class App {
 
       this.renderer.setSize(this.sizes.width, this.sizes.height);
       // this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
+
+    this.time.on('tick', () => {
+      this.renderer.render(this.scene, this.camera.instance);
+
+      this.renderer.toneMappingExposure = this.debugObject.exposure;
     });
   }
 
@@ -446,13 +439,25 @@ export default class App {
   setDebug() {
     this.debug = new dat.GUI({});
 
+    this.debugObject = {
+      envMapIntensity: 1,
+      exposure: 1,
+      removeCar: () => {
+        this.removeCar();
+      },
+      reloadCar: () => {
+        this.removeCar();
+        this.loadCar();
+      },
+    };
+
     this.debug.add(this.debugObject, 'removeCar').name('Remove Car');
     this.debug.add(this.debugObject, 'reloadCar').name('Reload Car');
 
     this.debug
       .add(this.config, 'car', {
         hummer: 'hummer',
-        cruiser: 'car2',
+        cruiser: 'cruiser',
         delorean: 'delorean',
         porsche: 'porsche',
       })

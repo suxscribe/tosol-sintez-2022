@@ -1,12 +1,11 @@
 import * as THREE from 'three';
-import { debugObject } from './data/debug';
 
 export default class UpdateMaterials {
   constructor(_options) {
     this.scene = _options.scene;
-    this.environmentMap = _options.environmentMap;
+    this.debugObject = _options.debugObject;
 
-    this.updateAllMaterials();
+    // this.updateAllMaterials();
   }
 
   updateAllMaterials() {
@@ -15,14 +14,11 @@ export default class UpdateMaterials {
         child instanceof THREE.Mesh &&
         child.material instanceof THREE.MeshStandardMaterial
       ) {
-        // console.log(child);
-        console.log(this.environmentMap);
-
-        child.material.envMap = debugObject.environmentMap; // apply env map to each child
-        child.material.envMapIntensity = debugObject.envMapIntensity;
+        if (this.debugObject) {
+          child.material.envMap = this.debugObject.environmentMap; // apply env map to each child
+          child.material.envMapIntensity = this.debugObject.envMapIntensity;
+        }
         child.material.needsUpdate = true; // this is for tonemapping
-
-        // child.material.emissive = new THREE.Color(0, 0, 0);
 
         child.castShadow = true;
         child.receiveShadow = true;

@@ -55,7 +55,7 @@ export default class Car {
       this.container.position.set(0, 0, 0);
     }
 
-    this.updateMaterials.updateAllMaterials();
+    // this.updateMaterials.updateAllMaterials();
 
     // console.log(this.model);
   }

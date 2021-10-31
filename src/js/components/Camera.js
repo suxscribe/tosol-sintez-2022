@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-// import { Camera } from 'three';
-
 export default class Camera {
   constructor(_options) {
     this.fov = _options.fov;
