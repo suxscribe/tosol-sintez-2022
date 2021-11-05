@@ -1,0 +1,32 @@
+.customizer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $color-white;
+  padding: $block-padding;
+
+  display: flex;
+
+  &__locations {
+    display: flex;
+
+    &-item {
+      margin-right: 20px;
+    }
+  }
+  &__cars {
+    display: flex;
+
+    &-item {
+      margin-right: 20px;
+    }
+  }
+  &__girls {
+    display: flex;
+
+    &-item {
+      margin-right: 20px;
+    }
+  }
+}

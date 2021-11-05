@@ -13,7 +13,7 @@ export default class Camera {
     this.container.matrixAutoUpdate = false;
 
     this.setInstance();
-    // this.setOrbitControls();
+    // this.setOrbitControls(); // disable orbit controls. using Navigaion
   }
 
   setInstance() {

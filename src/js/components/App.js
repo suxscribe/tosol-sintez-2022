@@ -3,8 +3,10 @@ import * as dat from 'dat.gui';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 
 import { isEmptyObject } from './Utils';
+import { vars } from './data/vars';
 import Time from '../utils/Time';
 import UpdateMaterials from './UpdateMaterials.js';
+import Lights from './Lights';
 import Camera from './Camera.js'; // camera constructor
 import Navigation from './Navigation';
 import Sizes from './Sizes.js';
@@ -18,31 +20,39 @@ export default class App {
     this.sizes = new Sizes();
 
     this.objects = {
-      environment: {},
+      locations: {
+        desert: {
+          name: 'Desert',
+          source: '/assets/models/desert.glb',
+          position: new THREE.Vector3(-15, -1.7, -9),
+          scale: new THREE.Vector3(0.25, 0.25, 0.25),
+          rotation: new THREE.Euler(0, Math.PI * 0.66, 0),
+        },
+      },
       cars: {
         hummer: {
-          name: 'hummer',
+          name: 'Hummer',
           source: '/assets/models/hummerhx4.glb',
           position: new THREE.Vector3(0, 0, 0),
           scale: new THREE.Vector3(0.08, 0.08, 0.08),
           rotation: new THREE.Euler(0, Math.PI * -0.5, 0),
         },
         cruiser: {
-          name: 'cruiser',
+          name: 'Land Cruiser',
           source: '/assets/models/landcruiser/landcruiser.glb',
           position: new THREE.Vector3(0, 0, 0),
           scale: new THREE.Vector3(2, 2, 2),
           rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
         },
         delorean: {
-          name: 'delorean',
+          name: 'DeLorean',
           source: '/assets/models/delorean.glb',
           position: new THREE.Vector3(0, 0, 0),
-          scale: new THREE.Vector3(2, 2, 2),
+          scale: new THREE.Vector3(2.5, 2.5, 2.5),
           rotation: new THREE.Euler(0, 0, 0),
         },
         porsche: {
-          name: 'porsche',
+          name: 'Porsche',
           source: '/assets/models/porsche/porsche.glb',
           position: new THREE.Vector3(0, 0, 0),
           scale: new THREE.Vector3(3.5, 3.5, 3.5),
@@ -51,58 +61,67 @@ export default class App {
       },
       girls: {
         girl1: {
-          name: 'girl1',
+          name: 'Girl 1',
           source: '/assets/models/girl1.glb',
           position: new THREE.Vector3(5, 0, 6),
           scale: new THREE.Vector3(1, 1, 1),
+          rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
+        },
+        girl2: {
+          name: 'Girl 2',
+          source: '/assets/models/girl2.glb',
+          position: new THREE.Vector3(5, 0, 6),
+          scale: new THREE.Vector3(4, 4, 4),
           rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
         },
       },
     };
 
     this.customizer = {
-      location1: {
+      scene1: {
+        name: 'Location 1',
+        location: 'desert',
         cars: ['hummer', 'cruiser'],
-        girls: ['girl1'],
+        girls: ['girl2', 'girl1'],
       },
-      location2: {
-        cars: ['hummer', 'porsche'],
-        girls: ['girl1'],
+      scene2: {
+        name: 'Location 2',
+        location: 'desert',
+        cars: ['porsche', 'delorean'],
+        girls: ['girl1', 'girl2'],
       },
     };
 
     this.initConfig();
     this.setDebug();
-
     this.setLoadingManager();
-
     this.setRenderer();
     this.setUpdateMaterials();
-
     this.setEnvMaps();
 
     this.setCamera();
     this.setNavigation();
     this.setHelpers();
-    this.setEvents();
-
     this.setLights();
 
+    this.loadLocation();
     this.loadCar();
     this.loadGirl();
-
     this.loadEnvironment();
-    // this.loadBoxCar();
+    this.renderCustomizer();
 
-    this.tick = this.tick.bind(this); // dont know why but it works
+    this.setEvents();
+
+    this.tick = this.tick.bind(this);
     this.tick();
   }
 
   initConfig() {
     this.config = {};
 
-    this.config.car = 'porsche';
-    this.config.girl = 'girl1';
+    this.config.scene = this.customizer.scene1;
+    this.config.car = 'hummer';
+    this.config.girl = 'girl2';
 
     // needed for navigation
     this.config.width = this.sizes.width;
@@ -128,10 +147,16 @@ export default class App {
       );
       this.loadingScreen.classList.add('preloader--active');
     };
+
     this.loadingManager.onLoad = () => {
       console.log('load complete');
 
       this.updateMaterials.updateAllMaterials(); // update materials after everything was loaded
+
+      if (this.pmremGenerator) {
+        // exr loader part
+        this.pmremGenerator.dispose();
+      }
 
       this.loadingScreen.classList.remove('preloader--active');
     };
@@ -185,6 +210,8 @@ export default class App {
     this.scene.add(this.camera.instance);
 
     this.camera.instance.position.set(2, 4, 26);
+    // this.camera.setOrbitControls(); // not using orbit controls since using custom Navigation
+
     // this.camera.instance.lookAt(20, 10, 5); // not working with controls enabled
   }
 
@@ -203,126 +230,62 @@ export default class App {
 
   setLights() {
     // Ligting
-    const ambientLight = new THREE.AmbientLight({
-      color: '#ffffff',
-      intensity: 0.1,
+    this.lights = new Lights({
+      scene: this.scene,
+      debug: this.debug,
     });
-    this.scene.add(ambientLight);
-
-    this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    this.directionalLight.position.set(6.5, 9.1, 7.8);
-    this.directionalLightTarget = new THREE.Object3D(0, 0, 0);
-    this.directionalLight.target = this.directionalLightTarget;
-    this.scene.add(this.directionalLightTarget);
-    // this.directionalLight.target.set(0, 0, 0);
-
-    this.directionalLight.castShadow = true;
-    this.directionalLight.shadow.mapSize.set(1024, 1024);
-    this.directionalLight.shadow.camera.far = 30;
-
-    this.directionalLight.shadow.camera.left = -10;
-    this.directionalLight.shadow.camera.top = 10;
-    this.directionalLight.shadow.camera.right = 10;
-    this.directionalLight.shadow.camera.bottom = -10;
-
-    this.scene.add(this.directionalLight);
-
-    this.directionalLightCameraHelper = new THREE.CameraHelper(
-      this.directionalLight.shadow.camera
-    );
-    this.scene.add(this.directionalLightCameraHelper);
-
-    this.debugFolderLight = this.debug.addFolder('Directional Light');
-    this.debugFolderLight
-      .add(this.directionalLight.position, 'x')
-      .min(-10)
-      .max(20)
-      .step(0.1)
-      .name('Light x');
-    this.debugFolderLight
-      .add(this.directionalLight.position, 'y')
-      .min(-10)
-      .max(20)
-      .step(0.1)
-      .name('Light y');
-    this.debugFolderLight
-      .add(this.directionalLight.position, 'z')
-      .min(-10)
-      .max(20)
-      .step(0.1)
-      .name('Light z');
-    this.debugFolderLight
-      .add(this.directionalLightTarget.position, 'x')
-      .min(-10)
-      .max(20)
-      .step(0.1)
-      .name('Light x');
-    this.debugFolderLight
-      .add(this.directionalLightTarget.position, 'y')
-      .min(-10)
-      .max(20)
-      .step(0.1)
-      .name('Light y');
-    this.debugFolderLight
-      .add(this.directionalLightTarget.position, 'z')
-      .min(-10)
-      .max(20)
-      .step(0.1)
-      .name('Light z');
-    this.debugFolderLight.close();
   }
 
   setEnvMaps() {
     // environment map
-    const cubeTextureLoader = new THREE.CubeTextureLoader();
+    const cubeTextureLoader = new THREE.CubeTextureLoader(this.loadingManager);
 
-    // debugObject.environmentMap = cubeTextureLoader.load([
-    //   '/assets/envMaps/bridge/posx.jpg',
-    //   '/assets/envMaps/bridge/negx.jpg',
-    //   '/assets/envMaps/bridge/posy.jpg',
-    //   '/assets/envMaps/bridge/negy.jpg',
-    //   '/assets/envMaps/bridge/posz.jpg',
-    //   '/assets/envMaps/bridge/negz.jpg',
-    // ]);
+    this.debugObject.environmentMap = cubeTextureLoader.load([
+      '/assets/envMaps/sf/posx.jpg',
+      '/assets/envMaps/sf/negx.jpg',
+      '/assets/envMaps/sf/posy.jpg',
+      '/assets/envMaps/sf/negy.jpg',
+      '/assets/envMaps/sf/posz.jpg',
+      '/assets/envMaps/sf/negz.jpg',
+    ]);
 
-    // debugObject.environmentMap.encoding = THREE.sRGBEncoding;
+    this.debugObject.environmentMap.encoding = THREE.sRGBEncoding;
+
+    this.scene.environment = this.debugObject.environmentMap;
+    this.scene.background = this.debugObject.environmentMap;
 
     // LOAD EXR
-    THREE.DefaultLoadingManager.onLoad = function () {
-      pmremGenerator.dispose();
-    };
 
-    const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-    pmremGenerator.compileEquirectangularShader();
+    // this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+    // this.pmremGenerator.compileEquirectangularShader();
 
-    let exrEnvMapLoader = new EXRLoader();
-    exrEnvMapLoader.setDataType(THREE.UnsignedByteType);
+    // let exrEnvMapLoader = new EXRLoader(this.loadingManager);
+    // exrEnvMapLoader.setDataType(THREE.UnsignedByteType);
 
-    let exrBackground;
-    let envMap;
-    let exrCubeRenderTarget;
+    // let exrBackground;
+    // let envMap;
+    // let exrCubeRenderTarget;
 
-    let exrEnvMap = exrEnvMapLoader.load(
-      '/assets/envMaps/room.exr',
-      (texture) => {
-        exrCubeRenderTarget = pmremGenerator.fromEquirectangular(texture);
-        exrBackground = exrCubeRenderTarget.texture;
-        envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
+    // let exrEnvMap = exrEnvMapLoader.load(
+    //   '/assets/envMaps/room.exr',
+    //   (texture) => {
+    //     exrCubeRenderTarget = this.pmremGenerator.fromEquirectangular(texture);
+    //     exrBackground = exrCubeRenderTarget.texture;
+    //     envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
 
-        this.debugObject.environmentMap = envMap;
-        console.log(this.debugObject.environmentMap);
+    //     this.debugObject.environmentMap = envMap;
+    //     console.log(this.debugObject.environmentMap);
 
-        // loadObjectAndAndEnvMap(); // Add envmap once the texture has been loaded
+    //     // loadObjectAndAndEnvMap(); // Add envmap once the texture has been loaded
 
-        texture.dispose();
-      }
-    );
+    //     texture.dispose();
+    //   }
+    // );
+    // this.renderer.outputEncoding = THREE.sRGBEncoding;
+    // this.scene.environment = exrEnvMap;
+    // this.scene.background = exrEnvMap;
 
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.outputEncoding = THREE.sRGBEncoding;
-
-    // this.scene.environment = debugObject.environmentMap;
-    // this.scene.background = debugObject.environmentMap;
 
     if (this.debug) {
       this.debug
@@ -348,8 +311,15 @@ export default class App {
     // window.requestAnimationFrame(this.tick);
   }
 
+  setModelLoadedListener(object) {
+    object.on('loaded', () => {
+      console.log('Car loaded event');
+      this.updateMaterials.updateAllMaterials(); //todo remove if texture loads correctly
+    });
+  }
+
   setEvents() {
-    // window.addEventListener('resize', () => {
+    // Window resize
     this.sizes.on('resize', () => {
       this.camera.instance.aspect = this.sizes.width / this.sizes.height;
       this.camera.instance.updateProjectionMatrix();
@@ -358,14 +328,66 @@ export default class App {
       // this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     });
 
+    // Update Animation
     this.time.on('tick', () => {
       this.renderer.render(this.scene, this.camera.instance);
 
       this.renderer.toneMappingExposure = this.debugObject.exposure;
     });
+
+    this.setModelLoadedListener(this.girl);
   }
 
   ////////////
+
+  // LOAD UNLOAD MODELS METHODS
+
+  loadLocation() {
+    if (this.config.scene != '') {
+      this.location = new Car({
+        object: this.objects.locations[this.config.scene.location],
+        scene: this.scene,
+        debug: this.debug,
+        loadingManager: this.loadingManager,
+      });
+      this.scene.add(this.location.container);
+    }
+    this.setModelLoadedListener(this.location);
+  }
+
+  loadCar() {
+    if (this.config.car != '') {
+      this.car = new Car({
+        object: this.objects.cars[this.config.car],
+        scene: this.scene,
+        debug: this.debug,
+        loadingManager: this.loadingManager,
+      });
+      this.scene.add(this.car.container);
+    }
+    this.setModelLoadedListener(this.car);
+  }
+
+  loadGirl() {
+    if (this.config.girl != '') {
+      this.girl = new Car({
+        object: this.objects.girls[this.config.girl],
+        scene: this.scene,
+        debug: this.debug,
+        loadingManager: this.loadingManager,
+      });
+      this.scene.add(this.girl.container);
+    }
+    this.setModelLoadedListener(this.girl); //todo change object to .girl
+  }
+
+  removeLocation() {
+    if (!isEmptyObject(this.location)) {
+      this.location.removeObject();
+      console.log('remove location');
+    }
+    this.location = {};
+  }
 
   removeCar() {
     if (!isEmptyObject(this.car)) {
@@ -383,59 +405,102 @@ export default class App {
     this.girl = {};
   }
 
-  setCar(car) {
-    this.config.car = car;
+  setToConfig(object, car) {
+    this.config[object] = car;
   }
 
-  setGirl(girl) {
-    this.config.girl = girl;
+  reloadLocation() {
+    this.removeLocation();
+    this.loadLocation();
   }
-
   reloadCar() {
     this.removeCar();
     this.loadCar();
   }
+  reloadGirl() {
+    this.removeGirl();
+    this.loadGirl();
+  }
 
+  customizerSwitchCar = (object) => {
+    this.setToConfig('car', object);
+    this.reloadCar();
+  };
+  customizerSwitchGirl = (object) => {
+    this.setToConfig('girl', object);
+    this.reloadGirl();
+  };
+
+  customizerSwitchLocation = (object) => {
+    console.log('switch location' + object);
+
+    const newLocation = object;
+
+    this.config.scene = this.customizer[newLocation];
+
+    this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
+    this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
+
+    this.reloadLocation();
+
+    this.customizerSwitchCar(this.config.scene.cars[0]);
+    this.customizerSwitchGirl(this.config.scene.girls[0]);
+    // todo switch location model
+  };
   ////////////
-
-  loadCar() {
-    this.car = new Car({
-      object: this.objects.cars[this.config.car],
-      scene: this.scene,
-      debug: this.debug,
-      loadingManager: this.loadingManager,
-    });
-    this.scene.add(this.car.container);
-  }
-
-  loadGirl() {
-    this.girl = new Car({
-      object: this.objects.girls[this.config.girl],
-      scene: this.scene,
-      debug: this.debug,
-      loadingManager: this.loadingManager,
-    });
-    this.scene.add(this.girl.container);
-  }
 
   loadEnvironment() {
     // plane test
-    const material = new THREE.MeshStandardMaterial({ color: '#aaaaaa' });
-
-    const plane = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry(40, 40, 1, 1),
-      material
-    );
-    plane.rotation.x = Math.PI * -0.5;
-    plane.position.y = 0;
-    plane.receiveShadow = true;
-
-    this.scene.add(plane);
-
-    // this.updateAllMaterials();
-    // this.updateMaterials.updateAllMaterials();
+    // const material = new THREE.MeshStandardMaterial({ color: '#aaaaaa' });
+    // const plane = new THREE.Mesh(
+    //   new THREE.PlaneBufferGeometry(40, 40, 1, 1),
+    //   material
+    // );
+    // plane.rotation.x = Math.PI * -0.5;
+    // plane.position.y = 0;
+    // plane.receiveShadow = true;
+    // this.scene.add(plane);
   }
 
+  getModelName(modelType, modelId) {
+    return this.objects[modelType][modelId].name;
+  }
+
+  renderModelList(parentElement, modelType, itemClass) {
+    if (parentElement) {
+      parentElement.innerHTML = '';
+
+      this.config.scene[modelType].forEach((model) => {
+        const markup = `
+          <div class="${itemClass}" data-${modelType}="${model}">${this.getModelName(
+          modelType,
+          model
+        )}</div>
+          `;
+
+        parentElement.insertAdjacentHTML('beforeend', markup);
+      });
+    }
+  }
+
+  renderCustomizer() {
+    this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
+    this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
+
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains(vars.carClass)) {
+        this.customizerSwitchCar(e.target.dataset.cars);
+      }
+      if (e.target.classList.contains(vars.girlClass)) {
+        this.customizerSwitchGirl(e.target.dataset.girls);
+      }
+      if (e.target.classList.contains(vars.locationClass)) {
+        this.customizerSwitchLocation(e.target.dataset.location);
+      }
+    });
+  }
+
+  // DEBUG
   setDebug() {
     this.debug = new dat.GUI({});
 
