@@ -483,19 +483,50 @@ export default class App {
     }
   }
 
+  updateCustomizer() {
+    vars.customizerDom
+      .querySelectorAll(`.${vars.locationClass}`)
+      .forEach((element) => {
+        element.classList.remove('active');
+        if (element.dataset.location == this.config.scene.name) {
+          element.classList.add('active');
+        }
+      });
+    vars.customizerDom
+      .querySelectorAll(`.${vars.carClass}`)
+      .forEach((element) => {
+        element.classList.remove('active');
+        if (element.dataset.cars == this.config.car) {
+          element.classList.add('active');
+        }
+      });
+    vars.customizerDom
+      .querySelectorAll(`.${vars.girlClass}`)
+      .forEach((element) => {
+        element.classList.remove('active');
+        if (element.dataset.girls == this.config.girl) {
+          element.classList.add('active');
+        }
+      });
+  }
+
   renderCustomizer() {
     this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
     this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
+    this.updateCustomizer();
 
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains(vars.carClass)) {
         this.customizerSwitchCar(e.target.dataset.cars);
+        this.updateCustomizer();
       }
       if (e.target.classList.contains(vars.girlClass)) {
         this.customizerSwitchGirl(e.target.dataset.girls);
+        this.updateCustomizer();
       }
       if (e.target.classList.contains(vars.locationClass)) {
         this.customizerSwitchLocation(e.target.dataset.location);
+        this.updateCustomizer();
       }
     });
   }

@@ -13,6 +13,12 @@
 
     &-item {
       margin-right: 20px;
+      color: $color-gray;
+      cursor: pointer;
+
+      &.active {
+        color: $color-black;
+      }
     }
   }
   &__cars {
@@ -20,6 +26,12 @@
 
     &-item {
       margin-right: 20px;
+      color: $color-gray;
+      cursor: pointer;
+
+      &.active {
+        color: $color-black;
+      }
     }
   }
   &__girls {
@@ -27,6 +39,12 @@
 
     &-item {
       margin-right: 20px;
+      color: $color-gray;
+      cursor: pointer;
+
+      &.active {
+        color: $color-black;
+      }
     }
   }
 }
