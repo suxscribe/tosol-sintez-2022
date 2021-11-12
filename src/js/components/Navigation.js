@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import normalizeWheel from 'normalize-wheel';
+import { gsap } from 'gsap';
 
 export default class Navigation {
   constructor(_options) {

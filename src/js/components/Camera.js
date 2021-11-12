@@ -1,8 +1,12 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import CameraControls from 'camera-controls';
+import EventEmitter from './../utils/EventEmitter';
 
-export default class Camera {
+export default class Camera extends EventEmitter {
   constructor(_options) {
+    super();
+
     this.fov = _options.fov;
     this.sizes = _options.sizes;
     this.debug = _options.debug;
@@ -14,6 +18,8 @@ export default class Camera {
 
     this.setInstance();
     // this.setOrbitControls(); // disable orbit controls. using Navigaion
+    this.setCameraControls();
+    this.setCameraControlsEvents();
   }
 
   setInstance() {
@@ -25,7 +31,7 @@ export default class Camera {
       1000
     );
 
-    this.instance.position.set(20, 10, 8);
+    this.instance.position.set(30, 19, 19);
 
     // Debug
     if (this.debug) {
@@ -62,6 +68,7 @@ export default class Camera {
     this.controls.rotateSpeed = 0.5; // 0.1
     this.controls.panSpeed = 0.5; // 0.1
     this.controls.zoomSpeed = 0.5; // 0.3
+
     this.controls.maxAzimuthAngle = Math.PI * 0.8;
     this.controls.minAzimuthAngle = Math.PI * 0.25;
     this.controls.maxPolarAngle = Math.PI * 0.55;
@@ -116,5 +123,70 @@ export default class Camera {
         .name('Camera Target z')
         .listen();
     }
+  }
+
+  setCameraControls() {
+    CameraControls.install({ THREE: THREE });
+
+    this.clock = new THREE.Clock();
+    this.cameraControls = new CameraControls(
+      this.instance,
+      this.renderer.domElement
+    );
+
+    this.cameraControls.dampingFactor = 0.02;
+    this.cameraControls.draggingDampingFactor = 0.02;
+    this.cameraControls.azimuthRotateSpeed = 0.1;
+    this.cameraControls.polarRotateSpeed = 0.1;
+    this.cameraControls.dollySpeed = 0.1;
+
+    this.cameraControls.minDistance = 20;
+    this.cameraControls.maxDistance = 40;
+    this.cameraControls.minAzimuthAngle = Math.PI * 0.2;
+    this.cameraControls.maxAzimuthAngle = Math.PI * 0.8;
+    this.cameraControls.minPolarAngle = 0.2;
+    this.cameraControls.maxPolarAngle = Math.PI * 0.5;
+
+    this.boundary = new THREE.Box3(
+      new THREE.Vector3(-30, -30, -30),
+      new THREE.Vector3(30, 30, 30)
+    );
+    this.cameraControls.setBoundary(this.boundary);
+    // this.cameraControls.boundaryEnclosesCamera = true;
+
+    this.time.on('tick', () => {
+      this.cameraControls.update(1 / this.time.delta);
+    });
+
+    document
+      .querySelector('.customizer__camera-control')
+      .addEventListener('click', (e) => {
+        this.cameraControls.rotate(45 * THREE.MathUtils.DEG2RAD, 0, true);
+      });
+  }
+
+  setCameraControlsEvents() {
+    if (this.cameraControls) {
+      // Set Events for render on demand etc
+      this.cameraControls.addEventListener('transitionstart', () => {
+        console.log('cameratransitionstart');
+
+        this.trigger('cameratransitionstart');
+      });
+      this.cameraControls.addEventListener('rest', () => {
+        console.log('cameratransitionend');
+
+        this.trigger('cameratransitionend');
+      });
+      this.cameraControls.addEventListener('update', () => {
+        console.log('camera update');
+
+        this.trigger('cameraupdate');
+      });
+    }
+  }
+
+  startCameraInitialFly() {
+    this.cameraControls.setPosition(18, 6, 10, true);
   }
 }

@@ -12,6 +12,7 @@ import Navigation from './Navigation';
 import Sizes from './Sizes.js';
 
 import Car from './Car.js';
+import World from './World';
 
 export default class App {
   constructor(_options) {
@@ -19,10 +20,21 @@ export default class App {
     this.time = new Time();
     this.sizes = new Sizes();
 
+    this.car = {};
+    this.girl = {};
+    this.location = {};
+
     this.objects = {
       locations: {
         desert: {
           name: 'Desert',
+          source: '/assets/models/desert.glb',
+          position: new THREE.Vector3(-15, -1.7, -9),
+          scale: new THREE.Vector3(0.25, 0.25, 0.25),
+          rotation: new THREE.Euler(0, Math.PI * 0.66, 0),
+        },
+        track: {
+          name: 'Track',
           source: '/assets/models/desert.glb',
           position: new THREE.Vector3(-15, -1.7, -9),
           scale: new THREE.Vector3(0.25, 0.25, 0.25),
@@ -77,20 +89,23 @@ export default class App {
       },
     };
 
+    // Objects sets available for each scene \ location
     this.customizer = {
-      scene1: {
+      desert: {
         name: 'Location 1',
         location: 'desert',
         cars: ['hummer', 'cruiser'],
         girls: ['girl2', 'girl1'],
       },
-      scene2: {
+      track: {
         name: 'Location 2',
-        location: 'desert',
+        location: 'track',
         cars: ['porsche', 'delorean'],
         girls: ['girl1', 'girl2'],
       },
     };
+
+    this.lights = {};
 
     this.initConfig();
     this.setDebug();
@@ -100,13 +115,12 @@ export default class App {
     this.setEnvMaps();
 
     this.setCamera();
-    this.setNavigation();
+    // this.setNavigation();
     this.setHelpers();
     this.setLights();
 
-    this.loadLocation();
-    this.loadCar();
-    this.loadGirl();
+    this.setWorld();
+
     this.loadEnvironment();
     this.renderCustomizer();
 
@@ -119,7 +133,7 @@ export default class App {
   initConfig() {
     this.config = {};
 
-    this.config.scene = this.customizer.scene1;
+    this.config.scene = this.customizer.desert;
     this.config.car = 'hummer';
     this.config.girl = 'girl2';
 
@@ -158,7 +172,10 @@ export default class App {
         this.pmremGenerator.dispose();
       }
 
+      // hide loading screen
       this.loadingScreen.classList.remove('preloader--active');
+
+      this.camera.startCameraInitialFly();
     };
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
       console.log('Loading ' + itemsLoaded + ' of ' + itemsTotal + ' total');
@@ -209,7 +226,7 @@ export default class App {
     });
     this.scene.add(this.camera.instance);
 
-    this.camera.instance.position.set(2, 4, 26);
+    // this.camera.instance.position.set(2, 4, 26);
     // this.camera.setOrbitControls(); // not using orbit controls since using custom Navigation
 
     // this.camera.instance.lookAt(20, 10, 5); // not working with controls enabled
@@ -233,6 +250,7 @@ export default class App {
     this.lights = new Lights({
       scene: this.scene,
       debug: this.debug,
+      camera: this.camera,
     });
   }
 
@@ -313,7 +331,7 @@ export default class App {
 
   setModelLoadedListener(object) {
     object.on('loaded', () => {
-      console.log('Car loaded event');
+      // console.log('Car loaded event');
       this.updateMaterials.updateAllMaterials(); //todo remove if texture loads correctly
     });
   }
@@ -326,126 +344,76 @@ export default class App {
 
       this.renderer.setSize(this.sizes.width, this.sizes.height);
       // this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      this.needsUpdate = true;
     });
 
     // Update Animation
     this.time.on('tick', () => {
-      this.renderer.render(this.scene, this.camera.instance);
-
-      this.renderer.toneMappingExposure = this.debugObject.exposure;
+      if (this.needsUpdate === true) {
+        // this.renderer.render(this.scene, this.camera.instance);
+        // this.renderer.toneMappingExposure = this.debugObject.exposure;
+        this.render();
+        this.needsUpdate = false;
+      }
     });
 
-    this.setModelLoadedListener(this.girl);
+    this.camera.on('cameraupdate', () => {
+      // this.render();
+      this.needsUpdate = true;
+    });
+    this.camera.on('cameratransitionend', () => {
+      this.needsUpdate = false;
+    });
+
+    // this.setModelLoadedListener(this.girl);
+  }
+
+  render() {
+    this.renderer.render(this.scene, this.camera.instance);
+    this.renderer.toneMappingExposure = this.debugObject.exposure;
   }
 
   ////////////
 
-  // LOAD UNLOAD MODELS METHODS
-
-  loadLocation() {
-    if (this.config.scene != '') {
-      this.location = new Car({
-        object: this.objects.locations[this.config.scene.location],
-        scene: this.scene,
-        debug: this.debug,
-        loadingManager: this.loadingManager,
-      });
-      this.scene.add(this.location.container);
-    }
-    this.setModelLoadedListener(this.location);
+  setWorld() {
+    this.world = new World({
+      objects: this.objects,
+      config: this.config,
+      car: this.car,
+      girl: this.girl,
+      location: this.location,
+      customizer: this.customizer,
+      scene: this.scene,
+      updateMaterials: this.updateMaterials,
+      debug: this.debug,
+      loadingManager: this.loadingManager,
+    });
   }
 
-  loadCar() {
-    if (this.config.car != '') {
-      this.car = new Car({
-        object: this.objects.cars[this.config.car],
-        scene: this.scene,
-        debug: this.debug,
-        loadingManager: this.loadingManager,
-      });
-      this.scene.add(this.car.container);
-    }
-    this.setModelLoadedListener(this.car);
+  setToConfig(objectType, car) {
+    this.config[objectType] = car;
   }
 
-  loadGirl() {
-    if (this.config.girl != '') {
-      this.girl = new Car({
-        object: this.objects.girls[this.config.girl],
-        scene: this.scene,
-        debug: this.debug,
-        loadingManager: this.loadingManager,
-      });
-      this.scene.add(this.girl.container);
-    }
-    this.setModelLoadedListener(this.girl); //todo change object to .girl
-  }
-
-  removeLocation() {
-    if (!isEmptyObject(this.location)) {
-      this.location.removeObject();
-      console.log('remove location');
-    }
-    this.location = {};
-  }
-
-  removeCar() {
-    if (!isEmptyObject(this.car)) {
-      this.car.removeObject();
-      console.log('remove car');
-    }
-    this.car = {};
-  }
-
-  removeGirl() {
-    if (!isEmptyObject(this.girl)) {
-      this.girl.removeObject();
-      console.log('remove girl');
-    }
-    this.girl = {};
-  }
-
-  setToConfig(object, car) {
-    this.config[object] = car;
-  }
-
-  reloadLocation() {
-    this.removeLocation();
-    this.loadLocation();
-  }
-  reloadCar() {
-    this.removeCar();
-    this.loadCar();
-  }
-  reloadGirl() {
-    this.removeGirl();
-    this.loadGirl();
-  }
-
-  customizerSwitchCar = (object) => {
-    this.setToConfig('car', object);
-    this.reloadCar();
+  customizerSwitchCar = (car) => {
+    this.setToConfig('car', car);
+    this.world.reloadCar();
   };
-  customizerSwitchGirl = (object) => {
-    this.setToConfig('girl', object);
-    this.reloadGirl();
+  customizerSwitchGirl = (girl) => {
+    this.setToConfig('girl', girl);
+    this.world.reloadGirl();
   };
 
   customizerSwitchLocation = (object) => {
-    console.log('switch location' + object);
-
-    const newLocation = object;
-
-    this.config.scene = this.customizer[newLocation];
+    this.config.scene = this.customizer[object];
 
     this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
     this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
 
-    this.reloadLocation();
+    this.world.reloadLocation();
 
     this.customizerSwitchCar(this.config.scene.cars[0]);
     this.customizerSwitchGirl(this.config.scene.girls[0]);
-    // todo switch location model
   };
   ////////////
 
@@ -483,15 +451,34 @@ export default class App {
     }
   }
 
+  renderScenesList() {
+    vars.customizerLocationsDom.innerHTML = '';
+
+    Object.entries(this.customizer).forEach(([scene, sceneParams]) => {
+      const markup = `
+          <div class="${vars.locationClass}" data-location="${scene}">${sceneParams.name}</div>
+          `;
+
+      vars.customizerLocationsDom.insertAdjacentHTML('beforeend', markup);
+    });
+  }
+
   updateCustomizer() {
+    // update Location list
     vars.customizerDom
       .querySelectorAll(`.${vars.locationClass}`)
       .forEach((element) => {
         element.classList.remove('active');
-        if (element.dataset.location == this.config.scene.name) {
+        if (element.dataset.location == this.config.scene.location) {
           element.classList.add('active');
+          console.log('acitve location');
+
+          console.log(element.dataset.location);
+          console.log(this.config.scene.location);
         }
       });
+
+    // Update Cars List
     vars.customizerDom
       .querySelectorAll(`.${vars.carClass}`)
       .forEach((element) => {
@@ -500,6 +487,8 @@ export default class App {
           element.classList.add('active');
         }
       });
+
+    // Update Girls List
     vars.customizerDom
       .querySelectorAll(`.${vars.girlClass}`)
       .forEach((element) => {
@@ -511,6 +500,8 @@ export default class App {
   }
 
   renderCustomizer() {
+    this.renderScenesList();
+
     this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
     this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
     this.updateCustomizer();
@@ -542,8 +533,7 @@ export default class App {
         this.removeCar();
       },
       reloadCar: () => {
-        this.removeCar();
-        this.loadCar();
+        this.world.reloadCar();
       },
     };
 
@@ -559,7 +549,7 @@ export default class App {
       })
       .name('Config Car')
       .onChange(() => {
-        this.reloadCar();
+        this.world.reloadCar();
       });
     // this.debug.add(this.config, 'girl').name('Config Girl');
   }
