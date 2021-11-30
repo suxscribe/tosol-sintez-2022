@@ -1,11 +1,15 @@
 import * as THREE from 'three';
+import { debugObject } from './data/vars';
+import { TextureLoader } from 'three';
 
 export default class UpdateMaterials {
   constructor(_options) {
     this.scene = _options.scene;
-    this.debugObject = _options.debugObject;
+    this.loadingManager = _options.loadingManager;
+    this.debugObject = debugObject;
 
-    // this.updateAllMaterials();
+    this.carPaintMaterialName = 'paint';
+    this.textureLoader = new TextureLoader(this.loadingManager);
   }
 
   updateAllMaterials() {
@@ -25,5 +29,35 @@ export default class UpdateMaterials {
       }
     });
     console.log('updateMaterials');
+  }
+
+  changeCarColor(color) {
+    this.scene.traverse((child) => {
+      if (child.material && child.material.name === this.carPaintMaterialName) {
+        child.material.color.set(color);
+      }
+    });
+    this.debugObject.needsUpdate = true;
+  }
+
+  // async loadTexture() {
+  //   const texture = await this.textureLoader.load(
+  //     '/assets/textures/car-test.jpg'
+  //   );
+  //   return { texture };
+  // }
+
+  async changeCarTexture() {
+    // const { carTexture } = await this.loadTexture();
+    const carTexture = this.textureLoader.load('/assets/textures/car-test.jpg');
+    console.log(carTexture);
+
+    this.scene.traverse((child) => {
+      if (child.material && child.material.name === this.carPaintMaterialName) {
+        child.material.map = carTexture;
+        child.material.needsUpdate = true;
+      }
+    });
+    this.debugObject.needsUpdate = true;
   }
 }

@@ -3,6 +3,11 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import UpdateMaterials from './UpdateMaterials.js';
 import EventEmitter from './../utils/EventEmitter';
+import {
+  Lensflare,
+  LensflareElement,
+} from 'three/examples/jsm/objects/Lensflare.js';
+import { debugObject } from './data/vars.js';
 
 export default class Car extends EventEmitter {
   constructor(_options) {
@@ -15,10 +20,17 @@ export default class Car extends EventEmitter {
     this.debug = _options.debug;
     this.loadingManager = _options.loadingManager;
 
+    this.debugObject = this.debugObject;
     this.updateMaterials = new UpdateMaterials({ scene: this.container });
 
+    this.loader = new GLTFLoader(this.loadingManager);
+
     this.loadCarModel();
+
+    this.debugFolderLight = [];
     this.setDebug();
+
+    this.setLensflare();
   }
 
   async loadCarModel() {
@@ -62,12 +74,10 @@ export default class Car extends EventEmitter {
 
     this.trigger('loaded'); // trigger loaded event to force update materials
 
-    // console.log(this.model);
+    console.log(this.model);
   }
 
   async loadModel() {
-    this.loader = new GLTFLoader(this.loadingManager);
-
     const modelData = await this.loader.loadAsync(this.object.source);
 
     console.log('Squaaawk! Loaded: ' + this.object.source);
@@ -80,6 +90,75 @@ export default class Car extends EventEmitter {
   setupModel(data) {
     // ADD Whole Scene
     return data.scene;
+  }
+
+  addLensflare() {
+    if (this.object.lensflares) {
+      this.object.lensflares.forEach((lensflareData) => {
+        const light = new THREE.PointLight(0xffffff, 1.5, 20);
+        light.color.setHSL(0.5, 0.5, 0.5);
+        light.position.set(lensflareData.x, lensflareData.y, lensflareData.z);
+        this.container.add(light);
+
+        const lensflare = new Lensflare();
+        lensflare.addElement(
+          new LensflareElement(this.textureFlare0, 700, 0, light.color)
+        );
+        // lensflare.addElement(new LensflareElement(this.textureFlare3, 60, 0.6));
+        // lensflare.addElement(new LensflareElement(this.textureFlare3, 70, 0.7));
+        // lensflare.addElement(
+        //   new LensflareElement(this.textureFlare3, 120, 0.9)
+        // );
+        // lensflare.addElement(new LensflareElement(this.textureFlare3, 70, 1));
+        light.add(lensflare);
+
+        if (this.debug) {
+          this.debugFolderLight[lensflareData.name] = this.debug.addFolder(
+            'Lensflare ' + lensflareData.name
+          );
+          this.debugFolderLight[lensflareData.name]
+            .add(light.position, 'x')
+            .min(-100)
+            .max(200)
+            .step(0.1)
+            .onChange(() => {
+              this.setNeedsUpdate();
+            })
+            .name('Light x');
+          this.debugFolderLight[lensflareData.name]
+            .add(light.position, 'y')
+            .min(-100)
+            .max(200)
+            .step(0.1)
+            .onChange(() => {
+              this.setNeedsUpdate();
+            })
+            .name('Light y');
+          this.debugFolderLight[lensflareData.name]
+            .add(light.position, 'z')
+            .min(-100)
+            .max(200)
+            .step(0.1)
+            .onChange(() => {
+              this.setNeedsUpdate();
+            })
+            .name('Light z');
+
+          this.debugFolderLight[lensflareData.name].close();
+        }
+      });
+    }
+  }
+
+  setLensflare() {
+    const textureLoader = new THREE.TextureLoader();
+
+    this.textureFlare0 = textureLoader.load('/assets/textures/flare.png');
+    this.textureFlare3 = textureLoader.load(
+      '/assets/textures/Flare_Pentagone.png'
+    );
+
+    this.addLensflare();
   }
 
   setDebug() {
@@ -129,6 +208,13 @@ export default class Car extends EventEmitter {
     this.debugFolder.close();
   }
 
+  setNeedsUpdate() {
+    console.log('needsupdate');
+
+    this.debugObject.needsUpdate = true;
+    // this.trigger('needsupdate');
+  }
+
   removeObject() {
     this.container.traverse((child) => {
       if (child.hasOwnProperty('geometry')) {
@@ -142,5 +228,16 @@ export default class Car extends EventEmitter {
     });
 
     this.debug.removeFolder(this.debugFolder);
+
+    // console.log(this.debugFolderLight);
+
+    Object.values(this.debugFolderLight).forEach((folder) => {
+      console.log('folder');
+
+      console.log(folder);
+
+      this.debug.removeFolder(folder);
+    });
+    // this.debug.removeFolder(this.debugFolderLight);
   }
 }

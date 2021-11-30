@@ -1,15 +1,20 @@
 import * as THREE from 'three';
 import * as dat from 'dat.gui';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { SAOPass } from 'three/examples/jsm/postprocessing/SAOPass.js';
+import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
 
 import { isEmptyObject } from './Utils';
-import { vars } from './data/vars';
+import { vars, objectsData, customizerData, debugObject } from './data/vars';
 import Time from '../utils/Time';
 import UpdateMaterials from './UpdateMaterials.js';
 import Lights from './Lights';
 import Camera from './Camera.js'; // camera constructor
 import Navigation from './Navigation';
 import Sizes from './Sizes.js';
+import Interface from './Interface';
 
 import Car from './Car.js';
 import World from './World';
@@ -24,86 +29,8 @@ export default class App {
     this.girl = {};
     this.location = {};
 
-    this.objects = {
-      locations: {
-        desert: {
-          name: 'Desert',
-          source: '/assets/models/desert.glb',
-          position: new THREE.Vector3(-15, -1.7, -9),
-          scale: new THREE.Vector3(0.25, 0.25, 0.25),
-          rotation: new THREE.Euler(0, Math.PI * 0.66, 0),
-        },
-        track: {
-          name: 'Track',
-          source: '/assets/models/desert.glb',
-          position: new THREE.Vector3(-15, -1.7, -9),
-          scale: new THREE.Vector3(0.25, 0.25, 0.25),
-          rotation: new THREE.Euler(0, Math.PI * 0.66, 0),
-        },
-      },
-      cars: {
-        hummer: {
-          name: 'Hummer',
-          source: '/assets/models/hummerhx4.glb',
-          position: new THREE.Vector3(0, 0, 0),
-          scale: new THREE.Vector3(0.08, 0.08, 0.08),
-          rotation: new THREE.Euler(0, Math.PI * -0.5, 0),
-        },
-        cruiser: {
-          name: 'Land Cruiser',
-          source: '/assets/models/landcruiser/landcruiser.glb',
-          position: new THREE.Vector3(0, 0, 0),
-          scale: new THREE.Vector3(2, 2, 2),
-          rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
-        },
-        delorean: {
-          name: 'DeLorean',
-          source: '/assets/models/delorean.glb',
-          position: new THREE.Vector3(0, 0, 0),
-          scale: new THREE.Vector3(2.5, 2.5, 2.5),
-          rotation: new THREE.Euler(0, 0, 0),
-        },
-        porsche: {
-          name: 'Porsche',
-          source: '/assets/models/porsche/porsche.glb',
-          position: new THREE.Vector3(0, 0, 0),
-          scale: new THREE.Vector3(3.5, 3.5, 3.5),
-          rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
-        },
-      },
-      girls: {
-        girl1: {
-          name: 'Girl 1',
-          source: '/assets/models/girl1.glb',
-          position: new THREE.Vector3(5, 0, 6),
-          scale: new THREE.Vector3(1, 1, 1),
-          rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
-        },
-        girl2: {
-          name: 'Girl 2',
-          source: '/assets/models/girl2.glb',
-          position: new THREE.Vector3(5, 0, 6),
-          scale: new THREE.Vector3(4, 4, 4),
-          rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
-        },
-      },
-    };
-
-    // Objects sets available for each scene \ location
-    this.customizer = {
-      desert: {
-        name: 'Location 1',
-        location: 'desert',
-        cars: ['hummer', 'cruiser'],
-        girls: ['girl2', 'girl1'],
-      },
-      track: {
-        name: 'Location 2',
-        location: 'track',
-        cars: ['porsche', 'delorean'],
-        girls: ['girl1', 'girl2'],
-      },
-    };
+    this.objects = objectsData; // Models data
+    this.customizer = customizerData; // Objects sets available for each scene \ location
 
     this.lights = {};
 
@@ -112,32 +39,32 @@ export default class App {
     this.setLoadingManager();
     this.setRenderer();
     this.setUpdateMaterials();
-    this.setEnvMaps();
 
     this.setCamera();
-    // this.setNavigation();
+    this.setEffects();
+    // this.setNavigation(); // custom mouse navigation (by Bruno Simon)
     this.setHelpers();
     this.setLights();
 
     this.setWorld();
 
-    this.loadEnvironment();
-    this.renderCustomizer();
+    // this.renderCustomizer();
+    this.setInterface();
 
     this.setEvents();
-
-    this.tick = this.tick.bind(this);
-    this.tick();
   }
 
   initConfig() {
     this.config = {};
 
+    // default config to load
+    // todo get defaults from config
     this.config.scene = this.customizer.desert;
-    this.config.car = 'hummer';
-    this.config.girl = 'girl2';
+    this.config.car = 'porsche';
+    this.config.girl = 'girl1';
+    this.config.envMapType = 'cube';
 
-    // needed for navigation
+    // needed for Navigation instance
     this.config.width = this.sizes.width;
     this.config.height = this.sizes.height;
     this.config.smallestSide = Math.min(this.config.width, this.config.height);
@@ -193,6 +120,8 @@ export default class App {
     // Renderer
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
+      antialias: true,
+      // preserveDrawingBuffer: true,
     });
     this.renderer.setPixelRatio(
       Math.min(Math.max(window.devicePixelRatio, 2), 2)
@@ -212,7 +141,7 @@ export default class App {
   setUpdateMaterials() {
     this.updateMaterials = new UpdateMaterials({
       scene: this.scene,
-      debugObject: this.debugObject,
+      loadingManager: this.loadingManager,
     });
   }
 
@@ -225,11 +154,61 @@ export default class App {
       time: this.time,
     });
     this.scene.add(this.camera.instance);
+    this.scene.add(this.camera.boundaryHelper);
 
     // this.camera.instance.position.set(2, 4, 26);
     // this.camera.setOrbitControls(); // not using orbit controls since using custom Navigation
 
     // this.camera.instance.lookAt(20, 10, 5); // not working with controls enabled
+  }
+
+  setEffects() {
+    this.composer = new EffectComposer(this.renderer);
+    this.renderPass = new RenderPass(this.scene, this.camera.instance);
+    this.composer.addPass(this.renderPass);
+
+    // // SSAA
+    // this.ssaaRenderPass = new SSAARenderPass(
+    //   this.scene,
+    //   this.camera.instance,
+    //   0xaaaaaa,
+    //   0
+    // );
+    // this.composer.addPass(this.ssaaRenderPass);
+
+    // // Ambient Occlusion
+    // this.saoPass = new SAOPass(this.scene, this.camera.instance, false, true);
+    // this.composer.addPass(this.saoPass);
+
+    // this.saoPass.resolution.set(4096, 4096);
+    // this.saoPass.params.saoBias = 0.58;
+    // this.saoPass.params.saoIntensity = 0.0001;
+    // this.saoPass.params.saoScale = 0.5;
+    // this.saoPass.params.saoBias = 0.58;
+    // this.saoPass.params.saoKernelRadius = 80;
+
+    // if (this.debug) {
+    //   this.debug
+    //     .add(this.saoPass.params, 'output', {
+    //       Beauty: SAOPass.OUTPUT.Beauty,
+    //       'Beauty+SAO': SAOPass.OUTPUT.Default,
+    //       SAO: SAOPass.OUTPUT.SAO,
+    //       Depth: SAOPass.OUTPUT.Depth,
+    //       Normal: SAOPass.OUTPUT.Normal,
+    //     })
+    //     .onChange((value) => {
+    //       this.saoPass.params.output = parseInt(value);
+    //     });
+    //   this.debug.add(this.saoPass.params, 'saoBias', -1, 1);
+    //   this.debug.add(this.saoPass.params, 'saoIntensity', 0, 1, 0.0001);
+    //   this.debug.add(this.saoPass.params, 'saoScale', 0, 10);
+    //   this.debug.add(this.saoPass.params, 'saoKernelRadius', 1, 100);
+    //   this.debug.add(this.saoPass.params, 'saoMinResolution', 0, 1);
+    //   this.debug.add(this.saoPass.params, 'saoBlur');
+    //   this.debug.add(this.saoPass.params, 'saoBlurRadius', 0, 200);
+    //   this.debug.add(this.saoPass.params, 'saoBlurStdDev', 0.5, 150);
+    //   this.debug.add(this.saoPass.params, 'saoBlurDepthCutoff', 0.0, 0.1);
+    // }
   }
 
   setNavigation() {
@@ -254,79 +233,10 @@ export default class App {
     });
   }
 
-  setEnvMaps() {
-    // environment map
-    const cubeTextureLoader = new THREE.CubeTextureLoader(this.loadingManager);
-
-    this.debugObject.environmentMap = cubeTextureLoader.load([
-      '/assets/envMaps/sf/posx.jpg',
-      '/assets/envMaps/sf/negx.jpg',
-      '/assets/envMaps/sf/posy.jpg',
-      '/assets/envMaps/sf/negy.jpg',
-      '/assets/envMaps/sf/posz.jpg',
-      '/assets/envMaps/sf/negz.jpg',
-    ]);
-
-    this.debugObject.environmentMap.encoding = THREE.sRGBEncoding;
-
-    this.scene.environment = this.debugObject.environmentMap;
-    this.scene.background = this.debugObject.environmentMap;
-
-    // LOAD EXR
-
-    // this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-    // this.pmremGenerator.compileEquirectangularShader();
-
-    // let exrEnvMapLoader = new EXRLoader(this.loadingManager);
-    // exrEnvMapLoader.setDataType(THREE.UnsignedByteType);
-
-    // let exrBackground;
-    // let envMap;
-    // let exrCubeRenderTarget;
-
-    // let exrEnvMap = exrEnvMapLoader.load(
-    //   '/assets/envMaps/room.exr',
-    //   (texture) => {
-    //     exrCubeRenderTarget = this.pmremGenerator.fromEquirectangular(texture);
-    //     exrBackground = exrCubeRenderTarget.texture;
-    //     envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
-
-    //     this.debugObject.environmentMap = envMap;
-    //     console.log(this.debugObject.environmentMap);
-
-    //     // loadObjectAndAndEnvMap(); // Add envmap once the texture has been loaded
-
-    //     texture.dispose();
-    //   }
-    // );
-    // this.renderer.outputEncoding = THREE.sRGBEncoding;
-    // this.scene.environment = exrEnvMap;
-    // this.scene.background = exrEnvMap;
-
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-
-    if (this.debug) {
-      this.debug
-        .add(this.debugObject, 'envMapIntensity')
-        .min(0)
-        .max(3)
-        .step(0.01)
-        .onChange(() => {
-          this.updateMaterials.updateAllMaterials();
-        });
-
-      this.debug.add(this.debugObject, 'exposure').min(0).max(3).step(0.1);
-    }
-  }
-
   setHelpers() {
+    // axes helper
     this.axesHelper = new THREE.AxesHelper(10);
     this.scene.add(this.axesHelper);
-  }
-
-  tick() {
-    // this.navigation.update();
-    // window.requestAnimationFrame(this.tick);
   }
 
   setModelLoadedListener(object) {
@@ -345,32 +255,40 @@ export default class App {
       this.renderer.setSize(this.sizes.width, this.sizes.height);
       // this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-      this.needsUpdate = true;
+      this.debugObject.needsUpdate = true;
     });
 
     // Update Animation
     this.time.on('tick', () => {
-      if (this.needsUpdate === true) {
-        // this.renderer.render(this.scene, this.camera.instance);
-        // this.renderer.toneMappingExposure = this.debugObject.exposure;
+      // render on demand
+      if (this.debugObject.needsUpdate === true) {
         this.render();
-        this.needsUpdate = false;
+        this.debugObject.needsUpdate = false;
+      }
+
+      // Screenshot stuff
+      if (this.debugObject.needsScreenshot) {
+        this.renderer.setSize(2000, 1500); // resize renderer to desired size
+        this.render();
+        this.debugObject.needsScreenshot = false;
+        this.interface.saveAsImage();
+        this.renderer.setSize(this.sizes.width, this.sizes.height); // renderer original size
+        this.debugObject.needsUpdate = true;
       }
     });
 
     this.camera.on('cameraupdate', () => {
       // this.render();
-      this.needsUpdate = true;
+      this.debugObject.needsUpdate = true;
     });
     this.camera.on('cameratransitionend', () => {
-      this.needsUpdate = false;
+      this.debugObject.needsUpdate = false;
     });
-
-    // this.setModelLoadedListener(this.girl);
   }
 
   render() {
-    this.renderer.render(this.scene, this.camera.instance);
+    // this.renderer.render(this.scene, this.camera.instance); // no effects
+    this.composer.render(); // with effects
     this.renderer.toneMappingExposure = this.debugObject.exposure;
   }
 
@@ -384,10 +302,21 @@ export default class App {
       girl: this.girl,
       location: this.location,
       customizer: this.customizer,
+      renderer: this.renderer,
       scene: this.scene,
       updateMaterials: this.updateMaterials,
       debug: this.debug,
       loadingManager: this.loadingManager,
+      camera: this.camera,
+    });
+  }
+
+  setInterface() {
+    this.interface = new Interface({
+      config: this.config,
+      world: this.world,
+      renderer: this.renderer,
+      updateMaterials: this.updateMaterials,
     });
   }
 
@@ -395,147 +324,11 @@ export default class App {
     this.config[objectType] = car;
   }
 
-  customizerSwitchCar = (car) => {
-    this.setToConfig('car', car);
-    this.world.reloadCar();
-  };
-  customizerSwitchGirl = (girl) => {
-    this.setToConfig('girl', girl);
-    this.world.reloadGirl();
-  };
-
-  customizerSwitchLocation = (object) => {
-    this.config.scene = this.customizer[object];
-
-    this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
-    this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
-
-    this.world.reloadLocation();
-
-    this.customizerSwitchCar(this.config.scene.cars[0]);
-    this.customizerSwitchGirl(this.config.scene.girls[0]);
-  };
-  ////////////
-
-  loadEnvironment() {
-    // plane test
-    // const material = new THREE.MeshStandardMaterial({ color: '#aaaaaa' });
-    // const plane = new THREE.Mesh(
-    //   new THREE.PlaneBufferGeometry(40, 40, 1, 1),
-    //   material
-    // );
-    // plane.rotation.x = Math.PI * -0.5;
-    // plane.position.y = 0;
-    // plane.receiveShadow = true;
-    // this.scene.add(plane);
-  }
-
-  getModelName(modelType, modelId) {
-    return this.objects[modelType][modelId].name;
-  }
-
-  renderModelList(parentElement, modelType, itemClass) {
-    if (parentElement) {
-      parentElement.innerHTML = '';
-
-      this.config.scene[modelType].forEach((model) => {
-        const markup = `
-          <div class="${itemClass}" data-${modelType}="${model}">${this.getModelName(
-          modelType,
-          model
-        )}</div>
-          `;
-
-        parentElement.insertAdjacentHTML('beforeend', markup);
-      });
-    }
-  }
-
-  renderScenesList() {
-    vars.customizerLocationsDom.innerHTML = '';
-
-    Object.entries(this.customizer).forEach(([scene, sceneParams]) => {
-      const markup = `
-          <div class="${vars.locationClass}" data-location="${scene}">${sceneParams.name}</div>
-          `;
-
-      vars.customizerLocationsDom.insertAdjacentHTML('beforeend', markup);
-    });
-  }
-
-  updateCustomizer() {
-    // update Location list
-    vars.customizerDom
-      .querySelectorAll(`.${vars.locationClass}`)
-      .forEach((element) => {
-        element.classList.remove('active');
-        if (element.dataset.location == this.config.scene.location) {
-          element.classList.add('active');
-          console.log('acitve location');
-
-          console.log(element.dataset.location);
-          console.log(this.config.scene.location);
-        }
-      });
-
-    // Update Cars List
-    vars.customizerDom
-      .querySelectorAll(`.${vars.carClass}`)
-      .forEach((element) => {
-        element.classList.remove('active');
-        if (element.dataset.cars == this.config.car) {
-          element.classList.add('active');
-        }
-      });
-
-    // Update Girls List
-    vars.customizerDom
-      .querySelectorAll(`.${vars.girlClass}`)
-      .forEach((element) => {
-        element.classList.remove('active');
-        if (element.dataset.girls == this.config.girl) {
-          element.classList.add('active');
-        }
-      });
-  }
-
-  renderCustomizer() {
-    this.renderScenesList();
-
-    this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
-    this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
-    this.updateCustomizer();
-
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains(vars.carClass)) {
-        this.customizerSwitchCar(e.target.dataset.cars);
-        this.updateCustomizer();
-      }
-      if (e.target.classList.contains(vars.girlClass)) {
-        this.customizerSwitchGirl(e.target.dataset.girls);
-        this.updateCustomizer();
-      }
-      if (e.target.classList.contains(vars.locationClass)) {
-        this.customizerSwitchLocation(e.target.dataset.location);
-        this.updateCustomizer();
-      }
-    });
-  }
-
   // DEBUG
   setDebug() {
     this.debug = new dat.GUI({});
 
-    this.debugObject = {
-      envMapIntensity: 1,
-      exposure: 1,
-      removeCar: () => {
-        this.removeCar();
-      },
-      reloadCar: () => {
-        this.world.reloadCar();
-      },
-    };
+    this.debugObject = debugObject;
 
     this.debug.add(this.debugObject, 'removeCar').name('Remove Car');
     this.debug.add(this.debugObject, 'reloadCar').name('Reload Car');

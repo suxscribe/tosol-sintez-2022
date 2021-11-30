@@ -134,23 +134,26 @@ export default class Camera extends EventEmitter {
       this.renderer.domElement
     );
 
-    this.cameraControls.dampingFactor = 0.02;
-    this.cameraControls.draggingDampingFactor = 0.02;
+    this.cameraControls.dampingFactor = 0.01;
+    this.cameraControls.draggingDampingFactor = 0.01;
     this.cameraControls.azimuthRotateSpeed = 0.1;
     this.cameraControls.polarRotateSpeed = 0.1;
     this.cameraControls.dollySpeed = 0.1;
+    this.cameraControls.truckSpeed = 0.5; // pan speed
 
-    this.cameraControls.minDistance = 20;
-    this.cameraControls.maxDistance = 40;
+    this.cameraControls.minDistance = 10;
+    this.cameraControls.maxDistance = 50;
     this.cameraControls.minAzimuthAngle = Math.PI * 0.2;
     this.cameraControls.maxAzimuthAngle = Math.PI * 0.8;
     this.cameraControls.minPolarAngle = 0.2;
     this.cameraControls.maxPolarAngle = Math.PI * 0.5;
 
     this.boundary = new THREE.Box3(
-      new THREE.Vector3(-30, -30, -30),
-      new THREE.Vector3(30, 30, 30)
+      new THREE.Vector3(0, 0, -10),
+      new THREE.Vector3(10, 10, 10)
     );
+    this.boundaryHelper = new THREE.Box3Helper(this.boundary, 0xffff00);
+
     this.cameraControls.setBoundary(this.boundary);
     // this.cameraControls.boundaryEnclosesCamera = true;
 
@@ -158,6 +161,7 @@ export default class Camera extends EventEmitter {
       this.cameraControls.update(1 / this.time.delta);
     });
 
+    // test camera transition on button click
     document
       .querySelector('.customizer__camera-control')
       .addEventListener('click', (e) => {
@@ -167,26 +171,31 @@ export default class Camera extends EventEmitter {
 
   setCameraControlsEvents() {
     if (this.cameraControls) {
-      // Set Events for render on demand etc
+      // Listen to camera updates for render on demand etc
       this.cameraControls.addEventListener('transitionstart', () => {
-        console.log('cameratransitionstart');
-
+        // console.log('cameratransitionstart');
         this.trigger('cameratransitionstart');
       });
       this.cameraControls.addEventListener('rest', () => {
-        console.log('cameratransitionend');
-
+        // console.log('cameratransitionend');
         this.trigger('cameratransitionend');
       });
       this.cameraControls.addEventListener('update', () => {
-        console.log('camera update');
-
+        // console.log('camera update');
         this.trigger('cameraupdate');
       });
     }
   }
 
   startCameraInitialFly() {
-    this.cameraControls.setPosition(18, 6, 10, true);
+    this.cameraControls.azimuthRotateSpeed = 0.01;
+    this.cameraControls.polarRotateSpeed = 0.01;
+    this.cameraControls.dollySpeed = 0.01;
+
+    this.cameraControls.setPosition(18, 8, 10, true);
+    3;
+    this.cameraControls.azimuthRotateSpeed = 0.1;
+    this.cameraControls.polarRotateSpeed = 0.1;
+    this.cameraControls.dollySpeed = 0.1;
   }
 }
