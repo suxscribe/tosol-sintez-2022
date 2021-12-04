@@ -19,9 +19,11 @@ import Interface from './Interface';
 import Car from './Car.js';
 import World from './World';
 
+import { validateForms } from '../utils/forms';
+
 export default class App {
   constructor(_options) {
-    this.canvas = document.querySelector('.webgl');
+    this.canvas = document.querySelector(`.${vars.canvasClass}`);
     this.time = new Time();
     this.sizes = new Sizes();
 
@@ -52,6 +54,8 @@ export default class App {
     this.setInterface();
 
     this.setEvents();
+
+    validateForms();
   }
 
   initConfig() {
@@ -61,8 +65,10 @@ export default class App {
     // todo get defaults from config
     this.config.scene = this.customizer.desert;
     this.config.car = 'porsche';
-    this.config.girl = 'girl1';
+    this.config.girl = 'empty';
+    this.config.spritegirl = 'girl2';
     this.config.envMapType = 'cube';
+    this.config.showCalendar = true;
 
     // needed for Navigation instance
     this.config.width = this.sizes.width;
@@ -102,7 +108,12 @@ export default class App {
       // hide loading screen
       this.loadingScreen.classList.remove('preloader--active');
 
-      this.camera.startCameraInitialFly();
+      // Initial Camera Movement
+      if (!this.debugObject.cameraInitMovementCompleted) {
+        this.camera.startCameraInitialFly();
+        this.debugObject.cameraInitMovementCompleted = true;
+      }
+      this.debugObject.needsUpdate = true;
     };
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
       console.log('Loading ' + itemsLoaded + ' of ' + itemsTotal + ' total');
@@ -118,10 +129,10 @@ export default class App {
     // this.scene.background = new THREE.Color('#eeeeee');
 
     // Renderer
+
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: true,
-      // preserveDrawingBuffer: true,
     });
     this.renderer.setPixelRatio(
       Math.min(Math.max(window.devicePixelRatio, 2), 2)
@@ -134,8 +145,8 @@ export default class App {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1;
 
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // this.renderer.shadowMap.enabled = true;
+    // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   }
 
   setUpdateMaterials() {
@@ -275,6 +286,14 @@ export default class App {
         this.renderer.setSize(this.sizes.width, this.sizes.height); // renderer original size
         this.debugObject.needsUpdate = true;
       }
+
+      if (this.debugObject.needsToggleCalendar === true) {
+        this.world.calendar.container.visible = this.config.showCalendar;
+        console.log(this.debugObject.needsToggleCalendar);
+        this.debugObject.needsToggleCalendar = false;
+        this.debugObject.needsUpdate = true;
+      }
+      // this.debugObject.needsUpdate = true;
     });
 
     this.camera.on('cameraupdate', () => {
@@ -287,8 +306,8 @@ export default class App {
   }
 
   render() {
-    // this.renderer.render(this.scene, this.camera.instance); // no effects
-    this.composer.render(); // with effects
+    this.renderer.render(this.scene, this.camera.instance); // no effects
+    // this.composer.render(); // with effects
     this.renderer.toneMappingExposure = this.debugObject.exposure;
   }
 
@@ -308,6 +327,7 @@ export default class App {
       debug: this.debug,
       loadingManager: this.loadingManager,
       camera: this.camera,
+      sizes: this.sizes,
     });
   }
 

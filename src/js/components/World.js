@@ -1,10 +1,13 @@
 import * as THREE from 'three';
 import Car from './Car';
+import Sprite from './Sprite';
+
 import { isEmptyObject } from './Utils';
 import {
   Lensflare,
   LensflareElement,
 } from 'three/examples/jsm/objects/Lensflare.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 import { debugObject } from './data/vars';
 
@@ -22,13 +25,18 @@ export default class World {
     this.debug = _options.debug;
     this.loadingManager = _options.loadingManager;
     this.camera = _options.camera;
+    this.sizes = _options.sizes;
 
     this.debugObject = debugObject;
+    this.textureLoader = new THREE.TextureLoader(this.loadingManager);
+    this.gltfLoader = new GLTFLoader(this.loadingManager);
 
     this.loadLocation();
     this.loadCar();
     this.loadGirl();
-    this.loadEnvironment();
+    // this.loadEnvironment();
+    this.loadSpriteGirl();
+    this.toggleCalendar();
   }
 
   setModelLoadedListener(object) {
@@ -87,8 +95,6 @@ export default class World {
         envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
 
         this.debugObject.environmentMap = envMap;
-        // console.log(this.debugObject.environmentMap);
-
         this.scene.background = exrBackground; // correct way to load exr background. but lowres
 
         texture.dispose();
@@ -124,6 +130,8 @@ export default class World {
         scene: this.scene,
         debug: this.debug,
         loadingManager: this.loadingManager,
+        loader: this.gltfLoader,
+        textureLoader: this.textureLoader,
       });
       this.scene.add(this.location.container);
     }
@@ -138,6 +146,8 @@ export default class World {
         scene: this.scene,
         debug: this.debug,
         loadingManager: this.loadingManager,
+        loader: this.gltfLoader,
+        textureLoader: this.textureLoader,
       });
       this.scene.add(this.car.container);
     }
@@ -151,10 +161,48 @@ export default class World {
         scene: this.scene,
         debug: this.debug,
         loadingManager: this.loadingManager,
+        loader: this.gltfLoader,
+        textureLoader: this.textureLoader,
       });
       this.scene.add(this.girl.container);
     }
-    this.setModelLoadedListener(this.girl); //todo change object to .girl
+    this.setModelLoadedListener(this.girl);
+  }
+
+  loadSpriteGirl() {
+    if (this.config.spriteGril != '') {
+      this.spriteGirl = new Sprite({
+        object: this.objects.spritegirls[this.config.spritegirl],
+        camera: this.camera,
+        scene: this.scene,
+        debug: this.debug,
+        sizes: this.sizes,
+        textureLoader: this.textureLoader,
+      });
+      this.camera.instance.add(this.spriteGirl.container);
+    }
+  }
+
+  toggleCalendar() {
+    if (this.config.showCalendar) {
+      this.calendar = new Sprite({
+        object: this.objects.calendar,
+        camera: this.camera,
+        scene: this.scene,
+        debug: this.debug,
+        sizes: this.sizes,
+        visible: false,
+        textureLoader: this.textureLoader,
+      });
+      this.camera.instance.add(this.calendar.container);
+      this.calendar.container.visible = this.config.showCalendar;
+      // this.debugObject.needsUpdate = true;
+    } else {
+      if (!isEmptyObject(this.calendar)) {
+        this.calendar.removeObject();
+        this.calendar = null;
+      }
+    }
   }
 
   loadEnvironment() {
@@ -166,45 +214,6 @@ export default class World {
     // bbHelper.position.set(0, 0, 0);
     // bbHelper.scale.set(60, 60, 60);
     // this.scene.add(bbHelper);
-
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(
-      '/assets/textures/girl2.png',
-      this.createHUDSprites.bind(this)
-    );
-  }
-
-  createHUDSprites(texture) {
-    const material = new THREE.SpriteMaterial({
-      map: texture,
-      color: 0xffffff,
-    });
-    const width = material.map.image.width / 1000;
-    const height = material.map.image.height / 1000;
-
-    this.spriteTL = new THREE.Sprite(material);
-
-    this.spriteTL.center.set(0.0, 1.0);
-    this.spriteTL.scale.set(width, height, 1);
-    this.spriteTL.position.set(0, 0, -5);
-
-    this.camera.instance.add(this.spriteTL);
-
-    this.debug.add(this.spriteTL.position, 'z').min(-20).max(20).step(0.1);
-    this.debug.add(this.spriteTL.position, 'y').min(-20).max(20).step(0.1);
-    this.debug.add(this.spriteTL.position, 'x').min(-20).max(20).step(0.1);
-
-    // this.updateHUDSprites(); // needs fixing
-  }
-  updateHUDSprites() {
-    const width = window.innerWidth / 2;
-    const height = window.innerHeight / 2;
-
-    this.spriteTL.position.set(-width, height, 1); // top left
-    // spriteTR.position.set( width, height, 1 ); // top right
-    // spriteBL.position.set( - width, - height, 1 ); // bottom left
-    // spriteBR.position.set( width, - height, 1 ); // bottom right
-    // spriteC.position.set( 0, 0, 1 ); // center
   }
 
   removeLocation() {
@@ -237,6 +246,14 @@ export default class World {
     this.girl = {};
   }
 
+  removeSpriteGirl() {
+    if (!isEmptyObject(this.spriteGirl)) {
+      this.spriteGirl.removeObject();
+      console.log('remove sprite girl');
+    }
+    this.spriteGirl = {};
+  }
+
   // setToConfig(objectType, car) {
   //   this.config[objectType] = car;
   // }
@@ -252,5 +269,9 @@ export default class World {
   reloadGirl() {
     this.removeGirl();
     this.loadGirl();
+  }
+  reloadSpriteGirl() {
+    this.removeSpriteGirl();
+    this.loadSpriteGirl();
   }
 }

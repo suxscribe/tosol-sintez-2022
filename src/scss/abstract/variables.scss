@@ -1,4 +1,3 @@
-
 $easing: cubic-bezier(0.77, 0, 0.175, 1);
 
 $font-family: 'Suisse Intl', sans-serif;
@@ -7,20 +6,19 @@ $base-font-size: 10px;
 // COLORS
 
 $color-white: #fff;
-$color-inhale: #4ea2e2;
-$color-exhale: #e36966;
 
 $color-black: #434047;
 $color-green: #95962d;
 $color-yellow: #e0e339;
 $color-dark: #266696;
+$color-error: #e36966;
 
 $color-gray: rgba(67, 64, 71, 0.4);
 $color-gray-2: #f7f7f9;
 
 :root {
   --box-shadow: 0 10px 40px #{$color-gray};
-  --transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+  --transition: 0.4s cubic-bezier(0.28, 0.34, 0.42, 0.98);
 }
 
 // MEDIA SIZES AND BREAKPOINTS
@@ -36,7 +34,6 @@ $mobile-min-height: 667px;
 
 $fhd-width: 1920px;
 $fhd-height: 992px;
-
 
 // CONTAINERS
 
@@ -64,24 +61,20 @@ $column-margin: responsive-value(
   'w'
 );
 
-
 // BLOCKS
 // CONTAINERS > BLOCKS
-$block-padding: responsive-value(
-  12px,
-  24px
-);
+$block-padding: responsive-value(12px, 24px);
 $block-margin: responsive-value(24px, 48px); // top bottom margin between blocks
-
 
 $grid-gap: responsive-value(16px, 32px);
 
 $border-radius: 16px;
 
-// BUTTONS 
+// BUTTONS
 $button-border-radius: responsive-value(24px, 32px);
 $button-height: responsive-value(152px, 168px);
 $button-s-height: responsive-value(48px, 64px);
+$button-padding: responsive-value(24px, 36px);
 
 // MISC
 $input-border-radius: responsive-value(18px, 32px);
@@ -99,7 +92,7 @@ $ball-size: 26px;
 :export {
   breatheBlockHeight: $breathe-block-height;
   ballSize: $ball-size;
-  colorInhale: $color-inhale;
-  colorExhale: $color-exhale;
   colorGray: $color-gray;
 }
+
+$close-button-size: 36px;

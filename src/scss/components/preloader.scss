@@ -7,10 +7,17 @@
   background-color: $color-white;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 
-  display: none;
+  // display: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  // visibility: hidden;
+  pointer-events: none;
 
   &--active {
     display: flex;
+    opacity: 1;
+    transition-duration: 0s;
   }
 }

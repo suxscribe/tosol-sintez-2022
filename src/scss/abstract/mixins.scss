@@ -59,8 +59,8 @@
 }
 
 @mixin font-lead {
-  $fhd-base-size: 2.2 * $base-font-size;
-  $tablet-base-size: $fhd-base-size * 0.6;
+  $fhd-base-size: 2.6 * $base-font-size;
+  $mobile-base-size: 1.8 * $base-font-size;
 
   font-size: 1.7rem;
   line-height: 1.48;
@@ -69,7 +69,7 @@
 
   @media (min-width: $breakpoint-small) {
     font-size: responsive-value(
-      $tablet-base-size,
+      $mobile-base-size,
       $fhd-base-size,
       $breakpoint-small,
       $fhd-width,
@@ -79,8 +79,8 @@
 }
 
 @mixin font-body {
-  $fhd-base-size: 1.6 * $base-font-size;
-  $mobile-base-size: 1.6 * $base-font-size;
+  $fhd-base-size: 1.8 * $base-font-size;
+  $mobile-base-size: 1.4 * $base-font-size;
 
   font-size: $mobile-base-size;
   line-height: 1.3;

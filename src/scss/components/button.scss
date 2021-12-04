@@ -1,0 +1,32 @@
+.button {
+  @include font-body;
+  background-color: $color-white;
+  border: 0px solid $color-black;
+  padding: 0 $button-padding;
+  height: $button-s-height;
+  line-height: $button-s-height;
+  border-radius: $button-border-radius;
+  white-space: nowrap;
+  cursor: pointer;
+  text-align: center;
+
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0);
+  transition: all var(--transition);
+
+  &:hover {
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  &--round {
+    padding: 0;
+    width: $button-s-height;
+  }
+  &--black {
+    background-color: $color-black;
+    color: $color-white;
+
+    &:hover {
+      background-color: rgba($color-black, 0.8);
+    }
+  }
+}

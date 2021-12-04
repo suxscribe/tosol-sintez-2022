@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import UpdateMaterials from './UpdateMaterials.js';
 import EventEmitter from './../utils/EventEmitter';
 import {
@@ -19,11 +18,11 @@ export default class Car extends EventEmitter {
     this.scene = _options.scene;
     this.debug = _options.debug;
     this.loadingManager = _options.loadingManager;
+    this.loader = _options.loader;
+    this.textureLoader = _options.textureLoader;
 
     this.debugObject = this.debugObject;
     this.updateMaterials = new UpdateMaterials({ scene: this.container });
-
-    this.loader = new GLTFLoader(this.loadingManager);
 
     this.loadCarModel();
 
@@ -73,17 +72,13 @@ export default class Car extends EventEmitter {
     console.log('trigger loaded');
 
     this.trigger('loaded'); // trigger loaded event to force update materials
-
-    console.log(this.model);
   }
 
   async loadModel() {
     const modelData = await this.loader.loadAsync(this.object.source);
-
     console.log('Squaaawk! Loaded: ' + this.object.source);
-
     const model = this.setupModel(modelData);
-
+    // const modalScene = modelData.scene;
     return { model };
   }
 
@@ -151,13 +146,12 @@ export default class Car extends EventEmitter {
   }
 
   setLensflare() {
-    const textureLoader = new THREE.TextureLoader();
+    // const textureLoader = new THREE.TextureLoader();
 
-    this.textureFlare0 = textureLoader.load('/assets/textures/flare.png');
-    this.textureFlare3 = textureLoader.load(
+    this.textureFlare0 = this.textureLoader.load('/assets/textures/flare.png');
+    this.textureFlare3 = this.textureLoader.load(
       '/assets/textures/Flare_Pentagone.png'
     );
-
     this.addLensflare();
   }
 
@@ -209,10 +203,7 @@ export default class Car extends EventEmitter {
   }
 
   setNeedsUpdate() {
-    console.log('needsupdate');
-
     this.debugObject.needsUpdate = true;
-    // this.trigger('needsupdate');
   }
 
   removeObject() {
@@ -227,17 +218,12 @@ export default class Car extends EventEmitter {
       // child.removeFromParent() // alternate way to remove object. without passing scene.
     });
 
-    this.debug.removeFolder(this.debugFolder);
-
-    // console.log(this.debugFolderLight);
-
-    Object.values(this.debugFolderLight).forEach((folder) => {
-      console.log('folder');
-
-      console.log(folder);
-
-      this.debug.removeFolder(folder);
-    });
+    if (this.debugFolder) {
+      this.debug.removeFolder(this.debugFolder);
+      Object.values(this.debugFolderLight).forEach((folder) => {
+        this.debug.removeFolder(folder);
+      });
+    }
     // this.debug.removeFolder(this.debugFolderLight);
   }
 }

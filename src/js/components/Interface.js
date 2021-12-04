@@ -5,6 +5,9 @@
 
 // const carClass = 'customizer__car';
 // const girlClass = 'customizer__girl';
+import tippy from 'tippy.js';
+import MicroModal from 'micromodal';
+
 import { vars, objectsData, customizerData, debugObject } from './data/vars';
 
 export default class World {
@@ -20,9 +23,25 @@ export default class World {
 
     this.setEvents();
     this.renderCustomizer();
+
+    tippy('[data-tippy-content]', {
+      placement: 'right',
+    });
   }
 
   setEvents() {
+    MicroModal.init({
+      // onShow: (modal) => console.info(`${modal.id} is shown`), // [1]
+      // onClose: (modal) => console.info(`${modal.id} is hidden`), // [2]
+      openTrigger: 'data-micromodal-open',
+      closeTrigger: 'data-micromodal-close',
+      openClass: 'is-open',
+      disableScroll: true,
+      disableFocus: false,
+      awaitOpenAnimation: true,
+      awaitCloseAnimation: true,
+    });
+
     document
       .querySelector('.customizer__screenshoter-make')
       .addEventListener('click', () => {
@@ -43,6 +62,50 @@ export default class World {
         this.updateMaterials.changeCarTexture();
       }
     });
+
+    // close select bar
+    document.addEventListener('click', (e) => {
+      if (
+        e.target.closest('.customizer__control-bar-close') ||
+        e.target.classList.contains(vars.canvasClass)
+      ) {
+        const parent = e.target.closest(`.${vars.customizerControlBarClass}`);
+        if (parent) {
+          parent.classList.remove(vars.visibleClass);
+        } else {
+          document
+            .querySelectorAll(`.${vars.customizerControlBarClass}`)
+            .forEach((bar) => {
+              bar.classList.remove(vars.visibleClass);
+            });
+        }
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('customizer__button')) {
+        if (e.target.dataset.bar != '') {
+          const bar = document.querySelector(
+            '.customizer__control-bar--' + e.target.dataset.bar
+          );
+          if (bar) {
+            bar.classList.add(vars.visibleClass);
+          }
+        }
+      }
+    });
+
+    // Toggle calendar
+    vars.customizerToggleCalendarDom.addEventListener('click', () => {
+      if (this.config.showCalendar) {
+        this.config.showCalendar = false;
+        vars.customizerToggleCalendarDom.classList.remove('active');
+      } else {
+        this.config.showCalendar = true;
+        vars.customizerToggleCalendarDom.classList.add('active');
+      }
+      this.debugObject.needsToggleCalendar = true;
+    });
   }
 
   setToConfig(objectType, car) {
@@ -57,12 +120,21 @@ export default class World {
     this.setToConfig('girl', girl);
     this.world.reloadGirl();
   };
+  customizerSwitchSpriteGirl = (spriteGirl) => {
+    this.setToConfig('spritegirl', spriteGirl);
+    this.world.reloadSpriteGirl();
+  };
 
   customizerSwitchLocation = (object) => {
     this.config.scene = this.customizer[object];
 
     this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
     this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
+    this.renderModelList(
+      vars.customizerSpriteGirlsDom,
+      'spritegirls',
+      vars.spriteGirlClass
+    );
 
     this.world.reloadLocation();
 
@@ -81,7 +153,7 @@ export default class World {
 
       this.config.scene[modelType].forEach((model) => {
         const markup = `
-          <div class="${itemClass}" data-${modelType}="${model}">${this.getModelName(
+          <div class="customizer__control-item ${itemClass}" data-${modelType}="${model}">${this.getModelName(
           modelType,
           model
         )}</div>
@@ -98,7 +170,7 @@ export default class World {
 
     Object.entries(this.customizer).forEach(([scene, sceneParams]) => {
       const markup = `
-          <div class="${vars.locationClass}" data-location="${scene}">${sceneParams.name}</div>
+          <div class="customizer__control-item ${vars.locationClass}" data-location="${scene}">${sceneParams.name}</div>
           `;
 
       vars.customizerLocationsDom.insertAdjacentHTML('beforeend', markup);
@@ -139,6 +211,16 @@ export default class World {
           element.classList.add('active');
         }
       });
+
+    // Update Sprite Girls List
+    vars.customizerDom
+      .querySelectorAll(`.${vars.spriteGirlClass}`)
+      .forEach((element) => {
+        element.classList.remove('active');
+        if (element.dataset.spritegirls == this.config.spritegirl) {
+          element.classList.add('active');
+        }
+      });
   }
 
   renderCustomizer() {
@@ -146,6 +228,11 @@ export default class World {
 
     this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
     this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
+    this.renderModelList(
+      vars.customizerSpriteGirlsDom,
+      'spritegirls',
+      vars.spriteGirlClass
+    );
     this.updateCustomizer();
 
     document.addEventListener('click', (e) => {
@@ -155,6 +242,10 @@ export default class World {
       }
       if (e.target.classList.contains(vars.girlClass)) {
         this.customizerSwitchGirl(e.target.dataset.girls);
+        this.updateCustomizer();
+      }
+      if (e.target.classList.contains(vars.spriteGirlClass)) {
+        this.customizerSwitchSpriteGirl(e.target.dataset.spritegirls);
         this.updateCustomizer();
       }
       if (e.target.classList.contains(vars.locationClass)) {

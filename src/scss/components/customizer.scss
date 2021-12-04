@@ -1,18 +1,92 @@
 .customizer {
+  $customizer-button-size: responsive-value(96px, 128px);
+
   position: absolute;
   left: 0;
-  right: 0;
+  top: 0;
   bottom: 0;
-  background: $color-white;
-  padding: $block-padding;
+  // background: $color-white;
+  // padding: $block-padding;
 
   display: flex;
 
-  &__locations {
+  &__buttons {
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  &__button {
+    width: $customizer-button-size;
+    height: $customizer-button-size;
+    background: $color-white;
+    border-radius: 50%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+    background-color: rgba(240, 240, 240, 1);
 
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0);
+    transition: all var(--transition);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 1);
+      box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &__controls {
+    position: absolute;
+  }
+  &__control {
+    &-bar {
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      background: #fff;
+      width: 300px;
+      padding: 60px $block-padding;
+      overflow-y: auto;
+
+      transform: translateX(-100%);
+      transition: transform var(--transition);
+
+      &.visible {
+        transform: translateX(0);
+      }
+
+      &-close {
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: $block-padding;
+        cursor: pointer;
+
+        & svg {
+          width: $close-button-size;
+          height: $close-button-size;
+        }
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+    &-items {
+      display: flex;
+      flex-direction: column;
+    }
     &-item {
-      margin-right: 20px;
+      margin-bottom: 20px;
       color: $color-gray;
       cursor: pointer;
 
@@ -20,44 +94,91 @@
         color: $color-black;
       }
       &:last-child {
-        margin-right: 0;
+        margin-bottom: 0;
       }
     }
   }
-  &__cars {
+
+  &__camera {
+    display: none;
+  }
+  &__screenshoter {
+    display: none;
+
+    &-sizes {
+      margin-bottom: 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    &-size {
+      background-color: $color-gray-2;
+      border-radius: 15px;
+      border: 2px solid $color-black;
+      text-align: center;
+      @include font-lead;
+    }
+  }
+
+  &-bottom {
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: $block-padding;
+    box-sizing: border-box;
+
     display: flex;
+    justify-content: space-between;
 
-    &-item {
-      margin-right: 20px;
-      color: $color-gray;
-      cursor: pointer;
+    &__center {
+      justify-self: center;
+      display: flex;
+    }
+    &__right {
+      justify-self: flex-end;
+      display: flex;
 
-      &.active {
-        color: $color-black;
-      }
-      &:last-child {
-        margin-right: 0;
+      & > * {
+        margin-right: 15px;
+
+        &:last-child {
+          margin-right: 0;
+        }
       }
     }
   }
-  &__girls {
-    display: flex;
 
-    &-item {
-      margin-right: 20px;
-      color: $color-gray;
-      cursor: pointer;
+  &__generate {
+    & svg {
+      width: 28px;
+      height: 28px;
+      margin-left: 10px;
+    }
+    margin-left: 10px;
+  }
 
-      &.active {
-        color: $color-black;
-      }
+  &__toggle-calendar {
+    background-color: $color-white;
 
-      &:last-child {
-        margin-right: 0;
-      }
+    &.active {
+      background-color: $color-green;
     }
   }
-  & > * {
-    margin-right: 20px;
+
+  &__share {
+    & svg {
+      width: 24px;
+      height: 24px;
+      margin-left: 10px;
+    }
+  }
+  &__gift {
+    & img {
+      width: 32px;
+      height: 32px;
+    }
   }
 }
