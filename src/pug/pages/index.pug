@@ -6,16 +6,19 @@ block variables
   - var pageClass = 'page--index';
 
 block content
-  .preloader 
+  .preloader.preloader--active
+    .preloader__image 
+      img(src="/assets/images/preloader.gif", alt="")
     .preloader__content Loading...
   canvas.webgl
   .customizer
     .customizer__buttons 
       .customizer__button.customizer__button--cars(data-bar="cars", data-tippy-content="Машина") Машина
+      .customizer__button.customizer__button--colors(data-bar="colors", data-tippy-content="Цвета машины") Цвета
       //- .customizer__button.customizer__button--girls(data-bar="girls", data-tippy-content="Девушка") Девушка 3D
       .customizer__button.customizer__button--sprite-girls(data-bar="sprite-girls", data-tippy-content="Девушка") Девушка
+      .customizer__button.customizer__button--girls-params(data-bar="girls-params", data-tippy-content="Девушка") Настройки девушки
       .customizer__button.customizer__button--locations(data-bar="locations", data-tippy-content="Локация") Локация
-      .customizer__button.customizer__button--colors(data-bar="colors", data-tippy-content="Цвета") Цвета
     .customizer__controls 
       .customizer__control-bar.customizer__control-bar--cars
         +control-bar-close()
@@ -34,6 +37,11 @@ block content
         .customizer__control-items.customizer__sprite-girls
           .customizer__control-item.customizer__sprite-girls-item(data-sprite-girl="girl1") Girl 1
           .customizer__control-item.customizer__sprite-girls-item(data-sprite-girl="girl2") Girl 1
+      .customizer__control-bar.customizer__control-bar--girls-params
+        +control-bar-close()
+        .customizer__control-items.customizer__girls-params
+          .customizer__control-item.customizer__girls-params-item Girl 1
+          .customizer__control-item.customizer__girls-params-item Girl 1
       .customizer__control-bar.customizer__control-bar--locations
         +control-bar-close()
         .customizer__control-items.customizer__locations
@@ -42,29 +50,30 @@ block content
       .customizer__control-bar.customizer__control-bar--colors
         +control-bar-close()
         .customizer__control-items.customizer__car-colors
-          .customizer__control-item.customizer__car-color(data-color="#ff0000") Red
-          .customizer__control-item.customizer__car-color(data-color="#00ff00") Green
-          .customizer__control-item.customizer__car-color(data-color="#0000ff") Blue
-          .customizer__control-item.customizer__car-texture Set Texture
+          .customizer__control-item.customizer__car-color(data-color="#db1515") Red
+          .customizer__control-item.customizer__car-color(data-color="#149429") Green
+          .customizer__control-item.customizer__car-color(data-color="#353d87") Blue
+          //- .customizer__control-item.customizer__car-texture Set Texture
     .customizer__camera 
       .customizer__camera-control Camera
-    .customizer__screenshoter 
-      .customizer__screenshoter-make Make Screenshot
+    //- .customizer__screenshoter 
+    //-   .customizer__screenshoter-make Make Screenshot
   .customizer-bottom 
     .customizer-bottom__center
-      .customizer__generate.button 
+      .customizer__generate.button.button--icon
         | Сгенерировать
         +svg({name:'refresh'})
-      .customizer__toggle-calendar.button
-        | Показать календарь
+      //- .customizer__toggle-calendar.button
+      //-   | Показать календарь
+      //- .customizer__toggle-render.button 
+      //-   | Render Size
     .customizer-bottom__right
-      .customizer__share.button(data-micromodal-open="modal-wallpaper")
-        | Скачать
-        +svg({name:'share'})
-      .customizer__share.button(data-micromodal-open="modal-share")
+      .customizer__share.button.button--round(data-micromodal-open="modal-wallpaper")
+        +svg({name:'download'})
+      .customizer__share.button.button--icon(data-micromodal-open="modal-share")
         | Поделиться
         +svg({name:'share'})
-      .customizer__gift.button.button--round(data-micromodal-open="modal-gift")
+      .customizer__gift.button.button--gift(data-micromodal-open="modal-gift")
         img(src="/assets/images/gift.png", alt="")
     
   #modal-wallpaper.modal.micromodal-slide(aria-hidden='true')
@@ -73,13 +82,12 @@ block content
         +modal-close()
         .modal__content
           h2.modal__title Скачать обои
+          .screenshot 
+            img.screenshot__holder(src="", alt="")
           .customizer__screenshoter-sizes
-            a.customizer__screenshoter-size(href="#") 1280x960
-            a.customizer__screenshoter-size(href="#") 1440x900
-            a.customizer__screenshoter-size(href="#") 1920x1080
-            a.customizer__screenshoter-size(href="#") 1600x1200
-            a.customizer__screenshoter-size(href="#") 2K
-            a.customizer__screenshoter-size(href="#") 4K
+            a.customizer__screenshoter-size.customizer__screenshoter-make(href="#", data-width="1920", data-height="1080") 1920x1080
+            a.customizer__screenshoter-size.customizer__screenshoter-make(href="#", data-width="2560", data-height="1440") 2K
+            a.customizer__screenshoter-size.customizer__screenshoter-make(href="#", data-width="3840", data-height="2160") 4K
           .customizer__screenshoter-add-calendar.form-checkbox
             input#screenshot-calendar(type="checkbox", value="calendar")
             label(for="screenshot-calendar") Добавить календарную сетку
@@ -100,31 +108,32 @@ block content
               +svg({name: 'twitter'})
             a.modal__social(href="#")
               +svg({name: 'ok'})
-          p Сохранить обои для рабочего стола
-          .customizer__screenshoter-sizes
-            a.customizer__screenshoter-size(href="#") 1280x960
-            a.customizer__screenshoter-size(href="#") 1440x900
-            a.customizer__screenshoter-size(href="#") 1920x1080
-            a.customizer__screenshoter-size(href="#") 1600x1200
-            a.customizer__screenshoter-size(href="#") 2K
-            a.customizer__screenshoter-size(href="#") 4K
-          .customizer__screenshoter-add-calendar.form-checkbox
-            input#screenshot-calendar(type="checkbox", value="calendar")
-            label(for="screenshot-calendar") Добавить календарную сетку
+          //- p Сохранить обои для рабочего стола
+          //- .customizer__screenshoter-sizes
+          //-   a.customizer__screenshoter-size.customizer__screenshoter-make(href="#") 1280x960
+          //-   a.customizer__screenshoter-size.customizer__screenshoter-make(href="#") 1440x900
+          //-   a.customizer__screenshoter-size.customizer__screenshoter-make(href="#") 1920x1080
+          //-   a.customizer__screenshoter-size.customizer__screenshoter-make(href="#") 1600x1200
+          //-   a.customizer__screenshoter-size.customizer__screenshoter-make(href="#") 2K
+          //-   a.customizer__screenshoter-size.customizer__screenshoter-make(href="#") 4K
+          //- .customizer__screenshoter-add-calendar.form-checkbox
+          //-   input#screenshot-calendar(type="checkbox", value="calendar")
+          //-   label(for="screenshot-calendar") Добавить календарную сетку
   #modal-gift.modal.micromodal-slide(aria-hidden='true')
     .modal__overlay(tabindex='-1', data-micromodal-close='')
-      .modal__container(role='dialog', aria-modal='true', aria-labelledby='modal-1-title')
+      .modal__container(role='dialog', aria-modal='true')
         +modal-close()
         .modal__content
           h2.modal__title Подарок
           .modal__form
-            form(action="").form
+            form#form-gift(action="").form
               +form-row({name: "form-phone", title: "Телефон", validate: 'phone', inputmask: "'mask': '+7 999 999 99 99', 'placeholder': ' '", placeholder: ' '})
               +form-row({name: "form-name", title: "Имя", validate: 'empty', 'placeholder': ' ' })
               +form-row({name: "form-company", title: "Компания", validate: 'empty', 'placeholder': ' '})
               +form-row({name: "form-email", title: "Email", validate: 'email', 'placeholder': ' '})
               +form-row({name: "form-code", title: "Код с открытки", validate: '', 'placeholder': ' '})
-              
+              .form__file 
+                input#form-file(type="file", name="")
               .form__row.form__submit
                 button(type="submit").form__submit-button.button.button--black отправить заявку
                 .form__submit-note 

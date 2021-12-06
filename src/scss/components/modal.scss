@@ -21,13 +21,22 @@
   }
 
   &__container {
-    background-color: #fff;
+    background-color: $color-gray;
     padding: 60px;
     max-width: 500px;
     max-height: 100vh;
-    border-radius: 4px;
+    border: 2px solid $color-white;
+    backdrop-filter: blur(50px);
+
+    border-radius: $border-radius;
     overflow-y: auto;
     box-sizing: border-box;
+  }
+
+  &__content {
+    & > *:last-child {
+      margin-bottom: 0;
+    }
   }
 
   &__header {
@@ -41,7 +50,7 @@
     margin-top: 0;
     margin-bottom: 0;
     box-sizing: border-box;
-    margin-bottom: 30px;
+    margin-bottom: 48px;
   }
 
   &__close {

@@ -36,7 +36,7 @@ export default class World {
     this.loadGirl();
     // this.loadEnvironment();
     this.loadSpriteGirl();
-    this.toggleCalendar();
+    this.loadCalendar();
   }
 
   setModelLoadedListener(object) {
@@ -62,12 +62,12 @@ export default class World {
       );
 
       this.debugObject.environmentMap = cubeTextureLoader.load([
-        envMapSource + 'posx.jpg',
-        envMapSource + 'negx.jpg',
-        envMapSource + 'posy.jpg',
-        envMapSource + 'negy.jpg',
-        envMapSource + 'posz.jpg',
-        envMapSource + 'negz.jpg',
+        envMapSource + 'px.jpg',
+        envMapSource + 'nx.jpg',
+        envMapSource + 'py.jpg',
+        envMapSource + 'ny.jpg',
+        envMapSource + 'pz.jpg',
+        envMapSource + 'nz.jpg',
       ]);
 
       this.debugObject.environmentMap.encoding = THREE.sRGBEncoding;
@@ -170,6 +170,7 @@ export default class World {
   }
 
   loadSpriteGirl() {
+    // girl object: this.objects.spritegirls[this.config.spritegirl].clothing[this.config.clothing][this.config.pose]
     if (this.config.spriteGril != '') {
       this.spriteGirl = new Sprite({
         object: this.objects.spritegirls[this.config.spritegirl],
@@ -178,31 +179,34 @@ export default class World {
         debug: this.debug,
         sizes: this.sizes,
         textureLoader: this.textureLoader,
+        clothing: this.config.clothing,
+        pose: this.config.pose,
       });
       this.camera.instance.add(this.spriteGirl.container);
     }
   }
 
-  toggleCalendar() {
-    if (this.config.showCalendar) {
-      this.calendar = new Sprite({
-        object: this.objects.calendar,
-        camera: this.camera,
-        scene: this.scene,
-        debug: this.debug,
-        sizes: this.sizes,
-        visible: false,
-        textureLoader: this.textureLoader,
-      });
-      this.camera.instance.add(this.calendar.container);
-      this.calendar.container.visible = this.config.showCalendar;
-      // this.debugObject.needsUpdate = true;
-    } else {
-      if (!isEmptyObject(this.calendar)) {
-        this.calendar.removeObject();
-        this.calendar = null;
-      }
-    }
+  loadCalendar() {
+    // if (this.config.showCalendar) {
+    this.calendar = new Sprite({
+      object: this.objects.calendar,
+      camera: this.camera,
+      scene: this.scene,
+      debug: this.debug,
+      sizes: this.sizes,
+      visible: this.config.showCalendar,
+      textureLoader: this.textureLoader,
+    });
+    this.camera.instance.add(this.calendar.container);
+    this.calendar.container.visible = this.config.showCalendar;
+    // this.debugObject.needsUpdate = true;
+
+    // } else {
+    //   if (!isEmptyObject(this.calendar)) {
+    //     this.calendar.removeObject();
+    //     this.calendar = null;
+    //   }
+    // }
   }
 
   loadEnvironment() {
@@ -273,5 +277,17 @@ export default class World {
   reloadSpriteGirl() {
     this.removeSpriteGirl();
     this.loadSpriteGirl();
+  }
+  reloadSpriteGirlPose() {
+    this.removeSpriteGirl();
+    this.loadSpriteGirl();
+  }
+
+  toggleCalendar() {
+    if (this.config.showCalendar === true) {
+      this.spriteGirl.container.position.x -= 0.4;
+    } else {
+      this.spriteGirl.container.position.x += 0.4;
+    }
   }
 }

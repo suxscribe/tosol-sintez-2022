@@ -3,8 +3,16 @@ import * as dat from 'dat.gui';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+// sao
 import { SAOPass } from 'three/examples/jsm/postprocessing/SAOPass.js';
 import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
+// ssr
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+
+import { SSRPass } from 'three/examples/jsm/postprocessing/SSRPass.js';
+import { ReflectorForSSRPass } from 'three/examples/jsm/objects/ReflectorForSSRPass.js';
+import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
+import * as Nodes from 'three/examples/jsm/nodes/Nodes.js';
 
 import { isEmptyObject } from './Utils';
 import { vars, objectsData, customizerData, debugObject } from './data/vars';
@@ -43,12 +51,12 @@ export default class App {
     this.setUpdateMaterials();
 
     this.setCamera();
-    this.setEffects();
     // this.setNavigation(); // custom mouse navigation (by Bruno Simon)
     this.setHelpers();
     this.setLights();
 
     this.setWorld();
+    this.setEffects();
 
     // this.renderCustomizer();
     this.setInterface();
@@ -64,11 +72,14 @@ export default class App {
     // default config to load
     // todo get defaults from config
     this.config.scene = this.customizer.desert;
-    this.config.car = 'porsche';
+    this.config.car = 'lamborgini';
     this.config.girl = 'empty';
-    this.config.spritegirl = 'girl2';
+    this.config.spritegirl = 'girl1';
     this.config.envMapType = 'cube';
-    this.config.showCalendar = true;
+    this.config.showCalendar = false;
+    this.config.screenshotSize = { width: 1920, height: 1080 };
+    this.config.clothing = 'clothing1';
+    this.config.pose = 'pose1';
 
     // needed for Navigation instance
     this.config.width = this.sizes.width;
@@ -83,15 +94,15 @@ export default class App {
     this.loadingScreen = document.querySelector('.preloader');
 
     this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
-      console.log(
-        'Started loading ' +
-          url +
-          '. Loaded ' +
-          itemsLoaded +
-          ' of ' +
-          itemsTotal +
-          ' total'
-      );
+      // console.log(
+      //   'Started loading ' +
+      //     url +
+      //     '. Loaded ' +
+      //     itemsLoaded +
+      //     ' of ' +
+      //     itemsTotal +
+      //     ' total'
+      // );
       this.loadingScreen.classList.add('preloader--active');
     };
 
@@ -116,7 +127,7 @@ export default class App {
       this.debugObject.needsUpdate = true;
     };
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-      console.log('Loading ' + itemsLoaded + ' of ' + itemsTotal + ' total');
+      // console.log('Loading ' + itemsLoaded + ' of ' + itemsTotal + ' total');
     };
     this.loadingManager.onError = (url) => {
       console.log('Error loading ' + url);
@@ -135,14 +146,14 @@ export default class App {
       antialias: true,
     });
     this.renderer.setPixelRatio(
-      Math.min(Math.max(window.devicePixelRatio, 2), 2)
+      Math.min(Math.max(window.devicePixelRatio, 2), 1) // 2
     );
     this.renderer.setSize(this.sizes.width, this.sizes.height);
 
     this.renderer.physicallyCorrectLights = true;
     this.renderer.outputEncoding = THREE.sRGBEncoding;
 
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    // this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1;
 
     // this.renderer.shadowMap.enabled = true;
@@ -165,7 +176,6 @@ export default class App {
       time: this.time,
     });
     this.scene.add(this.camera.instance);
-    this.scene.add(this.camera.boundaryHelper);
 
     // this.camera.instance.position.set(2, 4, 26);
     // this.camera.setOrbitControls(); // not using orbit controls since using custom Navigation
@@ -174,7 +184,20 @@ export default class App {
   }
 
   setEffects() {
-    this.composer = new EffectComposer(this.renderer);
+    // Render Target (to fix output encoding)
+    this.renderTarget = new THREE.WebGLRenderTarget(
+      this.sizes.width,
+      this.sizes.height,
+      {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+        encoding: THREE.sRGBEncoding,
+      }
+    );
+
+    // Composer
+    this.composer = new EffectComposer(this.renderer, this.renderTarget);
     this.renderPass = new RenderPass(this.scene, this.camera.instance);
     this.composer.addPass(this.renderPass);
 
@@ -220,6 +243,74 @@ export default class App {
     //   this.debug.add(this.saoPass.params, 'saoBlurStdDev', 0.5, 150);
     //   this.debug.add(this.saoPass.params, 'saoBlurDepthCutoff', 0.0, 0.1);
     // }
+
+    // SSR
+    // Ground
+    // console.log('selects', selects);
+
+    this.ssrPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(16, 16),
+      new THREE.MeshPhongMaterial({ color: 0x999999, specular: 0x101010 })
+    );
+    this.ssrPlane.rotation.x = -Math.PI / 2;
+    this.ssrPlane.position.y = -0.0001;
+    // this.ssrPlane.receiveShadow = true;
+    this.scene.add(this.ssrPlane);
+
+    this.ssrGeometry = new THREE.PlaneBufferGeometry(16, 16);
+    this.groundReflector = new ReflectorForSSRPass(this.ssrGeometry, {
+      clipBias: 0.0003,
+      textureWidth: window.innerWidth,
+      textureHeight: window.innerHeight,
+      color: 0x888888,
+      useDepthTexture: true,
+    });
+    this.groundReflector.material.depthWrite = false;
+    this.groundReflector.rotation.x = -Math.PI / 2;
+    this.groundReflector.visible = false;
+    this.scene.add(this.groundReflector);
+
+    this.ssrPass = new SSRPass({
+      renderer: this.renderer,
+      scene: this.scene,
+      camera: this.camera.instance,
+      width: innerWidth,
+      height: innerHeight,
+      groundReflector: this.groundReflector,
+      selects: this.debugObject.selects,
+    });
+    this.ssrPass.thickness = 0.018;
+    this.ssrPass.maxDistance = 1;
+    this.ssrPass.blur = false;
+
+    this.groundReflector.maxDistance = this.ssrPass.maxDistance;
+
+    this.composer.addPass(this.ssrPass);
+    // this.composer.addPass(new ShaderPass(GammaCorrectionShader));
+
+    if (this.debug) {
+      this.debugSsrPass = this.debug.addFolder('SSR Pass');
+      this.debugSsrPass
+        .add(this.ssrPass, 'thickness')
+        .min(0)
+        .max(0.1)
+        .step(0.0001)
+        .onChange(() => {
+          this.debugObject.needsUpdate = true;
+        });
+      this.debugSsrPass
+        .add(this.ssrPass, 'maxDistance')
+        .min(0)
+        .max(3)
+        .step(0.01)
+        .onChange(() => {
+          this.groundReflector.maxDistance = this.ssrPass.maxDistance;
+          this.debugObject.needsUpdate = true;
+        });
+      this.debugSsrPass.add(this.ssrPass, 'blur').onChange(() => {
+        this.debugObject.needsUpdate = true;
+      });
+    }
   }
 
   setNavigation() {
@@ -246,26 +337,45 @@ export default class App {
 
   setHelpers() {
     // axes helper
-    this.axesHelper = new THREE.AxesHelper(10);
-    this.scene.add(this.axesHelper);
+    // this.axesHelper = new THREE.AxesHelper(10);
+    // this.scene.add(this.axesHelper);
+    // this.scene.add(this.camera.boundaryHelper);
   }
 
   setModelLoadedListener(object) {
+    // todo move this to Car class
     object.on('loaded', () => {
       // console.log('Car loaded event');
       this.updateMaterials.updateAllMaterials(); //todo remove if texture loads correctly
     });
   }
 
+  resize(width = null, height = null) {
+    let newWidth;
+    let newHeight;
+
+    if (width && height) {
+      newWidth = width;
+      newHeight = height;
+    } else {
+      newWidth = this.sizes.width;
+      newHeight = this.sizes.height;
+    }
+
+    this.camera.instance.aspect = newWidth / newHeight;
+    this.camera.instance.updateProjectionMatrix();
+
+    // this.renderTarget.setSize(newWidth, newHeight);
+    // console.log(this.renderTarget);
+
+    this.renderer.setSize(newWidth, newHeight);
+  }
+
   setEvents() {
     // Window resize
     this.sizes.on('resize', () => {
-      this.camera.instance.aspect = this.sizes.width / this.sizes.height;
-      this.camera.instance.updateProjectionMatrix();
-
-      this.renderer.setSize(this.sizes.width, this.sizes.height);
+      this.resize();
       // this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
       this.debugObject.needsUpdate = true;
     });
 
@@ -279,17 +389,23 @@ export default class App {
 
       // Screenshot stuff
       if (this.debugObject.needsScreenshot) {
-        this.renderer.setSize(2000, 1500); // resize renderer to desired size
+        this.resize(
+          this.config.screenshotSize.width,
+          this.config.screenshotSize.height
+        );
+
         this.render();
         this.debugObject.needsScreenshot = false;
         this.interface.saveAsImage();
-        this.renderer.setSize(this.sizes.width, this.sizes.height); // renderer original size
+
+        // restore original renderer size
+        this.resize();
+
         this.debugObject.needsUpdate = true;
       }
 
       if (this.debugObject.needsToggleCalendar === true) {
         this.world.calendar.container.visible = this.config.showCalendar;
-        console.log(this.debugObject.needsToggleCalendar);
         this.debugObject.needsToggleCalendar = false;
         this.debugObject.needsUpdate = true;
       }
@@ -306,8 +422,8 @@ export default class App {
   }
 
   render() {
-    this.renderer.render(this.scene, this.camera.instance); // no effects
-    // this.composer.render(); // with effects
+    // this.renderer.render(this.scene, this.camera.instance); // no effects
+    this.composer.render(); // with effects
     this.renderer.toneMappingExposure = this.debugObject.exposure;
   }
 
@@ -350,20 +466,20 @@ export default class App {
 
     this.debugObject = debugObject;
 
-    this.debug.add(this.debugObject, 'removeCar').name('Remove Car');
-    this.debug.add(this.debugObject, 'reloadCar').name('Reload Car');
+    // this.debug.add(this.debugObject, 'removeCar').name('Remove Car');
+    // this.debug.add(this.debugObject, 'reloadCar').name('Reload Car');
 
-    this.debug
-      .add(this.config, 'car', {
-        hummer: 'hummer',
-        cruiser: 'cruiser',
-        delorean: 'delorean',
-        porsche: 'porsche',
-      })
-      .name('Config Car')
-      .onChange(() => {
-        this.world.reloadCar();
-      });
+    // this.debug
+    //   .add(this.config, 'car', {
+    //     hummer: 'hummer',
+    //     cruiser: 'cruiser',
+    //     delorean: 'delorean',
+    //     porsche: 'porsche',
+    //   })
+    //   .name('Config Car')
+    //   .onChange(() => {
+    //     this.world.reloadCar();
+    //   });
     // this.debug.add(this.config, 'girl').name('Config Girl');
   }
 }

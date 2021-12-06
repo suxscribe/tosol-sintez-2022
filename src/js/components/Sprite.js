@@ -10,8 +10,12 @@ export default class Sprite {
     this.sizes = _options.sizes;
     this.visible = _options.visible;
     this.textureLoader = _options.textureLoader;
+    this.clothing = _options.clothing;
+    this.pose = _options.pose;
 
     this.container = new THREE.Object3D();
+
+    // console.log(this.object);
 
     // this.loadTexture();
     this.createHUDSprites();
@@ -22,7 +26,13 @@ export default class Sprite {
   }
 
   async loadTexture() {
-    const textureData = await this.textureLoader.loadAsync(this.object.source);
+    if (this.clothing && this.pose) {
+      this.textureSrc = this.object.clothing[this.clothing][this.pose].source;
+    } else {
+      this.textureSrc = this.object.source;
+    }
+
+    const textureData = await this.textureLoader.loadAsync(this.textureSrc);
 
     //this.createHUDSprites.bind(this)
     const sprite = textureData;
@@ -45,8 +55,6 @@ export default class Sprite {
     // height 3800
     // x = 0.1;
 
-    console.log(this.material);
-
     this.spriteObject = new THREE.Sprite(this.material);
 
     if (this.object.center !== undefined) {
@@ -64,7 +72,6 @@ export default class Sprite {
         this.object.scale.y,
         this.object.scale.z
       );
-      console.log('sprite scale');
     } else {
       this.spriteObject.scale.set(1, 1, 1);
     }
@@ -139,7 +146,9 @@ export default class Sprite {
         child.geometry.dispose();
       }
       if (child.hasOwnProperty('material')) {
-        child.material.dispose();
+        if (child.material) {
+          child.material.dispose();
+        }
       }
       this.camera.instance.remove(child);
       // child.removeFromParent() // alternate way to remove object. without passing scene.

@@ -9,8 +9,9 @@ import tippy from 'tippy.js';
 import MicroModal from 'micromodal';
 
 import { vars, objectsData, customizerData, debugObject } from './data/vars';
+import { doc } from 'prettier';
 
-export default class World {
+export default class Interface {
   constructor(_options) {
     this.config = _options.config;
     this.world = _options.world;
@@ -42,11 +43,21 @@ export default class World {
       awaitCloseAnimation: true,
     });
 
-    document
-      .querySelector('.customizer__screenshoter-make')
-      .addEventListener('click', () => {
-        this.takeScreenshot();
-      });
+    // Make Screenshot
+    // document
+    //   .querySelector('.customizer__screenshoter-make')
+    //   .addEventListener('click', () => {
+    //     this.takeScreenshot();
+    //   });
+    document.addEventListener('click', (e) => {
+      const width = parseInt(e.target.dataset.width);
+      const height = parseInt(e.target.dataset.height);
+
+      if (e.target.classList.contains('customizer__screenshoter-make')) {
+        console.log('screenshot' + width + 'x' + height);
+        this.takeScreenshot(width, height);
+      }
+    });
 
     // Change car color
     document.addEventListener('click', (e) => {
@@ -56,6 +67,7 @@ export default class World {
       }
     });
 
+    // Change Car texture
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('customizer__car-texture')) {
         console.log('texture');
@@ -79,6 +91,7 @@ export default class World {
               bar.classList.remove(vars.visibleClass);
             });
         }
+        this.toggleButtons(true);
       }
     });
 
@@ -90,22 +103,63 @@ export default class World {
           );
           if (bar) {
             bar.classList.add(vars.visibleClass);
+            this.toggleButtons(false);
           }
         }
       }
     });
 
     // Toggle calendar
-    vars.customizerToggleCalendarDom.addEventListener('click', () => {
-      if (this.config.showCalendar) {
-        this.config.showCalendar = false;
-        vars.customizerToggleCalendarDom.classList.remove('active');
-      } else {
-        this.config.showCalendar = true;
-        vars.customizerToggleCalendarDom.classList.add('active');
-      }
-      this.debugObject.needsToggleCalendar = true;
+    if (vars.customizerToggleCalendarDom) {
+      vars.customizerToggleCalendarDom.addEventListener('click', () => {
+        if (this.config.showCalendar === true) {
+          this.config.showCalendar = false;
+          vars.customizerToggleCalendarDom.classList.remove('active');
+        } else {
+          this.config.showCalendar = true;
+          vars.customizerToggleCalendarDom.classList.add('active');
+        }
+        console.log(this.config.showCalendar);
+        this.world.toggleCalendar();
+        this.debugObject.needsToggleCalendar = true;
+      });
+    }
+
+    // FORM SEND
+    vars.formDom.addEventListener('submit', this.formSend);
+  }
+
+  async formSend(e) {
+    e.preventDefault();
+
+    let formData = new FormData(vars.formDom);
+    // formData.append('image', formImage.files[0]);
+
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
+
+    vars.formDom.classList.add('sending');
+
+    let response = await fetch('sendmail.php', {
+      method: 'POST',
+      body: formData,
     });
+    if (response.ok) {
+      let result = await response.json();
+      console.log(result.message);
+      vars.formDom.reset();
+      vars.formDom.classList.add('send');
+    } else {
+    }
+  }
+
+  toggleButtons(show) {
+    if (show) {
+      vars.customizerButtonsDom.classList.remove('hidden');
+    } else {
+      vars.customizerButtonsDom.classList.add('hidden');
+    }
   }
 
   setToConfig(objectType, car) {
@@ -123,6 +177,13 @@ export default class World {
   customizerSwitchSpriteGirl = (spriteGirl) => {
     this.setToConfig('spritegirl', spriteGirl);
     this.world.reloadSpriteGirl();
+  };
+  customizerSwitchSpriteGirlPose = (clothing, pose) => {
+    this.setToConfig('clothing', clothing);
+    this.setToConfig('pose', pose);
+    console.log(clothing, pose);
+
+    this.world.reloadSpriteGirlPose();
   };
 
   customizerSwitchLocation = (object) => {
@@ -177,6 +238,34 @@ export default class World {
     });
   }
 
+  // GIrls Pose & Clothing variations
+  renderGirlParams() {
+    const girl = 'girl1';
+    let markup = '';
+
+    vars.customizerGirlsParamsDom.innerHTML = '';
+
+    let i = 1;
+    Object.entries(objectsData.spritegirls[girl].clothing).forEach(
+      ([clothingType, poseList]) => {
+        markup += `<div class=" customizer__girls-param-clothing">
+        <div class="customizer__girls-param-clothing-name" data-clothing="${clothingType}">Вариант ${i}</div>
+        <ul class="customizer__girls-param-pose-list">`;
+
+        let j = 1;
+        Object.entries(poseList).forEach(([pose, poseParams]) => {
+          markup += `<li class="customizer__control-item ${vars.girlParamsPoseClass}" data-clothing="${clothingType}" data-pose="${pose}">Поза ${j}</li>`;
+          j++;
+        });
+
+        markup += `</ul></div>`;
+        i++;
+      }
+    );
+
+    vars.customizerGirlsParamsDom.insertAdjacentHTML('beforeend', markup);
+  }
+
   updateCustomizer() {
     // update Location list
     vars.customizerDom
@@ -185,10 +274,6 @@ export default class World {
         element.classList.remove('active');
         if (element.dataset.location == this.config.scene.location) {
           element.classList.add('active');
-          console.log('acitve location');
-
-          console.log(element.dataset.location);
-          console.log(this.config.scene.location);
         }
       });
 
@@ -221,6 +306,20 @@ export default class World {
           element.classList.add('active');
         }
       });
+
+    // Update Girls Pose List
+    vars.customizerDom
+      .querySelectorAll(`.${vars.girlParamsPoseClass}`)
+      .forEach((element) => {
+        element.classList.remove('active');
+
+        if (
+          element.dataset.clothing == this.config.clothing &&
+          element.dataset.pose == this.config.pose
+        ) {
+          element.classList.add('active');
+        }
+      });
   }
 
   renderCustomizer() {
@@ -233,8 +332,10 @@ export default class World {
       'spritegirls',
       vars.spriteGirlClass
     );
+    this.renderGirlParams();
     this.updateCustomizer();
 
+    // events on click
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains(vars.carClass)) {
         this.customizerSwitchCar(e.target.dataset.cars);
@@ -252,11 +353,24 @@ export default class World {
         this.customizerSwitchLocation(e.target.dataset.location);
         this.updateCustomizer();
       }
+      // click on pose
+      if (e.target.classList.contains(vars.girlParamsPoseClass)) {
+        this.customizerSwitchSpriteGirlPose(
+          e.target.dataset.clothing,
+          e.target.dataset.pose
+        );
+        this.updateCustomizer();
+      }
     });
   }
 
   // ScreenShots
-  takeScreenshot() {
+  takeScreenshot(screenshotWidth, screenshotHeight) {
+    this.config.screenshotSize = {
+      width: screenshotWidth,
+      height: screenshotHeight,
+    };
+
     this.debugObject.needsScreenshot = true;
     this.debugObject.needsUpdate = true;
   }
@@ -277,6 +391,8 @@ export default class World {
     }
   }
   saveFile(strData, filename) {
+    vars.screenshotHolderDom.src = strData;
+
     let link = document.createElement('a');
     if (typeof link.download === 'string') {
       document.body.appendChild(link); //Firefox requires the link to be in the body

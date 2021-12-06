@@ -8,10 +8,11 @@
   justify-content: center;
   align-items: center;
   z-index: 100;
+  flex-direction: column;
 
   // display: none;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.4s ease;
   // visibility: hidden;
   pointer-events: none;
 
@@ -19,5 +20,10 @@
     display: flex;
     opacity: 1;
     transition-duration: 0s;
+  }
+
+  &__image {
+    width: 100px;
+    margin-bottom: 30px;
   }
 }

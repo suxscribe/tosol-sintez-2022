@@ -53,10 +53,10 @@ export const validateForms = () => {
     document.addEventListener(
       'invalid',
       (function () {
-        console.log('invalid');
+        // console.log('form invalid');
 
         return function (e) {
-          console.log(e);
+          // console.log(e);
 
           //prevent the browser from showing default error bubble / hint
           e.preventDefault();

@@ -17,7 +17,7 @@ export default class Camera extends EventEmitter {
     this.container.matrixAutoUpdate = false;
 
     this.setInstance();
-    // this.setOrbitControls(); // disable orbit controls. using Navigaion
+    // this.setOrbitControls(); // disable orbit controls.
     this.setCameraControls();
     this.setCameraControlsEvents();
   }
@@ -145,8 +145,8 @@ export default class Camera extends EventEmitter {
     this.cameraControls.maxDistance = 50;
     this.cameraControls.minAzimuthAngle = Math.PI * 0.2;
     this.cameraControls.maxAzimuthAngle = Math.PI * 0.8;
-    this.cameraControls.minPolarAngle = 0.2;
-    this.cameraControls.maxPolarAngle = Math.PI * 0.5;
+    this.cameraControls.minPolarAngle = Math.PI * 0.2;
+    this.cameraControls.maxPolarAngle = Math.PI * 0.4;
 
     this.boundary = new THREE.Box3(
       new THREE.Vector3(0, 0, -10),

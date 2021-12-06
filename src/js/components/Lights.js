@@ -12,7 +12,7 @@ export default class Lights {
   setLights() {
     this.ambientLight = new THREE.AmbientLight({
       color: '#ffffff',
-      intensity: 0.1,
+      intensity: 0.6,
     });
     this.scene.add(this.ambientLight);
 
@@ -32,7 +32,7 @@ export default class Lights {
     this.directionalLight.shadow.camera.right = 10;
     this.directionalLight.shadow.camera.bottom = -10;
 
-    this.scene.add(this.directionalLight);
+    // this.scene.add(this.directionalLight);
 
     this.directionalLightCameraHelper = new THREE.CameraHelper(
       this.directionalLight.shadow.camera
@@ -52,6 +52,12 @@ export default class Lights {
 
     if (this.debug) {
       this.debugFolderLight = this.debug.addFolder('Directional Light');
+      this.debugFolderLight
+        .add(this.ambientLight, 'intensity')
+        .min(0)
+        .max(3)
+        .step(0.01)
+        .name('ambient');
       this.debugFolderLight
         .add(this.directionalLight.position, 'x')
         .min(-10)

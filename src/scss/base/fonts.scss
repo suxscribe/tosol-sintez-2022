@@ -1,8 +1,24 @@
 @font-face {
-  font-family: 'Suisse Intl Book';
-  src: url('../fonts/subset-SuisseIntl-Book.woff2') format('woff2'),
-    url('../fonts/subset-SuisseIntl-Book.woff') format('woff');
+  font-family: 'HalvarBreit';
+  src: url('../fonts/HalvarBreit-Bd.woff2') format('woff2'),
+    url('../fonts/HalvarBreit-Bd.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('../fonts/Roboto.woff2') format('woff2'),
+    url('../fonts/Roboto.woff') format('woff');
   font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('../fonts/Robotobold.woff2') format('woff2'),
+    url('../fonts/Robotobold.woff') format('woff');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }

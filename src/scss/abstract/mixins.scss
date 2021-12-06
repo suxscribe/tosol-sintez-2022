@@ -79,8 +79,8 @@
 }
 
 @mixin font-body {
-  $fhd-base-size: 1.8 * $base-font-size;
-  $mobile-base-size: 1.4 * $base-font-size;
+  $fhd-base-size: 1.6 * $base-font-size;
+  $mobile-base-size: 1.3 * $base-font-size;
 
   font-size: $mobile-base-size;
   line-height: 1.3;
@@ -99,10 +99,10 @@
 }
 
 @mixin font-small {
-  $fhd-base-size: 1.4 * $base-font-size;
+  $fhd-base-size: 1.2 * $base-font-size;
   $tablet-base-size: $fhd-base-size * 0.8;
 
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   line-height: 1.5;
   font-weight: 400;
   letter-spacing: 0;

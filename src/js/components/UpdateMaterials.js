@@ -8,24 +8,44 @@ export default class UpdateMaterials {
     this.loadingManager = _options.loadingManager;
     this.debugObject = debugObject;
 
-    this.carPaintMaterialName = 'paint';
+    this.carPaintMaterialArr = ['paint', 'CarPaint'];
     this.textureLoader = new TextureLoader(this.loadingManager);
   }
 
   updateAllMaterials() {
+    debugObject.selects = [];
     this.scene.traverse((child) => {
       if (
         child instanceof THREE.Mesh &&
         child.material instanceof THREE.MeshStandardMaterial
       ) {
-        if (this.debugObject) {
-          child.material.envMap = this.debugObject.environmentMap; // apply env map to each child
-          child.material.envMapIntensity = this.debugObject.envMapIntensity;
+        console.log(child.material.name);
+
+        if (this.debugObject.excludedMaterials.includes(child.material.name)) {
+          // do nothing
+          console.log(child.material);
+          child.material.envMapIntensity = 0;
+        } else if (child.material.name == 'shadow') {
+          // child.material.alphaMap
+          // child.material._alphaTest = 0.5;
+          child.material.transparent = true;
+          child.material.blending = THREE.MultiplyBlending;
+          console.log(child.material);
+        } else {
+          if (this.debugObject) {
+            child.material.envMap = this.debugObject.environmentMap; // apply env map to each child
+            child.material.envMapIntensity = this.debugObject.envMapIntensity;
+          }
+
+          child.material.needsUpdate = true; // this is for tonemapping
+
+          child.castShadow = true;
+          child.receiveShadow = true;
         }
+
         child.material.needsUpdate = true; // this is for tonemapping
 
-        child.castShadow = true;
-        child.receiveShadow = true;
+        debugObject.selects.push(child); // ssr
       }
     });
     console.log('updateMaterials');
@@ -33,7 +53,16 @@ export default class UpdateMaterials {
 
   changeCarColor(color) {
     this.scene.traverse((child) => {
-      if (child.material && child.material.name === this.carPaintMaterialName) {
+      if (
+        child.material &&
+        this.carPaintMaterialArr.includes(child.material.name)
+      ) {
+        console.log(
+          'set color',
+          child.material.name,
+          this.carPaintMaterialName
+        );
+
         child.material.color.set(color);
       }
     });
@@ -53,7 +82,10 @@ export default class UpdateMaterials {
     console.log(carTexture);
 
     this.scene.traverse((child) => {
-      if (child.material && child.material.name === this.carPaintMaterialName) {
+      if (
+        child.material &&
+        this.carPaintMaterialArr.includes(child.material.name)
+      ) {
         child.material.map = carTexture;
         child.material.needsUpdate = true;
       }

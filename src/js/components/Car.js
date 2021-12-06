@@ -212,7 +212,9 @@ export default class Car extends EventEmitter {
         child.geometry.dispose();
       }
       if (child.hasOwnProperty('material')) {
-        child.material.dispose();
+        if (child.material) {
+          child.material.dispose();
+        }
       }
       this.scene.remove(child);
       // child.removeFromParent() // alternate way to remove object. without passing scene.
