@@ -29,8 +29,8 @@ export const objectsData = {
   locations: {
     underground: {
       name: 'Underground',
-      source: '/assets/models/loc-underground.gltf',
-      position: new THREE.Vector3(-2.2, 0, 3.1),
+      source: '/assets/models/loc-underground.glb',
+      position: new THREE.Vector3(-2.2, -0.02, 3.1),
       scale: new THREE.Vector3(0.05, 0.05, 0.05),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/underground/',
@@ -63,8 +63,8 @@ export const objectsData = {
     },
     lamborgini: {
       name: 'Lamborgini',
-      source: '/assets/models/lamborgini-lite.glb',
-      position: new THREE.Vector3(0, 0, 0),
+      source: '/assets/models/lamborgini-8.glb',
+      position: new THREE.Vector3(0, 0.0, 0),
       scale: new THREE.Vector3(0.3, 0.3, 0.3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
     },
@@ -262,24 +262,24 @@ export const customizerData = {
 
 export let debugObject = {
   needsUpdate: false,
-  envMapIntensity: 2,
+  envMapIntensity: 1,
   exposure: 1,
+  pixelRatio: Math.min(Math.max(window.devicePixelRatio, 2), 1),
   cameraInitMovementCompleted: false,
   needsToggleCalendar: false,
   selects: [],
+  carPaintMaterials: ['paint', 'CarPaint'],
   excludedMaterials: [
     'TIRE1.1',
     'TIRE1.2',
+    'Tire_',
     'WallRight.1',
     'WallLeft.1',
     'WallBack.1',
     'watter',
     'Pipes2.1',
+    'RimsColor_',
   ],
-  removeCar: () => {
-    this.removeCar();
-  },
-  reloadCar: () => {
-    this.world.reloadCar();
-  },
+  shadowMaterials: ['shadow', 'watter', 'Shadow_'],
+  bloomIntensity: 0,
 };

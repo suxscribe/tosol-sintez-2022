@@ -43,6 +43,8 @@ export default class Sprite {
   async createHUDSprites() {
     const { sprite } = await this.loadTexture();
 
+    sprite.encoding = THREE.sRGBEncoding; // this fixes the pale look!!!!
+
     this.material = new THREE.SpriteMaterial({
       map: sprite,
       color: 0xffffff,

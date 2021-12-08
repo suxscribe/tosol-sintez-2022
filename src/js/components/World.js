@@ -73,7 +73,7 @@ export default class World {
       this.debugObject.environmentMap.encoding = THREE.sRGBEncoding;
 
       this.scene.environment = this.debugObject.environmentMap;
-      this.scene.background = this.debugObject.environmentMap;
+      // this.scene.background = this.debugObject.environmentMap;
     }
     // LOAD EXR
     else if (

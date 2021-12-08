@@ -8,39 +8,47 @@ export default class UpdateMaterials {
     this.loadingManager = _options.loadingManager;
     this.debugObject = debugObject;
 
-    this.carPaintMaterialArr = ['paint', 'CarPaint'];
     this.textureLoader = new TextureLoader(this.loadingManager);
+
+    // this.shadowTexture = this.textureLoader.load(
+    //   '/assets/textures/lamborgini-alpha.png'
+    // ); //testing
   }
 
   updateAllMaterials() {
-    debugObject.selects = [];
+    debugObject.selects = []; // array for object to make SSR effects
     this.scene.traverse((child) => {
       if (
         child instanceof THREE.Mesh &&
-        child.material instanceof THREE.MeshStandardMaterial
+        (child.material instanceof THREE.MeshStandardMaterial ||
+          child.material instanceof THREE.MeshPhysicalMaterial)
       ) {
         console.log(child.material.name);
+        // console.log(child.material);
+
+        // todo add envMap assignment only to materials specified
+        // todo add transparent to specified materials
 
         if (this.debugObject.excludedMaterials.includes(child.material.name)) {
-          // do nothing
+          // disable envMap effect on some materials
           console.log(child.material);
           child.material.envMapIntensity = 0;
-        } else if (child.material.name == 'shadow') {
+        } else if (
+          this.debugObject.shadowMaterials.includes(child.material.name)
+        ) {
           // child.material.alphaMap
           // child.material._alphaTest = 0.5;
+          // child.material.alphaMap = this.shadowTexture;
           child.material.transparent = true;
-          child.material.blending = THREE.MultiplyBlending;
+          // child.material.visible = false;
+          // child.material.blending = THREE.MultiplyBlending;
           console.log(child.material);
         } else {
-          if (this.debugObject) {
-            child.material.envMap = this.debugObject.environmentMap; // apply env map to each child
-            child.material.envMapIntensity = this.debugObject.envMapIntensity;
-          }
+          child.material.envMap = this.debugObject.environmentMap; // apply env map to each child
+          child.material.envMapIntensity = this.debugObject.envMapIntensity;
 
-          child.material.needsUpdate = true; // this is for tonemapping
-
-          child.castShadow = true;
-          child.receiveShadow = true;
+          // child.castShadow = true;
+          // child.receiveShadow = true;
         }
 
         child.material.needsUpdate = true; // this is for tonemapping
@@ -55,7 +63,7 @@ export default class UpdateMaterials {
     this.scene.traverse((child) => {
       if (
         child.material &&
-        this.carPaintMaterialArr.includes(child.material.name)
+        debugObject.carPaintMaterials.includes(child.material.name)
       ) {
         console.log(
           'set color',

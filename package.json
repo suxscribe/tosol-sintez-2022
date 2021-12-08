@@ -45,6 +45,8 @@
     "inputmask": "^5.0.6",
     "micromodal": "^0.4.10",
     "normalize-wheel": "^1.0.1",
+    "postprocessing": "^6.23.3",
+    "stats.js": "^0.17.0",
     "three": "^0.133.1",
     "tippy.js": "^6.3.7"
   }
