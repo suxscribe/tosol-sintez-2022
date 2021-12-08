@@ -29,9 +29,9 @@ export const objectsData = {
   locations: {
     underground: {
       name: 'Underground',
-      source: '/assets/models/loc-underground.glb',
-      position: new THREE.Vector3(-2.2, -0.02, 3.1),
-      scale: new THREE.Vector3(0.05, 0.05, 0.05),
+      source: '/assets/models/loc-underground-2.glb',
+      position: new THREE.Vector3(-1.7, -0.02, 1.8),
+      scale: new THREE.Vector3(0.04, 0.04, 0.04),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/underground/',
       envMapType: 'cube',
@@ -276,8 +276,8 @@ export let debugObject = {
     'WallRight.1',
     'WallLeft.1',
     'WallBack.1',
-    'watter',
     'Pipes2.1',
+    // 'watter',
     'RimsColor_',
   ],
   shadowMaterials: ['shadow', 'watter', 'Shadow_'],

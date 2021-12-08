@@ -6,18 +6,27 @@ import * as dat from 'dat.gui';
 import { SAOPass } from 'three/examples/jsm/postprocessing/SAOPass.js';
 import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
 // ssr
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
-
+// import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { SSRPass } from 'three/examples/jsm/postprocessing/SSRPass.js';
 import { ReflectorForSSRPass } from 'three/examples/jsm/objects/ReflectorForSSRPass.js';
 import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
 
+// PostProcessing
 import {
   BloomEffect,
+  BlendFunction,
   BrightnessContrastEffect,
   EffectPass,
   EffectComposer,
   RenderPass,
+  EdgeDetectionMode,
+  PredicationMode,
+  ShaderPass,
+  CopyMaterial,
+  TextureEffect,
+  SMAAEffect,
+  SMAAImageLoader,
+  SMAAPreset,
 } from 'postprocessing';
 
 import { isEmptyObject } from './Utils';
@@ -266,6 +275,67 @@ export default class App {
           this.debugObject.needsUpdate = true;
         });
     }
+
+    // SMAA
+    this.assetsSMAA = {};
+    // this.assetsSMAA.search = new Image();
+    this.edgesTextureEffect = null;
+    this.weightsTextureEffect = null;
+
+    this.smaaImageLoader = new SMAAImageLoader(this.loadingManager);
+
+    this.anisotropy = Math.min(
+      this.composer.getRenderer().capabilities.getMaxAnisotropy(),
+      8
+    );
+
+    this.smaaImageLoader.load(([search, area]) => {
+      this.assetsSMAA.search = search;
+      this.assetsSMAA.area = area;
+    });
+    console.log(this.assetsSMAA);
+
+    this.effectSMAA = new SMAAEffect(
+      this.assetsSMAA.search,
+      this.assetsSMAA.area,
+      SMAAPreset.HIGHT,
+      EdgeDetectionMode.COLOR
+    );
+
+    this.effectSMAA.edgeDetectionMaterial.setEdgeDetectionThreshold(0.02);
+    this.effectSMAA.edgeDetectionMaterial.setPredicationMode(
+      PredicationMode.DEPTH
+    );
+    this.effectSMAA.edgeDetectionMaterial.setPredicationThreshold(0.002);
+    this.effectSMAA.edgeDetectionMaterial.setPredicationScale(1.0);
+
+    this.edgesTextureEffect = new TextureEffect({
+      blendFunction: BlendFunction.SKIP,
+      texture: this.effectSMAA.renderTargetEdges.texture,
+    });
+
+    this.weightsTextureEffect = new TextureEffect({
+      blendFunction: BlendFunction.SKIP,
+      texture: this.effectSMAA.renderTargetWeights.texture,
+    });
+
+    this.copyPass = new ShaderPass(new CopyMaterial());
+
+    this.effectSMAAPass = new EffectPass(
+      this.camera.instance,
+      this.effectSMAA,
+      this.edgesTextureEffect,
+      this.weightsTextureEffect
+    );
+
+    console.log(this.copyPass);
+
+    this.copyPass.enabled = false;
+    this.copyPass.renderToScreen = true;
+    this.effectSMAAPass.renderToScreen = true;
+
+    this.composer.addPass(this.copyPass);
+    this.composer.addPass(this.effectSMAAPass);
 
     // this.addSsaaRenderPass(); // dynamic ambient occlusion. bad
     // this.addSSRPass();

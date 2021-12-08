@@ -9,10 +9,6 @@ export default class UpdateMaterials {
     this.debugObject = debugObject;
 
     this.textureLoader = new TextureLoader(this.loadingManager);
-
-    // this.shadowTexture = this.textureLoader.load(
-    //   '/assets/textures/lamborgini-alpha.png'
-    // ); //testing
   }
 
   updateAllMaterials() {
@@ -33,9 +29,9 @@ export default class UpdateMaterials {
           // disable envMap effect on some materials
           console.log(child.material);
           child.material.envMapIntensity = 0;
-        } else if (
-          this.debugObject.shadowMaterials.includes(child.material.name)
-        ) {
+        }
+
+        if (this.debugObject.shadowMaterials.includes(child.material.name)) {
           // child.material.alphaMap
           // child.material._alphaTest = 0.5;
           // child.material.alphaMap = this.shadowTexture;
@@ -43,12 +39,22 @@ export default class UpdateMaterials {
           // child.material.visible = false;
           // child.material.blending = THREE.MultiplyBlending;
           console.log(child.material);
-        } else {
+        }
+
+        if (
+          !this.debugObject.excludedMaterials.includes(child.material.name) &&
+          !this.debugObject.shadowMaterials.includes(child.material.name)
+        ) {
           child.material.envMap = this.debugObject.environmentMap; // apply env map to each child
           child.material.envMapIntensity = this.debugObject.envMapIntensity;
 
           // child.castShadow = true;
           // child.receiveShadow = true;
+        }
+
+        if (child.material.name == 'watter') {
+          child.material.transparent = true;
+          child.material.blending = THREE.MultiplyBlending;
         }
 
         child.material.needsUpdate = true; // this is for tonemapping
