@@ -1,11 +1,25 @@
 .button {
+  $button-max-width: 300px;
+  $button-transition: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
   @mixin button-svg {
-    & svg {
-      width: $button-icon-size;
-      height: $button-icon-size;
+    & .button__icon {
+      width: $button-icon-wrap-size;
+      height: $button-icon-wrap-size;
       padding: 10px;
       background: #fff;
       border-radius: 50%;
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+
+      & svg,
+      & img {
+        position: absolute;
+        width: $button-icon-size;
+        height: $button-icon-size;
+      }
     }
   }
 
@@ -26,27 +40,49 @@
 
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0);
   backdrop-filter: blur(50px);
-  transition: all var(--transition);
+  transition: all 0.65s $button-transition;
 
   &:hover {
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
   }
 
+  & svg {
+  }
+
   &--round {
     padding: 0;
     border: none;
-    width: $button-s-height;
-    justify-content: center;
+    max-width: $button-s-height;
+    // justify-content: space-between;
 
-    padding: 0 $button-round-padding;
+    padding: $button-round-padding;
 
     @include button-svg();
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 65px;
+      height: 60px;
+      // background: rgba(255, 255, 255, 0.5);
+      left: -11px;
+    }
+
+    &:hover {
+      max-width: $button-max-width;
+
+      &:before {
+        left: -25px;
+      }
+    }
   }
+
   &--gift {
     padding: 12px;
     border: none;
-    width: $button-s-height;
-    justify-content: center;
+    // width: $button-s-height;
+    // justify-content: center;
     background-color: $color-white;
 
     & img {
@@ -66,9 +102,28 @@
   &--icon {
     padding-right: $button-round-padding;
     @include button-svg();
+  }
 
-    & svg {
-      margin-left: 10px;
+  &__content {
+    padding-right: 10px;
+
+    .button--round & {
+      padding-right: 0px;
+      padding-left: 0;
+      opacity: 0;
+
+      max-width: 0;
+      flex: 0 0 auto;
+      transition: all 0.59s $button-transition;
+      overflow: hidden;
+    }
+
+    .button--round:hover & {
+      opacity: 1;
+      max-width: $button-max-width;
+      padding-right: 10px;
+      padding-left: 20px;
+      transition: all 0.71s $button-transition;
     }
   }
 }

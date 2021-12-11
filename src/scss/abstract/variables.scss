@@ -76,8 +76,9 @@ $button-height: responsive-value(152px, 168px);
 $button-s-height: responsive-value(48px, 64px);
 $button-padding: responsive-value(24px, 36px);
 
-$button-icon-size: responsive-value(36px, 52px);
-$button-round-padding: responsive-value(3px, 6px);
+$button-icon-wrap-size: responsive-value(36px, 52px);
+$button-icon-size: responsive-value(18px, 28px);
+$button-round-padding: responsive-value(4px, 8px);
 
 // MISC
 $input-border-radius: responsive-value(18px, 32px);

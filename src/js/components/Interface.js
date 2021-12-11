@@ -18,6 +18,8 @@ export default class Interface {
     this.renderer = _options.renderer;
     this.updateMaterials = _options.updateMaterials;
 
+    this.api = 'script.php';
+
     this.objects = objectsData; // Models data
     this.debugObject = debugObject;
     this.customizer = customizerData; // Objects sets available for each scene \ location
@@ -50,10 +52,10 @@ export default class Interface {
     //     this.takeScreenshot();
     //   });
     document.addEventListener('click', (e) => {
-      const width = parseInt(e.target.dataset.width);
-      const height = parseInt(e.target.dataset.height);
-
       if (e.target.classList.contains('customizer__screenshoter-make')) {
+        const width = parseInt(e.target.dataset.width);
+        const height = parseInt(e.target.dataset.height);
+
         console.log('screenshot' + width + 'x' + height);
         this.takeScreenshot(width, height);
       }
@@ -177,6 +179,14 @@ export default class Interface {
   customizerSwitchSpriteGirl = (spriteGirl) => {
     this.setToConfig('spritegirl', spriteGirl);
     this.world.reloadSpriteGirl();
+
+    if (this.config.spritegirl == 'girl0') {
+      console.log(this.config.spritegirl);
+
+      vars.customizerGirlsParamsButton.classList.add('hidden');
+    } else {
+      vars.customizerGirlsParamsButton.classList.remove('hidden');
+    }
   };
   customizerSwitchSpriteGirlPose = (clothing, pose) => {
     this.setToConfig('clothing', clothing);
@@ -364,7 +374,9 @@ export default class Interface {
     });
   }
 
-  // ScreenShots
+  /* 
+  Screenshots
+  */
   takeScreenshot(screenshotWidth, screenshotHeight) {
     this.config.screenshotSize = {
       width: screenshotWidth,
@@ -383,13 +395,47 @@ export default class Interface {
       let strMime = 'image/jpeg';
       imgData = this.renderer.domElement.toDataURL(strMime);
 
-      this.saveFile(imgData.replace(strMime, strDownloadMime), 'test.jpg');
+      const fileData = {
+        image: imgData,
+      };
+      this.sendToServer(fileData);
+      // this.saveFile(imgData.replace(strMime, strDownloadMime), 'test.jpg');
       this.debugObject.needsUpdate = true; // render with original size after resize
     } catch (e) {
       console.log(e);
       return;
     }
   }
+
+  sendToServer(data) {
+    console.log(data);
+
+    fetch(this.api + '?c=save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json;charset=utf-8' },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      //.then(res => res.text())
+      .then((response) => {
+        console.log(response);
+        document
+          .querySelector('.customizer__screenshoter-link1')
+          .setAttribute('href', response.name);
+        document.querySelector('.customizer__screenshoter-link1').innerHTML =
+          response.name;
+
+        document
+          .querySelector('.customizer__screenshoter-link2')
+          .setAttribute('href', 'script.php?c=view&image=' + response.tm);
+        document.querySelector('.customizer__screenshoter-link2').innerHTML =
+          'Открыть страницу';
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   saveFile(strData, filename) {
     vars.screenshotHolderDom.src = strData;
 

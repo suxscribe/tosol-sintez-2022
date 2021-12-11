@@ -61,24 +61,30 @@ block content
   .customizer-bottom 
     .customizer-bottom__center
       .customizer__generate.button.button--icon
-        | Сгенерировать
-        +svg({name:'refresh'})
+        span.button__content Сгенерировать
+        span.button__icon 
+          +svg({name:'refresh'})
       //- .customizer__toggle-calendar.button
       //-   | Показать календарь
       //- .customizer__toggle-render.button 
       //-   | Render Size
     .customizer-bottom__right
       .customizer__share.button.button--round(data-micromodal-open="modal-wallpaper")
-        +svg({name:'download'})
+        span.button__content Скачать
+        span.button__icon 
+          +svg({name:'download'})
       .customizer__share.button.button--icon(data-micromodal-open="modal-share")
-        | Поделиться
-        +svg({name:'share'})
-      .customizer__gift.button.button--gift(data-micromodal-open="modal-gift")
-        img(src="/assets/images/gift.png", alt="")
+        span.button__content Поделиться
+        span.button__icon 
+          +svg({name:'share'})
+      .customizer__gift.button.button--round.button--gift(data-micromodal-open="modal-gift")
+        span.button__content Получить подарок
+        span.button__icon 
+          img(src="/assets/images/gift.png", alt="")
     
   #modal-wallpaper.modal.micromodal-slide(aria-hidden='true')
     .modal__overlay(tabindex='-1', data-micromodal-close='')
-      .modal__container(role='dialog', aria-modal='true', aria-labelledby='modal-1-title')
+      .modal__container(role='dialog', aria-modal='true')
         +modal-close()
         .modal__content
           h2.modal__title Скачать обои
@@ -88,12 +94,15 @@ block content
             a.customizer__screenshoter-size.customizer__screenshoter-make(href="#", data-width="1920", data-height="1080") 1920x1080
             a.customizer__screenshoter-size.customizer__screenshoter-make(href="#", data-width="2560", data-height="1440") 2K
             a.customizer__screenshoter-size.customizer__screenshoter-make(href="#", data-width="3840", data-height="2160") 4K
+          .customizer__screenshoter-links 
+            a.customizer__screenshoter-link1(target="_blank")
+            a.customizer__screenshoter-link2(target="_blank")
           .customizer__screenshoter-add-calendar.form-checkbox
             input#screenshot-calendar(type="checkbox", value="calendar")
             label(for="screenshot-calendar") Добавить календарную сетку
   #modal-share.modal.micromodal-slide(aria-hidden='true')
     .modal__overlay(tabindex='-1', data-micromodal-close='')
-      .modal__container(role='dialog', aria-modal='true', aria-labelledby='modal-1-title')
+      .modal__container(role='dialog', aria-modal='true')
         +modal-close()
         .modal__content
           h2.modal__title Поделиться в социальных сетях

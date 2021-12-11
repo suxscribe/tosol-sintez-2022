@@ -1,0 +1,24 @@
+extends ../layout/main
+
+block variables
+  - var title = 'Tosol Sintez 2022';
+  - var description = 'Description';
+  - var pageClass = 'page--share';
+
+block content
+  .share 
+    .share__logo 
+      img(src="/assets/images/felix-logo.svg", alt="")
+    .share__image
+      img(src="/assets/images/screenshot.jpg", alt="")
+    .share__socials 
+      a.share__social(href="#")
+        +svg({name: 'instagram'})
+      a.share__social(href="#")
+        +svg({name: 'facebook'})
+      a.share__social(href="#")
+        +svg({name: 'vk'})
+      a.share__social(href="#")
+        +svg({name: 'twitter'})
+      a.share__social(href="#")
+        +svg({name: 'ok'})

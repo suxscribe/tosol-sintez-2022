@@ -13,6 +13,10 @@ export const vars = {
   customizerToggleCalendarDom: document.querySelector(
     '.customizer__toggle-calendar'
   ),
+  customizerGirlsParamsButton: document.querySelector(
+    '.customizer__button--girls-params'
+  ),
+
   screenshotHolderDom: document.querySelector('.screenshot__holder'),
   formDom: document.querySelector('#form-gift'),
 
@@ -27,13 +31,13 @@ export const vars = {
 
 export const objectsData = {
   locations: {
-    underground: {
-      name: 'Underground',
-      source: '/assets/models/loc-underground-2.glb',
+    studio: {
+      name: 'Studio',
+      source: '/assets/models/loc-studio.glb',
       position: new THREE.Vector3(-1.7, -0.02, 1.8),
-      scale: new THREE.Vector3(0.04, 0.04, 0.04),
+      scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
-      envMapSource: '/assets/envMaps/underground/',
+      envMapSource: '/assets/envMaps/bw/',
       envMapType: 'cube',
     },
     track: {
@@ -63,7 +67,7 @@ export const objectsData = {
     },
     lamborgini: {
       name: 'Lamborgini',
-      source: '/assets/models/lamborgini-8.glb',
+      source: '/assets/models/lamborgini-10.glb',
       position: new THREE.Vector3(0, 0.0, 0),
       scale: new THREE.Vector3(0.3, 0.3, 0.3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -109,45 +113,11 @@ export const objectsData = {
   spritegirls: {
     girl0: {
       name: 'Без девушки',
-      source: '/assets/textures/girl1.png',
+      source: '',
       center: new THREE.Vector2(0.5, 0.5),
       position: new THREE.Vector3(0.6, -0.26, -3),
       scale: new THREE.Vector3(1, 1, 1),
-      clothing: {
-        clothing1: {
-          pose1: {
-            source: '/assets/textures/girl0/girl-1-1.webp',
-          },
-          pose2: {
-            source: '/assets/textures/girl0/girl-1-2.webp',
-          },
-          pose3: {
-            source: '/assets/textures/girl0/girl-1-3.webp',
-          },
-        },
-        clothing2: {
-          pose1: {
-            source: '/assets/textures/girl0/girl-2-1.webp',
-          },
-          pose2: {
-            source: '/assets/textures/girl0/girl-2-2.webp',
-          },
-          pose3: {
-            source: '/assets/textures/girl0/girl-2-3.webp',
-          },
-        },
-        clothing3: {
-          pose1: {
-            source: '/assets/textures/girl0/girl-3-1.webp',
-          },
-          pose2: {
-            source: '/assets/textures/girl0/girl-3-2.webp',
-          },
-          pose3: {
-            source: '/assets/textures/girl0/girl-3-3.webp',
-          },
-        },
-      },
+      clothing: {},
     },
     girl1: {
       name: 'Girl 1',
@@ -241,18 +211,26 @@ export const objectsData = {
     position: new THREE.Vector3(1.59, 0.0, -3.1),
     scale: new THREE.Vector3(0.9, 0.9, 1),
   },
+  grain: {
+    name: 'Grain',
+    source: '/assets/textures/grain-background-2.png',
+    center: new THREE.Vector2(0.5, 0.5),
+    position: new THREE.Vector3(0, 0, -0.65),
+    scale: new THREE.Vector3(1, 1, 1),
+    repeat: true,
+  },
 };
 
 export const customizerData = {
-  desert: {
-    name: 'Подземка',
-    location: 'underground',
+  studio: {
+    name: 'Студия',
+    location: 'studio',
     cars: ['porsche', 'ferrari', 'lamborgini'],
     girls: ['girl1', 'girl2', 'girl3', 'helmet'],
     spritegirls: ['girl0', 'girl1', 'girl2'],
   },
   track: {
-    name: 'Студия',
+    name: 'Пустая',
     location: 'track',
     cars: ['porsche', 'ferrari', 'lamborgini'],
     girls: ['girl1', 'girl2', 'girl3', 'helmet'],
@@ -279,7 +257,14 @@ export let debugObject = {
     'Pipes2.1',
     // 'watter',
     'RimsColor_',
+    'plane_01',
+    'plane_02',
+    'plane_03',
+    'plane_04',
+    'BG',
+    ``,
   ],
+  includedMaterials: ['paint', 'CarPaint', 'CarPaint_'],
   shadowMaterials: ['shadow', 'watter', 'Shadow_'],
   bloomIntensity: 0,
 };

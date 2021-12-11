@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import Sizes from './Sizes.js';
+import { debugObject } from './data/vars';
 
 export default class Sprite {
   constructor(_options) {
@@ -10,19 +11,19 @@ export default class Sprite {
     this.sizes = _options.sizes;
     this.visible = _options.visible;
     this.textureLoader = _options.textureLoader;
-    this.clothing = _options.clothing;
-    this.pose = _options.pose;
+    this.clothing = _options.clothing; // todo move to object
+    this.pose = _options.pose; // todo move to object
 
     this.container = new THREE.Object3D();
 
     // console.log(this.object);
 
     // this.loadTexture();
-    this.createHUDSprites();
-    this.setDebug();
-    this.setEvents();
-
-    //todo make updateSprite method on resize
+    if (this.object.source != '') {
+      this.createSprite();
+      this.setDebug();
+      this.setEvents();
+    }
   }
 
   async loadTexture() {
@@ -40,7 +41,7 @@ export default class Sprite {
     // console.log(this.debugTexture);
   }
 
-  async createHUDSprites() {
+  async createSprite() {
     const { sprite } = await this.loadTexture();
 
     sprite.encoding = THREE.sRGBEncoding; // this fixes the pale look!!!!
@@ -91,10 +92,29 @@ export default class Sprite {
 
     this.container.add(this.spriteObject);
 
-    const width = this.material.map.image.width * this.getScreenFactor();
-    const height = this.material.map.image.height * this.getScreenFactor();
+    this.updateHUDSprites(); // set sprite size
 
-    this.container.scale.set(width, height, 1);
+    // Repeat texture
+    if (this.object.repeat === true) {
+      this.material.map.wrapS = THREE.RepeatWrapping;
+      this.material.map.wrapT = THREE.RepeatWrapping;
+
+      const repeatX = Math.ceil(
+        this.sizes.width / this.material.map.image.width
+      );
+      const repeatY = Math.ceil(
+        this.sizes.height / this.material.map.image.height
+      );
+
+      this.material.map.offset.set(0, 0);
+      this.material.map.repeat.set(repeatX, repeatY);
+
+      this.container.scale.set(
+        this.sizes.width * this.getScreenFactor(),
+        this.sizes.height * this.getScreenFactor(),
+        1
+      );
+    }
 
     if (this.visible === false) {
       this.container.visible = this.visible;
@@ -160,5 +180,6 @@ export default class Sprite {
     if (this.debugFolderSprite) {
       this.debug.removeFolder(this.debugFolderSprite);
     }
+    debugObject.needsUpdate = true;
   }
 }

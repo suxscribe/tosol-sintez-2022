@@ -8,7 +8,7 @@ export default class UpdateMaterials {
     this.loadingManager = _options.loadingManager;
     this.debugObject = debugObject;
 
-    this.textureLoader = new TextureLoader(this.loadingManager);
+    // this.textureLoader = new TextureLoader(this.loadingManager);
   }
 
   updateAllMaterials() {
@@ -19,18 +19,18 @@ export default class UpdateMaterials {
         (child.material instanceof THREE.MeshStandardMaterial ||
           child.material instanceof THREE.MeshPhysicalMaterial)
       ) {
-        console.log(child.material.name);
+        // console.log(child.material.name);
         // console.log(child.material);
 
         // todo add envMap assignment only to materials specified
-        // todo add transparent to specified materials
 
+        // Disable envMap effect on some materials
         if (this.debugObject.excludedMaterials.includes(child.material.name)) {
-          // disable envMap effect on some materials
-          console.log(child.material);
+          // console.log(child.material);
           child.material.envMapIntensity = 0;
         }
 
+        // Set Transparent = True on shadow materials
         if (this.debugObject.shadowMaterials.includes(child.material.name)) {
           // child.material.alphaMap
           // child.material._alphaTest = 0.5;
@@ -38,9 +38,14 @@ export default class UpdateMaterials {
           child.material.transparent = true;
           // child.material.visible = false;
           // child.material.blending = THREE.MultiplyBlending;
-          console.log(child.material);
+          // console.log(child.material);
         }
 
+        // Set EnvMaps to specified materials
+        // if (this.debugObject.includedMaterials.includes(child.material.name)) {
+        //   child.material.envMap = this.debugObject.environmentMap; // apply env map
+        //   child.material.envMapIntensity = this.debugObject.envMapIntensity;
+        // }
         if (
           !this.debugObject.excludedMaterials.includes(child.material.name) &&
           !this.debugObject.shadowMaterials.includes(child.material.name)
@@ -90,20 +95,20 @@ export default class UpdateMaterials {
   //   return { texture };
   // }
 
-  async changeCarTexture() {
-    // const { carTexture } = await this.loadTexture();
-    const carTexture = this.textureLoader.load('/assets/textures/car-test.jpg');
-    console.log(carTexture);
+  // async changeCarTexture() {
+  //   // const { carTexture } = await this.loadTexture();
+  //   const carTexture = this.textureLoader.load('/assets/textures/car-test.jpg');
+  //   console.log(carTexture);
 
-    this.scene.traverse((child) => {
-      if (
-        child.material &&
-        this.carPaintMaterialArr.includes(child.material.name)
-      ) {
-        child.material.map = carTexture;
-        child.material.needsUpdate = true;
-      }
-    });
-    this.debugObject.needsUpdate = true;
-  }
+  //   this.scene.traverse((child) => {
+  //     if (
+  //       child.material &&
+  //       this.carPaintMaterialArr.includes(child.material.name)
+  //     ) {
+  //       child.material.map = carTexture;
+  //       child.material.needsUpdate = true;
+  //     }
+  //   });
+  //   this.debugObject.needsUpdate = true;
+  // }
 }

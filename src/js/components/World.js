@@ -33,9 +33,12 @@ export default class World {
 
     this.loadLocation();
     this.loadCar();
-    this.loadGirl();
-    // this.loadEnvironment();
+
+    // this.loadGirl();
+    this.loadCustom();
+
     this.loadSpriteGirl();
+    this.loadGrain();
     this.loadCalendar();
   }
 
@@ -51,12 +54,12 @@ export default class World {
 
     const envMapSource =
       this.objects.locations[this.config.scene.location].envMapSource;
+    const envMapType =
+      this.objects.locations[this.config.scene.location].envMapType;
 
     this.debugFolderEnvMap = this.debug.addFolder('envMap');
 
-    if (
-      this.objects.locations[this.config.scene.location].envMapType == 'cube'
-    ) {
+    if (envMapType == 'cube') {
       const cubeTextureLoader = new THREE.CubeTextureLoader(
         this.loadingManager
       );
@@ -76,9 +79,7 @@ export default class World {
       // this.scene.background = this.debugObject.environmentMap;
     }
     // LOAD EXR
-    else if (
-      this.objects.locations[this.config.scene.location].envMapType == 'exr'
-    ) {
+    else if (envMapType == 'exr') {
       this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
       this.pmremGenerator.compileEquirectangularShader();
 
@@ -113,6 +114,7 @@ export default class World {
         .step(0.01)
         .onChange(() => {
           this.updateMaterials.updateAllMaterials();
+          this.debugObject.needsUpdate = true;
         });
 
       this.debugFolderEnvMap
@@ -186,6 +188,18 @@ export default class World {
     }
   }
 
+  loadGrain() {
+    this.grain = new Sprite({
+      object: this.objects.grain,
+      camera: this.camera,
+      scene: this.scene,
+      debug: this.debug,
+      sizes: this.sizes,
+      textureLoader: this.textureLoader,
+    });
+    this.camera.instance.add(this.grain.container);
+  }
+
   loadCalendar() {
     // if (this.config.showCalendar) {
     this.calendar = new Sprite({
@@ -209,7 +223,7 @@ export default class World {
     // }
   }
 
-  loadEnvironment() {
+  loadCustom() {
     // controls boundary helper
     // const bbHelper = new THREE.Mesh(
     //   new THREE.BoxGeometry(1, 1, 1),

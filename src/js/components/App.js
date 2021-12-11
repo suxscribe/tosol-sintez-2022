@@ -1,35 +1,7 @@
 import * as THREE from 'three';
 import * as dat from 'dat.gui';
-// import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-// import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-// sao
-import { SAOPass } from 'three/examples/jsm/postprocessing/SAOPass.js';
-import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
-// ssr
-// import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
-import { SSRPass } from 'three/examples/jsm/postprocessing/SSRPass.js';
-import { ReflectorForSSRPass } from 'three/examples/jsm/objects/ReflectorForSSRPass.js';
-import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
+import Stats from 'three/examples/jsm/libs/stats.module';
 
-// PostProcessing
-import {
-  BloomEffect,
-  BlendFunction,
-  BrightnessContrastEffect,
-  EffectPass,
-  EffectComposer,
-  RenderPass,
-  EdgeDetectionMode,
-  PredicationMode,
-  ShaderPass,
-  CopyMaterial,
-  TextureEffect,
-  SMAAEffect,
-  SMAAImageLoader,
-  SMAAPreset,
-} from 'postprocessing';
-
-import { isEmptyObject } from './Utils';
 import { vars, objectsData, customizerData, debugObject } from './data/vars';
 import Time from '../utils/Time';
 import UpdateMaterials from './UpdateMaterials.js';
@@ -38,8 +10,8 @@ import Camera from './Camera.js'; // camera constructor
 import Navigation from './Navigation';
 import Sizes from './Sizes.js';
 import Interface from './Interface';
+import Effects from './Effects';
 
-import Car from './Car.js';
 import World from './World';
 
 import { validateForms } from '../utils/forms';
@@ -47,6 +19,7 @@ import { validateForms } from '../utils/forms';
 export default class App {
   constructor(_options) {
     this.canvas = document.querySelector(`.${vars.canvasClass}`);
+    this.domContainer = document.querySelector('.main');
     this.time = new Time();
     this.sizes = new Sizes();
 
@@ -68,12 +41,10 @@ export default class App {
     this.setCamera();
     // this.setNavigation(); // custom mouse navigation (by Bruno Simon)
     this.setHelpers();
-    this.setLights();
+    // this.setLights();
 
     this.setWorld();
     this.setEffects();
-
-    // this.renderCustomizer();
     this.setInterface();
 
     this.setEvents();
@@ -86,7 +57,7 @@ export default class App {
 
     // default config to load
     // todo get defaults from config
-    this.config.scene = this.customizer.desert;
+    this.config.scene = this.customizer.studio;
     this.config.car = 'lamborgini';
     this.config.girl = 'empty';
     this.config.spritegirl = 'girl1';
@@ -97,10 +68,10 @@ export default class App {
     this.config.pose = 'pose1';
 
     // needed for Navigation instance
-    this.config.width = this.sizes.width;
-    this.config.height = this.sizes.height;
-    this.config.smallestSide = Math.min(this.config.width, this.config.height);
-    this.config.largestSide = Math.max(this.config.width, this.config.height);
+    // this.config.width = this.sizes.width;
+    // this.config.height = this.sizes.height;
+    // this.config.smallestSide = Math.min(this.config.width, this.config.height);
+    // this.config.largestSide = Math.max(this.config.width, this.config.height);
   }
 
   setLoadingManager() {
@@ -148,9 +119,9 @@ export default class App {
       canvas: this.canvas,
       antialias: true,
       powerPreference: 'high-performance',
-      antialias: false,
+      // antialias: false,
       stencil: false,
-      depth: false,
+      // depth: false,
     });
     this.renderer.setPixelRatio(this.debugObject.pixelRatio);
     this.renderer.setSize(this.sizes.width, this.sizes.height);
@@ -183,165 +154,13 @@ export default class App {
   }
 
   setEffects() {
-    // Render Target (to fix output encoding)
-    this.renderTarget = new THREE.WebGLRenderTarget(
-      this.sizes.width,
-      this.sizes.height,
-      {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        encoding: THREE.sRGBEncoding,
-      }
-    );
-
-    // Composer
-    this.composer = new EffectComposer(this.renderer, this.renderTarget);
-    this.renderPass = new RenderPass(this.scene, this.camera.instance);
-    this.composer.addPass(this.renderPass);
-
-    // PASSES
-    // BLOOM
-    this.effectBloom = new BloomEffect({
-      luminanceThreshold: 0.75,
-      luminanceSmoothing: 0.5,
-      height: 480,
+    this.effects = new Effects({
+      renderer: this.renderer,
+      camera: this.camera,
+      scene: this.scene,
+      debug: this.debug,
+      sizes: this.sizes,
     });
-    this.effectBloomPass = new EffectPass(
-      this.camera.instance,
-      this.effectBloom
-    );
-    this.composer.addPass(this.effectBloomPass);
-
-    if (this.debug) {
-      this.debugEffectBloomFolder = this.debug.addFolder('Bloom');
-      this.debugEffectBloomFolder
-        .add(this.effectBloom, 'intensity', 0.0, 3.0, 0.01)
-        .onChange(() => {
-          this.debugObject.needsUpdate = true;
-        });
-      this.debugEffectBloomFolder
-        .add(this.effectBloom.luminanceMaterial, 'threshold', 0.0, 1.0, 0.001)
-        .onChange(() => {
-          this.debugObject.needsUpdate = true;
-        });
-      this.debugEffectBloomFolder
-        .add(this.effectBloom.luminanceMaterial, 'smoothing', 0.0, 1.0, 0.001)
-        .onChange(() => {
-          this.debugObject.needsUpdate = true;
-        });
-    }
-
-    // BRIGHTNESS CONTRAST
-    this.effectBrightness = new BrightnessContrastEffect({
-      brightness: 0,
-      contranst: 0,
-    });
-    this.effectBrightnessPass = new EffectPass(
-      this.camera.instance,
-      this.effectBrightness
-    );
-    this.composer.addPass(this.effectBrightnessPass);
-
-    if (this.debug) {
-      this.debugEffectBrightnessFolder = this.debug.addFolder('Brightness');
-      this.debugEffectBrightnessFolder
-        .add(
-          this.effectBrightness.uniforms.get('brightness'),
-          'value',
-          -0.5,
-          0.5,
-          0.001
-        )
-        .name('brightness')
-        .onChange(() => {
-          this.debugObject.needsUpdate = true;
-        });
-      this.debugEffectBrightnessFolder
-        .add(
-          this.effectBrightness.uniforms.get('contrast'),
-          'value',
-          -0.5,
-          0.5,
-          0.001
-        )
-        .name('contrast')
-        .onChange(() => {
-          this.debugObject.needsUpdate = true;
-        });
-      this.debugEffectBrightnessFolder
-        .add(this.effectBrightness.blendMode.opacity, 'value', 0.0, 1, 0.01)
-        .onChange(() => {
-          this.debugObject.needsUpdate = true;
-        });
-    }
-
-    // SMAA
-    this.assetsSMAA = {};
-    // this.assetsSMAA.search = new Image();
-    this.edgesTextureEffect = null;
-    this.weightsTextureEffect = null;
-
-    this.smaaImageLoader = new SMAAImageLoader(this.loadingManager);
-
-    this.anisotropy = Math.min(
-      this.composer.getRenderer().capabilities.getMaxAnisotropy(),
-      8
-    );
-
-    this.smaaImageLoader.load(([search, area]) => {
-      this.assetsSMAA.search = search;
-      this.assetsSMAA.area = area;
-    });
-    console.log(this.assetsSMAA);
-
-    this.effectSMAA = new SMAAEffect(
-      this.assetsSMAA.search,
-      this.assetsSMAA.area,
-      SMAAPreset.HIGHT,
-      EdgeDetectionMode.COLOR
-    );
-
-    this.effectSMAA.edgeDetectionMaterial.setEdgeDetectionThreshold(0.02);
-    this.effectSMAA.edgeDetectionMaterial.setPredicationMode(
-      PredicationMode.DEPTH
-    );
-    this.effectSMAA.edgeDetectionMaterial.setPredicationThreshold(0.002);
-    this.effectSMAA.edgeDetectionMaterial.setPredicationScale(1.0);
-
-    this.edgesTextureEffect = new TextureEffect({
-      blendFunction: BlendFunction.SKIP,
-      texture: this.effectSMAA.renderTargetEdges.texture,
-    });
-
-    this.weightsTextureEffect = new TextureEffect({
-      blendFunction: BlendFunction.SKIP,
-      texture: this.effectSMAA.renderTargetWeights.texture,
-    });
-
-    this.copyPass = new ShaderPass(new CopyMaterial());
-
-    this.effectSMAAPass = new EffectPass(
-      this.camera.instance,
-      this.effectSMAA,
-      this.edgesTextureEffect,
-      this.weightsTextureEffect
-    );
-
-    console.log(this.copyPass);
-
-    this.copyPass.enabled = false;
-    this.copyPass.renderToScreen = true;
-    this.effectSMAAPass.renderToScreen = true;
-
-    this.composer.addPass(this.copyPass);
-    this.composer.addPass(this.effectSMAAPass);
-
-    // this.addSsaaRenderPass(); // dynamic ambient occlusion. bad
-    // this.addSSRPass();
-
-    this.resize();
-    // this.composer.addPass(new ShaderPass(GammaCorrectionShader)); // should be last
   }
 
   setNavigation() {
@@ -370,7 +189,7 @@ export default class App {
     // axes helper
     // this.axesHelper = new THREE.AxesHelper(10);
     // this.scene.add(this.axesHelper);
-    this.scene.add(this.camera.boundaryHelper);
+    // this.scene.add(this.camera.boundaryHelper);
   }
 
   setModelLoadedListener(object) {
@@ -382,10 +201,12 @@ export default class App {
   }
 
   render() {
+    this.stats.begin();
     // this.renderer.render(this.scene, this.camera.instance); // no effects
-    this.composer.render(); // with effects
-    this.renderer.toneMappingExposure = this.debugObject.exposure;
-    this.composer.toneMappingExposure = this.debugObject.exposure;
+    this.effects.composer.render(); // with effects
+    // this.renderer.toneMappingExposure = this.debugObject.exposure;
+    // this.effects.composer.toneMappingExposure = this.debugObject.exposure;
+    this.stats.end();
   }
 
   resize(width = null, height = null) {
@@ -405,7 +226,7 @@ export default class App {
 
     this.renderer.setSize(newWidth, newHeight);
     this.renderer.setPixelRatio(this.debugObject.pixelRatio);
-    this.composer.setSize(newWidth, newHeight);
+    this.effects.composer.setSize(newWidth, newHeight);
     // this.composer.setPixelRatio(this.debugObject.pixelRatio);
   }
 
@@ -443,6 +264,7 @@ export default class App {
       }
 
       if (this.debugObject.needsToggleCalendar === true) {
+        // todo this should not be here
         this.world.calendar.container.visible = this.config.showCalendar;
         this.debugObject.needsToggleCalendar = false;
         this.debugObject.needsUpdate = true;
@@ -494,115 +316,8 @@ export default class App {
   setDebug() {
     this.debug = new dat.GUI({});
     this.debugObject = debugObject;
-  }
 
-  addSSRPass() {
-    // SSR
-    // Ground
-
-    this.ssrPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(16, 16),
-      new THREE.MeshPhongMaterial({ color: 0x999999, specular: 0x101010 })
-    );
-    this.ssrPlane.rotation.x = -Math.PI / 2;
-    this.ssrPlane.position.y = -0.001;
-    // this.ssrPlane.receiveShadow = true;
-    // this.scene.add(this.ssrPlane);
-
-    this.ssrGeometry = new THREE.PlaneBufferGeometry(16, 16);
-    this.groundReflector = new ReflectorForSSRPass(this.ssrGeometry, {
-      clipBias: 0.0003,
-      textureWidth: window.innerWidth,
-      textureHeight: window.innerHeight,
-      color: 0x888888,
-      useDepthTexture: true,
-    });
-    this.groundReflector.material.depthWrite = false;
-    this.groundReflector.rotation.x = -Math.PI / 2;
-    this.groundReflector.visible = false;
-    this.scene.add(this.groundReflector);
-
-    this.ssrPass = new SSRPass({
-      renderer: this.renderer,
-      scene: this.scene,
-      camera: this.camera.instance,
-      width: innerWidth,
-      height: innerHeight,
-      groundReflector: this.groundReflector,
-      selects: this.debugObject.selects,
-    });
-    this.ssrPass.thickness = 0.018;
-    this.ssrPass.maxDistance = 1;
-    this.ssrPass.blur = false;
-
-    this.groundReflector.maxDistance = this.ssrPass.maxDistance;
-
-    this.composer.addPass(this.ssrPass);
-
-    if (this.debug) {
-      this.debugSsrPass = this.debug.addFolder('SSR Pass');
-      this.debugSsrPass
-        .add(this.ssrPass, 'thickness')
-        .min(0)
-        .max(0.1)
-        .step(0.0001)
-        .onChange(() => {
-          this.debugObject.needsUpdate = true;
-        });
-      this.debugSsrPass
-        .add(this.ssrPass, 'maxDistance')
-        .min(0)
-        .max(3)
-        .step(0.01)
-        .onChange(() => {
-          this.groundReflector.maxDistance = this.ssrPass.maxDistance;
-          this.debugObject.needsUpdate = true;
-        });
-      this.debugSsrPass.add(this.ssrPass, 'blur').onChange(() => {
-        this.debugObject.needsUpdate = true;
-      });
-    }
-  }
-
-  addSsaaRenderPass() {
-    // SSAA
-    this.ssaaRenderPass = new SSAARenderPass(
-      this.scene,
-      this.camera.instance,
-      0xaaaaaa,
-      0
-    );
-    this.composer.addPass(this.ssaaRenderPass);
-    // Ambient Occlusion
-    this.saoPass = new SAOPass(this.scene, this.camera.instance, false, true);
-    this.composer.addPass(this.saoPass);
-    this.saoPass.resolution.set(4096, 4096);
-    this.saoPass.params.saoBias = 0.58;
-    this.saoPass.params.saoIntensity = 0.0001;
-    this.saoPass.params.saoScale = 0.5;
-    this.saoPass.params.saoBias = 0.58;
-    this.saoPass.params.saoKernelRadius = 80;
-    if (this.debug) {
-      this.debug
-        .add(this.saoPass.params, 'output', {
-          Beauty: SAOPass.OUTPUT.Beauty,
-          'Beauty+SAO': SAOPass.OUTPUT.Default,
-          SAO: SAOPass.OUTPUT.SAO,
-          Depth: SAOPass.OUTPUT.Depth,
-          Normal: SAOPass.OUTPUT.Normal,
-        })
-        .onChange((value) => {
-          this.saoPass.params.output = parseInt(value);
-        });
-      this.debug.add(this.saoPass.params, 'saoBias', -1, 1);
-      this.debug.add(this.saoPass.params, 'saoIntensity', 0, 1, 0.0001);
-      this.debug.add(this.saoPass.params, 'saoScale', 0, 10);
-      this.debug.add(this.saoPass.params, 'saoKernelRadius', 1, 100);
-      this.debug.add(this.saoPass.params, 'saoMinResolution', 0, 1);
-      this.debug.add(this.saoPass.params, 'saoBlur');
-      this.debug.add(this.saoPass.params, 'saoBlurRadius', 0, 200);
-      this.debug.add(this.saoPass.params, 'saoBlurStdDev', 0.5, 150);
-      this.debug.add(this.saoPass.params, 'saoBlurDepthCutoff', 0.0, 0.1);
-    }
+    this.stats = new Stats();
+    this.domContainer.appendChild(this.stats.dom);
   }
 }
