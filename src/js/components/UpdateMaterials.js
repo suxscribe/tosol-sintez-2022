@@ -76,11 +76,7 @@ export default class UpdateMaterials {
         child.material &&
         debugObject.carPaintMaterials.includes(child.material.name)
       ) {
-        console.log(
-          'set color',
-          child.material.name,
-          this.carPaintMaterialName
-        );
+        console.log('set color', child.material.name);
 
         child.material.color.set(color);
       }

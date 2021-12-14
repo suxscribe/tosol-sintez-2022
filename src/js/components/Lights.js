@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { debugObject } from './data/vars';
 
 export default class Lights {
   constructor(_options) {
@@ -50,7 +51,7 @@ export default class Lights {
       this.directionalLight.shadow.mapSize.set(1024, 1024);
     });
 
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debugFolderLight = this.debug.addFolder('Directional Light');
       this.debugFolderLight
         .add(this.ambientLight, 'intensity')

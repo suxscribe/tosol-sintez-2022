@@ -35,10 +35,8 @@ export default class Sprite {
 
     const textureData = await this.textureLoader.loadAsync(this.textureSrc);
 
-    //this.createHUDSprites.bind(this)
     const sprite = textureData;
     return { sprite };
-    // console.log(this.debugTexture);
   }
 
   async createSprite() {
@@ -50,33 +48,24 @@ export default class Sprite {
       map: sprite,
       color: 0xffffff,
     });
-
-    //  const width = material.map.image.width / 1000;
-    //  const height = material.map.image.height / 1000;
-
-    // width 1900
-    // height 3800
-    // x = 0.1;
-
     this.spriteObject = new THREE.Sprite(this.material);
 
+    // Set Center
     if (this.object.center !== undefined) {
       this.spriteObject.center.set(this.object.center.x, this.object.center.y);
     } else {
       this.spriteObject.center.set(0.5, 0.5);
     }
 
-    // this.spriteObject.scale.set(width, height, 1);
-    // this.spriteObject.position.set(0.3, 0, -3);
     // Set sprite scale
     if (this.object.scale !== undefined) {
-      this.spriteObject.scale.set(
+      this.container.scale.set(
         this.object.scale.x,
         this.object.scale.y,
         this.object.scale.z
-      );
+      ); // was this.container.scale
     } else {
-      this.spriteObject.scale.set(1, 1, 1);
+      this.container.scale.set(1, 1, 1);
     }
 
     // Set container position
@@ -116,26 +105,49 @@ export default class Sprite {
       );
     }
 
-    if (this.visible === false) {
-      this.container.visible = this.visible;
-    }
+    this.container.visible = this.visible;
   }
-  updateHUDSprites() {
-    const width = this.material.map.image.width * this.getScreenFactor();
-    const height = this.material.map.image.height * this.getScreenFactor();
+  updateHUDSprites(width = null, height = null) {
+    let newWidth;
+    let newHeight;
+    if (width && height) {
+      newWidth = width;
+      newHeight = height;
+    } else {
+      newWidth = this.sizes.width;
+      newHeight = this.sizes.height;
+    }
 
-    // this.spriteObject.position.set(-width, height, 1); // top left
-    this.container.scale.set(width, height, 1);
+    if (this.object.isOrtho === true) {
+      const materialWidth =
+        (this.material.map.image.width * newHeight) /
+        this.material.map.image.height;
+      const materialHeight = newHeight;
+
+      this.spriteObject.scale.set(materialWidth, materialHeight, 1);
+
+      if (this.object.align === 'right') {
+        this.spriteObject.position.set(newWidth / 2, 0, 0); //  // this.sizes.width
+      }
+      if (this.object.align === 'left') {
+        this.spriteObject.position.set(-newWidth / 2, 0, 0);
+      }
+    } else {
+      const width = this.material.map.image.width * this.getScreenFactor();
+      const height = this.material.map.image.height * this.getScreenFactor();
+
+      this.container.scale.set(width, height, 1);
+    }
   }
 
   setEvents() {
     this.sizes.on('resize', () => {
-      // this.updateHUDSprites();
+      this.updateHUDSprites();
     });
   }
 
   setDebug() {
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debugFolderSprite = this.debug.addFolder(
         'Sprite ' + this.object.name
       );
@@ -143,17 +155,26 @@ export default class Sprite {
         .add(this.container.position, 'z')
         .min(-3)
         .max(3)
-        .step(0.01);
+        .step(0.01)
+        .onChange(() => {
+          debugObject.needsUpdate = true;
+        });
       this.debugFolderSprite
         .add(this.container.position, 'y')
-        .min(-3)
-        .max(3)
-        .step(0.01);
+        .min(-1000)
+        .max(1000)
+        .step(0.01)
+        .onChange(() => {
+          debugObject.needsUpdate = true;
+        });
       this.debugFolderSprite
         .add(this.container.position, 'x')
-        .min(-3)
-        .max(3)
-        .step(0.01);
+        .min(-1000)
+        .max(1000)
+        .step(0.01)
+        .onChange(() => {
+          debugObject.needsUpdate = true;
+        });
     }
   }
 
@@ -175,7 +196,7 @@ export default class Sprite {
       this.camera.instance.remove(child);
       // child.removeFromParent() // alternate way to remove object. without passing scene.
     });
-    this.container = null;
+    // this.container = null; // causes promise error for some reason
 
     if (this.debugFolderSprite) {
       this.debug.removeFolder(this.debugFolderSprite);

@@ -12,13 +12,16 @@
 @import 'layouts/footer';
 
 @import 'pages/index';
+@import 'pages/share';
 
 @import 'components/preloader';
 @import 'components/customizer';
 @import 'components/button';
 @import 'components/form';
 @import 'components/screenshot';
+@import 'components/socials';
 
 @import 'components/modal';
 
-@import 'tippy.js/dist/tippy.css';
+// @import 'tippy.js/dist/tippy.css';
+@import 'vendor/tippy.scss';

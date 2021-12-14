@@ -1,11 +1,11 @@
 .form {
   $input-height: 72px;
   $input-padding: 32px;
-  $form-element-radius: 5px;
+  $row-margin: 12px;
 
   &__row {
     display: block;
-    margin-bottom: 18px;
+    margin-bottom: $row-margin;
     position: relative;
 
     @media (min-width: $breakpoint-small) {
@@ -13,6 +13,17 @@
 
     &:last-child {
       margin-bottom: 0;
+    }
+
+    &-wrap {
+      display: grid;
+      gap: $row-margin;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: $row-margin;
+
+      & > * {
+        margin-bottom: 0;
+      }
     }
   }
 
@@ -64,8 +75,8 @@
     vertical-align: middle;
     max-width: 100%;
     width: 100%;
-    padding: $input-height/4 $input-padding 0 $input-padding;
-    background: $color-white;
+    padding: $input-height/5 $input-padding 0 $input-padding;
+    background: transparent;
     color: $color-black;
     border: 2px solid rgba($color-black, 1);
     border-radius: $form-element-radius;
@@ -111,13 +122,15 @@
 
   &__note {
     color: $color-error;
+    pointer-events: none;
+    font-family: $font-family-2;
   }
 
   &__note,
   .validation-error {
     @include font-small;
     position: absolute;
-    bottom: 6px;
+    bottom: 9px;
     left: 30px;
 
     margin-bottom: -0.5rem;
@@ -143,9 +156,11 @@
   }
   &__submit-button {
     flex: 0 0 auto;
+    display: block;
     border-radius: $form-element-radius;
     // margin-bottom: 28px;
     width: 100%;
+    text-align: center;
 
     @media (min-width: $breakpoint-small) {
     }
@@ -155,12 +170,13 @@
   }
   &__submit-note {
     @include font-small;
+    font-family: $font-family-2;
 
-    color: $color-gray;
-    // text-align: center;
+    color: $color-black;
+    text-align: center;
 
     @media (min-width: $breakpoint-small) {
-      text-align: left;
+      text-align: center;
     }
   }
 

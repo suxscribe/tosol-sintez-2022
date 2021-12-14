@@ -1,7 +1,4 @@
 .button {
-  $button-max-width: 300px;
-  $button-transition: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
   @mixin button-svg {
     & .button__icon {
       width: $button-icon-wrap-size;
@@ -53,6 +50,7 @@
     padding: 0;
     border: none;
     max-width: $button-s-height;
+    position: relative;
     // justify-content: space-between;
 
     padding: $button-round-padding;
@@ -89,16 +87,19 @@
     }
   }
   &--black {
-    background-color: $color-black;
+    background-color: $color-dark;
     color: $color-white;
     border: none;
+    border-radius: $form-element-radius;
     font-family: $font-family;
     text-align: center;
+    justify-content: center;
 
     &:hover {
-      background-color: rgba($color-black, 0.8);
+      background-color: rgba($color-dark, 0.8);
     }
   }
+
   &--icon {
     padding-right: $button-round-padding;
     @include button-svg();

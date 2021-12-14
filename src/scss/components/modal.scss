@@ -22,7 +22,8 @@
 
   &__container {
     background-color: $color-gray;
-    max-width: 500px;
+    width: 100%;
+    max-width: 680px;
     max-height: 100vh;
     border: 2px solid $color-white;
     backdrop-filter: blur(50px);
@@ -30,13 +31,28 @@
     border-radius: $border-radius;
     overflow-y: auto;
     box-sizing: border-box;
+
+    .modal--sent & {
+      background-color: $color-white;
+      border-color: $color-white;
+      max-width: 484px;
+    }
   }
 
   &__content {
-    padding: 60px;
+    padding: 36px;
 
     & > *:last-child {
       margin-bottom: 0;
+    }
+  }
+
+  &__logo {
+    margin-bottom: 24px;
+    text-align: center;
+
+    & > * {
+      width: 132px;
     }
   }
 
@@ -51,18 +67,25 @@
     margin-top: 0;
     margin-bottom: 0;
     box-sizing: border-box;
-    margin-bottom: 48px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
   }
 
   &__close {
     position: absolute;
     width: $close-button-size;
     height: $close-button-size;
-    right: 30px;
-    top: 30px;
+    border-radius: 50%;
+    right: 10px;
+    top: 10px;
     cursor: pointer;
     background: transparent;
     border: 0;
+    transition: background-color var(--transition);
+
+    &:hover {
+      background-color: $color-white;
+    }
   }
 
   &__socials {
@@ -87,6 +110,7 @@
 
     & p {
       margin-bottom: 30px;
+      font-family: $font-family-2;
     }
   }
 

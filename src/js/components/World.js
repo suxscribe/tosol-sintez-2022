@@ -25,26 +25,29 @@ export default class World {
     this.debug = _options.debug;
     this.loadingManager = _options.loadingManager;
     this.camera = _options.camera;
+    this.cameraOrtho = _options.cameraOrtho;
+    this.sceneOrtho = _options.sceneOrtho;
     this.sizes = _options.sizes;
 
     this.debugObject = debugObject;
     this.textureLoader = new THREE.TextureLoader(this.loadingManager);
     this.gltfLoader = new GLTFLoader(this.loadingManager);
 
+    // // this.loadGirl();
     this.loadLocation();
     this.loadCar();
+    this.loadSpriteGirl();
 
-    // this.loadGirl();
     this.loadCustom();
 
-    this.loadSpriteGirl();
-    this.loadGrain();
+    // this.loadGrain();
     this.loadCalendar();
+    this.loadLogo();
   }
 
   setModelLoadedListener(object) {
     object.on('loaded', () => {
-      console.log('Car loaded event');
+      console.log('Model loaded');
       this.updateMaterials.updateAllMaterials(); //todo remove if texture loads correctly
     });
   }
@@ -56,8 +59,6 @@ export default class World {
       this.objects.locations[this.config.scene.location].envMapSource;
     const envMapType =
       this.objects.locations[this.config.scene.location].envMapType;
-
-    this.debugFolderEnvMap = this.debug.addFolder('envMap');
 
     if (envMapType == 'cube') {
       const cubeTextureLoader = new THREE.CubeTextureLoader(
@@ -106,7 +107,8 @@ export default class World {
     }
     // EXR END
 
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
+      this.debugFolderEnvMap = this.debug.addFolder('envMap');
       this.debugFolderEnvMap
         .add(this.debugObject, 'envMapIntensity')
         .min(0)
@@ -138,7 +140,7 @@ export default class World {
       this.scene.add(this.location.container);
     }
     this.loadEnvMap();
-    this.setModelLoadedListener(this.location);
+    // this.setModelLoadedListener(this.location); // not needed. loadingManager handles update
   }
 
   loadCar() {
@@ -153,7 +155,7 @@ export default class World {
       });
       this.scene.add(this.car.container);
     }
-    this.setModelLoadedListener(this.car);
+    this.setModelLoadedListener(this.car); // todo change this. init listener on model load completed
   }
 
   loadGirl() {
@@ -168,7 +170,7 @@ export default class World {
       });
       this.scene.add(this.girl.container);
     }
-    this.setModelLoadedListener(this.girl);
+    // this.setModelLoadedListener(this.girl); // not needed. loadingManager handles update
   }
 
   loadSpriteGirl() {
@@ -201,7 +203,6 @@ export default class World {
   }
 
   loadCalendar() {
-    // if (this.config.showCalendar) {
     this.calendar = new Sprite({
       object: this.objects.calendar,
       camera: this.camera,
@@ -211,16 +212,20 @@ export default class World {
       visible: this.config.showCalendar,
       textureLoader: this.textureLoader,
     });
-    this.camera.instance.add(this.calendar.container);
-    this.calendar.container.visible = this.config.showCalendar;
-    // this.debugObject.needsUpdate = true;
+    this.sceneOrtho.add(this.calendar.container);
+  }
 
-    // } else {
-    //   if (!isEmptyObject(this.calendar)) {
-    //     this.calendar.removeObject();
-    //     this.calendar = null;
-    //   }
-    // }
+  loadLogo() {
+    this.logo = new Sprite({
+      object: this.objects.logo,
+      camera: this.camera,
+      scene: this.scene,
+      debug: this.debug,
+      sizes: this.sizes,
+      visible: this.config.showLogoSprite,
+      textureLoader: this.textureLoader,
+    });
+    this.sceneOrtho.add(this.logo.container);
   }
 
   loadCustom() {
@@ -242,10 +247,12 @@ export default class World {
     this.location = {};
 
     this.scene.environment = null;
-    this.scene.background = null;
+    // this.scene.background = null;
     this.debugObject.environmentMap = null;
 
-    this.debug.removeFolder(this.debugFolderEnvMap);
+    if (this.debug && debugObject.showDebug === true) {
+      this.debug.removeFolder(this.debugFolderEnvMap);
+    }
   }
 
   removeCar() {

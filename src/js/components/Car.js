@@ -22,7 +22,7 @@ export default class Car extends EventEmitter {
     this.textureLoader = _options.textureLoader;
 
     this.debugObject = this.debugObject;
-    this.updateMaterials = new UpdateMaterials({ scene: this.container });
+    // this.updateMaterials = new UpdateMaterials({ scene: this.container });
 
     this.loadCarModel();
 
@@ -107,7 +107,7 @@ export default class Car extends EventEmitter {
         // lensflare.addElement(new LensflareElement(this.textureFlare3, 70, 1));
         light.add(lensflare);
 
-        if (this.debug) {
+        if (this.debug && debugObject.showDebug === true) {
           this.debugFolderLight[lensflareData.name] = this.debug.addFolder(
             'Lensflare ' + lensflareData.name
           );
@@ -156,50 +156,52 @@ export default class Car extends EventEmitter {
   }
 
   setDebug() {
-    this.debugFolder = this.debug.addFolder(this.object.name);
-    this.debugFolder
-      .add(this.container.position, 'x')
-      .min(-20)
-      .max(20)
-      .step(0.05)
-      .name(this.object.name + ' position x')
-      .listen();
-    this.debugFolder
-      .add(this.container.position, 'y')
-      .min(-20)
-      .max(20)
-      .step(0.05)
-      .name(this.object.name + ' position y')
-      .listen();
-    this.debugFolder
-      .add(this.container.position, 'z')
-      .min(-20)
-      .max(20)
-      .step(0.05)
-      .name(this.object.name + ' position z')
-      .listen();
-    this.debugFolder
-      .add(this.container.rotation, 'x')
-      .min(-Math.PI)
-      .max(Math.PI)
-      .step(0.001)
-      .name(this.object.name + ' rotation x')
-      .listen();
-    this.debugFolder
-      .add(this.container.rotation, 'y')
-      .min(-Math.PI)
-      .max(Math.PI)
-      .step(0.001)
-      .name(this.object.name + ' rotation y')
-      .listen();
-    this.debugFolder
-      .add(this.container.rotation, 'z')
-      .min(-Math.PI)
-      .max(Math.PI)
-      .step(0.001)
-      .name(this.object.name + ' rotation z')
-      .listen();
-    this.debugFolder.close();
+    if (this.debug && debugObject.showDebug) {
+      this.debugFolder = this.debug.addFolder(this.object.name);
+      this.debugFolder
+        .add(this.container.position, 'x')
+        .min(-20)
+        .max(20)
+        .step(0.05)
+        .name(this.object.name + ' position x')
+        .listen();
+      this.debugFolder
+        .add(this.container.position, 'y')
+        .min(-20)
+        .max(20)
+        .step(0.05)
+        .name(this.object.name + ' position y')
+        .listen();
+      this.debugFolder
+        .add(this.container.position, 'z')
+        .min(-20)
+        .max(20)
+        .step(0.05)
+        .name(this.object.name + ' position z')
+        .listen();
+      this.debugFolder
+        .add(this.container.rotation, 'x')
+        .min(-Math.PI)
+        .max(Math.PI)
+        .step(0.001)
+        .name(this.object.name + ' rotation x')
+        .listen();
+      this.debugFolder
+        .add(this.container.rotation, 'y')
+        .min(-Math.PI)
+        .max(Math.PI)
+        .step(0.001)
+        .name(this.object.name + ' rotation y')
+        .listen();
+      this.debugFolder
+        .add(this.container.rotation, 'z')
+        .min(-Math.PI)
+        .max(Math.PI)
+        .step(0.001)
+        .name(this.object.name + ' rotation z')
+        .listen();
+      this.debugFolder.close();
+    }
   }
 
   setNeedsUpdate() {

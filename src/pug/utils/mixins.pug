@@ -3,11 +3,11 @@ mixin svg(args)
         use(xlink:href=`#${args.name}`)
 
 mixin form-row(args)
-  .form__row.form__row-input.stacked(class=args.class)
+  .form__row.form__row-input.stacked(class=args.class, )
     if args.textarea
       textarea(placeholder=args.placeholder, name=args.name, class=`form__textarea validate--${args.validate}`, oninput="this.parentNode.dataset.value = this.value")
     else
-      input(type="text", placeholder=args.placeholder, name=args.name, class=`validate--${args.validate} form__${args.validate}`, required).form__input
+      input(id=args.id, type="text", placeholder=args.placeholder, name=args.name, class=`validate--${args.validate} form__${args.validate}`, required).form__input
       
     .form__note
     label.form__label(for=args.name)= args.title

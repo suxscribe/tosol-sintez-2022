@@ -16,10 +16,37 @@ export const vars = {
   customizerGirlsParamsButton: document.querySelector(
     '.customizer__button--girls-params'
   ),
-
-  screenshotHolderDom: document.querySelector('.screenshot__holder'),
+  customizerCarColorsElements: document.querySelectorAll(
+    '.customizer__car-color'
+  ),
+  customizerGerenateButtonDom: document.querySelector(
+    '.customizer__generate-button'
+  ),
+  screenshoterLinkImageDom: document.querySelector(
+    '.customizer__screenshoter-link--1'
+  ),
+  screenshoterLinkPageDom: document.querySelector(
+    '.customizer__screenshoter-link--2'
+  ),
+  screenshotHolderDownloadDom: document.querySelector(
+    '.screenshot__holder--download'
+  ),
+  screenshotHolderShareDom: document.querySelector(
+    '.screenshot__holder--share'
+  ),
+  screenshotHolderGiftDom: document.querySelector('.screenshot__holder--gift'),
+  preloaderProgressDom: document.querySelector('.preloader__progress'),
   formDom: document.querySelector('#form-gift'),
+  formInputScreenshotDom: document.querySelector('#form-screenshot'),
+  formInputCalendarCheckbox: document.querySelector('#screenshot-calendar'),
+  formGiftCodeInputDom: document.querySelector('#form-code'),
+  formGiftCodeMatch: 'CUSTOM',
+  modalGiftId: 'modal-gift',
+  modalSentId: 'modal-sent',
 
+  domain: 'https://constructor.ts-2022.ru/',
+
+  customizerButtonClass: 'customizer__button',
   customizerControlBarClass: 'customizer__control-bar',
   locationClass: 'customizer__locations-item',
   carClass: 'customizer__cars-item',
@@ -27,6 +54,9 @@ export const vars = {
   spriteGirlClass: 'customizer__sprite-girls-item',
   girlParamsPoseClass: 'customizer__girls-pose-item',
   visibleClass: 'visible',
+  screenshotUrlPart: 'script.php?c=view&image=',
+  screenshotMime: 'image/jpeg',
+  spriteGirlShift: 0.3,
 };
 
 export const objectsData = {
@@ -34,6 +64,7 @@ export const objectsData = {
     studio: {
       name: 'Studio',
       source: '/assets/models/loc-studio.glb',
+      preview: '/assets/images/previews/loc-studio.jpg',
       position: new THREE.Vector3(-1.7, -0.02, 1.8),
       scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -41,11 +72,12 @@ export const objectsData = {
       envMapType: 'cube',
     },
     track: {
-      name: 'Track',
-      source: '/assets/models/empty.glb',
-      position: new THREE.Vector3(-15, -1.7, -9),
-      scale: new THREE.Vector3(0.25, 0.25, 0.25),
-      rotation: new THREE.Euler(0, Math.PI * 0.66, 0),
+      name: 'Studio 2',
+      source: '/assets/models/loc-studio-mono.glb',
+      preview: '/assets/images/previews/loc-studio-mono.jpg',
+      position: new THREE.Vector3(-1.7, -0.02, 1.8),
+      scale: new THREE.Vector3(1.5, 1.5, 1.5),
+      rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
       envMapType: 'cube',
     },
@@ -54,20 +86,23 @@ export const objectsData = {
     porsche: {
       name: 'Porsche',
       source: '/assets/models/porsche.glb',
+      preview: '/assets/images/previews/car-porsche.jpg',
       position: new THREE.Vector3(0, 0, 0),
-      scale: new THREE.Vector3(3.5, 3.5, 3.5),
+      scale: new THREE.Vector3(0.03, 0.03, 0.03),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
     },
     ferrari: {
       name: 'Ferrari',
       source: '/assets/models/ferrari.glb',
+      preview: '/assets/images/previews/car-ferrari.jpg',
       position: new THREE.Vector3(0, 0, 0),
-      scale: new THREE.Vector3(0.03, 0.03, 0.03),
+      scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
     },
     lamborgini: {
       name: 'Lamborgini',
-      source: '/assets/models/lamborgini-10.glb',
+      source: '/assets/models/lamborgini-12.glb',
+      preview: '/assets/images/previews/car-lamborgini.jpg',
       position: new THREE.Vector3(0, 0.0, 0),
       scale: new THREE.Vector3(0.3, 0.3, 0.3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -77,6 +112,7 @@ export const objectsData = {
     girl1: {
       name: 'Girl 1',
       source: '/assets/models/girl1.glb',
+      preview: '',
       position: new THREE.Vector3(5, 0, 6),
       scale: new THREE.Vector3(1, 1, 1),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -84,6 +120,7 @@ export const objectsData = {
     girl2: {
       name: 'Girl 2',
       source: '/assets/models/girl2.glb',
+      preview: '',
       position: new THREE.Vector3(5, 0, 6),
       scale: new THREE.Vector3(4, 4, 4),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -91,6 +128,7 @@ export const objectsData = {
     girl3: {
       name: 'Girl 3',
       source: '/assets/models/girl3.glb',
+      preview: '',
       position: new THREE.Vector3(5, 0.5, 6),
       scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -98,6 +136,7 @@ export const objectsData = {
     helmet: {
       name: 'Helmet',
       source: '/assets/models/helmet/DamagedHelmet.gltf',
+      preview: '',
       position: new THREE.Vector3(5, 3, 9.5),
       scale: new THREE.Vector3(2.5, 2.5, 2.5),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -105,6 +144,7 @@ export const objectsData = {
     empty: {
       name: 'Empty',
       source: '/assets/models/empty.glb',
+      preview: '',
       position: new THREE.Vector3(5, 3, 9.5),
       scale: new THREE.Vector3(2.5, 2.5, 2.5),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -114,16 +154,18 @@ export const objectsData = {
     girl0: {
       name: 'Без девушки',
       source: '',
+      preview: '/assets/images/previews/girl0.jpg',
       center: new THREE.Vector2(0.5, 0.5),
-      position: new THREE.Vector3(0.6, -0.26, -3),
+      position: new THREE.Vector3(0.8, -0.05, -3),
       scale: new THREE.Vector3(1, 1, 1),
       clothing: {},
     },
     girl1: {
       name: 'Girl 1',
       source: '/assets/textures/girl1.png',
+      preview: '/assets/images/previews/girl1.jpg',
       center: new THREE.Vector2(0.5, 0.5),
-      position: new THREE.Vector3(0.6, -0.26, -3),
+      position: new THREE.Vector3(0.8, -0.05, -3),
       scale: new THREE.Vector3(1, 1, 1),
       clothing: {
         clothing1: {
@@ -162,58 +204,48 @@ export const objectsData = {
       },
     },
     girl2: {
-      name: 'Girl 2',
-      source: '/assets/textures/girl2.png',
-      center: new THREE.Vector2(0.0, 1.0),
-      position: new THREE.Vector3(0.6, -0.26, -3),
+      name: 'Без девушки',
+      source: '',
+      preview: '/assets/images/previews/soon.jpg',
+      center: new THREE.Vector2(0.5, 0.5),
+      position: new THREE.Vector3(0.8, -0.05, -3),
       scale: new THREE.Vector3(1, 1, 1),
-      clothing: {
-        clothing1: {
-          pose1: {
-            source: '/assets/textures/girl2/girl-1-1.webp',
-          },
-          pose2: {
-            source: '/assets/textures/girl2/girl-1-2.webp',
-          },
-          pose3: {
-            source: '/assets/textures/girl2/girl-1-3.webp',
-          },
-        },
-        clothing2: {
-          pose1: {
-            source: '/assets/textures/girl2/girl-2-1.webp',
-          },
-          pose2: {
-            source: '/assets/textures/girl2/girl-2-2.webp',
-          },
-          pose3: {
-            source: '/assets/textures/girl2/girl-2-3.webp',
-          },
-        },
-        clothing3: {
-          pose1: {
-            source: '/assets/textures/girl2/girl-3-1.webp',
-          },
-          pose2: {
-            source: '/assets/textures/girl2/girl-3-2.webp',
-          },
-          pose3: {
-            source: '/assets/textures/girl2/girl-3-3.webp',
-          },
-        },
-      },
+      clothing: {},
+    },
+    girl3: {
+      name: 'Без девушки',
+      source: '',
+      preview: '/assets/images/previews/soon.jpg',
+      center: new THREE.Vector2(0.5, 0.5),
+      position: new THREE.Vector3(0.8, -0.05, -3),
+      scale: new THREE.Vector3(1, 1, 1),
+      clothing: {},
     },
   },
   calendar: {
     name: 'Calendar',
     source: '/assets/textures/calendar.png',
+    preview: '',
     center: new THREE.Vector2(1, 0.5),
-    position: new THREE.Vector3(1.59, 0.0, -3.1),
-    scale: new THREE.Vector3(0.9, 0.9, 1),
+    position: new THREE.Vector3(0.0, 0.0, 1),
+    scale: undefined,
+    isOrtho: true,
+    align: 'right',
+  },
+  logo: {
+    name: 'Logo',
+    source: '/assets/textures/felix_graphic.png',
+    preview: '',
+    center: new THREE.Vector2(0, 0.5),
+    position: new THREE.Vector3(0.0, 0.0, 1),
+    scale: undefined,
+    isOrtho: true,
+    align: 'left',
   },
   grain: {
     name: 'Grain',
     source: '/assets/textures/grain-background-2.png',
+    preview: '',
     center: new THREE.Vector2(0.5, 0.5),
     position: new THREE.Vector3(0, 0, -0.65),
     scale: new THREE.Vector3(1, 1, 1),
@@ -225,16 +257,16 @@ export const customizerData = {
   studio: {
     name: 'Студия',
     location: 'studio',
-    cars: ['porsche', 'ferrari', 'lamborgini'],
+    cars: ['lamborgini', 'porsche', 'ferrari'],
     girls: ['girl1', 'girl2', 'girl3', 'helmet'],
-    spritegirls: ['girl0', 'girl1', 'girl2'],
+    spritegirls: ['girl0', 'girl1', 'girl2', 'girl3'],
   },
   track: {
     name: 'Пустая',
     location: 'track',
-    cars: ['porsche', 'ferrari', 'lamborgini'],
+    cars: ['lamborgini', 'porsche', 'ferrari'],
     girls: ['girl1', 'girl2', 'girl3', 'helmet'],
-    spritegirls: ['girl0', 'girl1', 'girl2'],
+    spritegirls: ['girl0', 'girl1', 'girl2', 'girl3'],
   },
 };
 
@@ -255,16 +287,23 @@ export let debugObject = {
     'WallLeft.1',
     'WallBack.1',
     'Pipes2.1',
-    // 'watter',
     'RimsColor_',
+    'RimsColor',
     'plane_01',
     'plane_02',
     'plane_03',
     'plane_04',
     'BG',
-    ``,
+    'disk',
+    'brake',
   ],
+  giftScreenshotSize: {
+    width: 3840,
+    height: 2160,
+  },
   includedMaterials: ['paint', 'CarPaint', 'CarPaint_'],
   shadowMaterials: ['shadow', 'watter', 'Shadow_'],
   bloomIntensity: 0,
+  showStats: false,
+  showDebug: false,
 };

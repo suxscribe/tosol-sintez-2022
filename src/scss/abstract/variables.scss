@@ -1,16 +1,17 @@
 $easing: cubic-bezier(0.77, 0, 0.175, 1);
 
 $font-family: 'HalvarBreit', sans-serif;
+$font-family-2: 'Roboto', sans-serif;
 $base-font-size: 10px;
 
 // COLORS
 
 $color-white: #fff;
 
-$color-black: #434047;
+$color-black: #000000;
 $color-green: #95962d;
 $color-yellow: #e0e339;
-$color-dark: #266696;
+$color-dark: #1b2d44;
 $color-error: #d90e3e;
 
 $color-gray: rgba(241, 243, 251, 0.7);
@@ -71,14 +72,16 @@ $grid-gap: responsive-value(16px, 32px);
 $border-radius: 12px;
 
 // BUTTONS
-$button-border-radius: responsive-value(24px, 32px);
+$button-border-radius: 32px;
 $button-height: responsive-value(152px, 168px);
-$button-s-height: responsive-value(48px, 64px);
+$button-s-height: responsive-value(42px, 64px);
 $button-padding: responsive-value(24px, 36px);
 
-$button-icon-wrap-size: responsive-value(36px, 52px);
-$button-icon-size: responsive-value(18px, 28px);
-$button-round-padding: responsive-value(4px, 8px);
+$button-icon-wrap-size: responsive-value(34px, 52px);
+$button-icon-size: 28px;
+$button-round-padding: responsive-value(4px, 6px);
+$button-max-width: 300px;
+$button-transition: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
 // MISC
 $input-border-radius: responsive-value(18px, 32px);
@@ -102,3 +105,4 @@ $ball-size: 26px;
 $close-button-size: 36px;
 
 $translate: 40px;
+$form-element-radius: 5px;

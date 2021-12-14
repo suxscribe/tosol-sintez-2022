@@ -1,10 +1,3 @@
-// const customizerDom = document.querySelector('.customizer');
-// const customizerLocationsDom = document.querySelector('.customizer__locations');
-// const customizerCarsDom = document.querySelector('.customizer__cars');
-// const customizerGirlsDom = document.querySelector('.customizer__girls');
-
-// const carClass = 'customizer__car';
-// const girlClass = 'customizer__girl';
 import tippy from 'tippy.js';
 import MicroModal from 'micromodal';
 
@@ -29,13 +22,13 @@ export default class Interface {
 
     tippy('[data-tippy-content]', {
       placement: 'right',
+      arrow: false,
+      offset: [0, 20],
     });
   }
 
   setEvents() {
     MicroModal.init({
-      // onShow: (modal) => console.info(`${modal.id} is shown`), // [1]
-      // onClose: (modal) => console.info(`${modal.id} is hidden`), // [2]
       openTrigger: 'data-micromodal-open',
       closeTrigger: 'data-micromodal-close',
       openClass: 'is-open',
@@ -52,12 +45,38 @@ export default class Interface {
     //     this.takeScreenshot();
     //   });
     document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('customizer__screenshoter-make')) {
+      if (e.target.classList.contains('customizer__screenshoter-download')) {
         const width = parseInt(e.target.dataset.width);
         const height = parseInt(e.target.dataset.height);
 
-        console.log('screenshot' + width + 'x' + height);
-        this.takeScreenshot(width, height);
+        // console.log('screenshot' + width + 'x' + height);
+        this.takeScreenshot(width, height, 'download');
+      }
+
+      // open share modal and make preview screenshot
+      if (
+        e.target.classList.contains('customizer__share-button') ||
+        e.target.closest('.customizer__share-button')
+      ) {
+        this.takeScreenshot(
+          this.config.screenshotSize.width,
+          this.config.screenshotSize.height,
+          'share'
+        );
+      }
+
+      // open gift modal and make screenshot
+      if (e.target.classList.contains('customizer__gift')) {
+        // this.config.screenshotSize.width =
+        //   this.debugObject.giftScreenshotSize.width;
+        // this.config.screenshotSize.height =
+        //   this.debugObject.giftScreenshotSize.height;
+
+        this.takeScreenshot(
+          this.debugObject.giftScreenshotSize.width,
+          this.debugObject.giftScreenshotSize.height,
+          'gift'
+        );
       }
     });
 
@@ -66,39 +85,81 @@ export default class Interface {
       if (e.target.classList.contains('customizer__car-color')) {
         console.log('color' + e.target.dataset.color);
         this.updateMaterials.changeCarColor(e.target.dataset.color);
-      }
-    });
 
-    // Change Car texture
-    document.addEventListener('click', (e) => {
+        vars.customizerCarColorsElements.forEach((element) => {
+          element.classList.remove('active');
+        });
+        e.target.classList.add('active');
+      }
+
+      // Change Car texture
       if (e.target.classList.contains('customizer__car-texture')) {
         console.log('texture');
         this.updateMaterials.changeCarTexture();
       }
+
+      // Generate Custom Car & Girl Set
+      if (e.target.classList.contains('customizer__generate-button')) {
+        console.log('random');
+
+        // select random car - store to config
+        const propCar = this.getRandomProp(objectsData.cars);
+        this.customizerSwitchCar(propCar);
+        // this.setToConfig('car', prop);
+        // this.reloadCar();
+
+        // select random sprite girl - store to config
+        const propSpriteGirl = this.getRandomProp(
+          objectsData.spritegirls,
+          true
+        );
+        console.log(propSpriteGirl);
+
+        this.customizerSwitchSpriteGirl(propSpriteGirl);
+
+        // select random girl clothing \ pose - store to config
+        let propSpriteGirlPose = 'pose1';
+        let propSpriteGirlClothing = 'clothing1';
+        if (
+          objectsData.spritegirls[propSpriteGirl].clothing.clothing1 !==
+          undefined
+        ) {
+          propSpriteGirlClothing = this.getRandomProp(
+            objectsData.spritegirls[propSpriteGirl].clothing
+          );
+
+          propSpriteGirlPose = this.getRandomProp(
+            objectsData.spritegirls[propSpriteGirl].clothing.clothing1
+          );
+          console.log(propSpriteGirlClothing);
+          console.log(propSpriteGirlPose);
+        }
+
+        this.customizerSwitchSpriteGirlPose(
+          propSpriteGirlClothing,
+          propSpriteGirlPose
+        );
+
+        // select random color
+        vars.customizerCarColorsElements[
+          Math.floor(Math.random() * vars.customizerCarColorsElements.length)
+        ].click();
+        // todo update car color after car was loaded
+        // todo select random color - store to config (! add config parameter)
+      }
     });
 
-    // close select bar
+    // close control bar
     document.addEventListener('click', (e) => {
       if (
         e.target.closest('.customizer__control-bar-close') ||
         e.target.classList.contains(vars.canvasClass)
       ) {
-        const parent = e.target.closest(`.${vars.customizerControlBarClass}`);
-        if (parent) {
-          parent.classList.remove(vars.visibleClass);
-        } else {
-          document
-            .querySelectorAll(`.${vars.customizerControlBarClass}`)
-            .forEach((bar) => {
-              bar.classList.remove(vars.visibleClass);
-            });
-        }
-        this.toggleButtons(true);
+        this.closeControlBars();
       }
-    });
 
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('customizer__button')) {
+      // open control bar
+      if (e.target.classList.contains(vars.customizerButtonClass)) {
         if (e.target.dataset.bar != '') {
           const bar = document.querySelector(
             '.customizer__control-bar--' + e.target.dataset.bar
@@ -111,49 +172,90 @@ export default class Interface {
       }
     });
 
-    // Toggle calendar
-    if (vars.customizerToggleCalendarDom) {
-      vars.customizerToggleCalendarDom.addEventListener('click', () => {
-        if (this.config.showCalendar === true) {
-          this.config.showCalendar = false;
-          vars.customizerToggleCalendarDom.classList.remove('active');
-        } else {
-          this.config.showCalendar = true;
-          vars.customizerToggleCalendarDom.classList.add('active');
-        }
-        console.log(this.config.showCalendar);
-        this.world.toggleCalendar();
-        this.debugObject.needsToggleCalendar = true;
-      });
-    }
+    // Toggle calendar button // todo remove this
+    // if (vars.customizerToggleCalendarDom) {
+    //   vars.customizerToggleCalendarDom.addEventListener('click', () => {
+    //     if (this.config.showCalendar === true) {
+    //       this.config.showCalendar = false;
+    //       vars.customizerToggleCalendarDom.classList.remove('active');
+    //     } else {
+    //       this.config.showCalendar = true;
+    //       vars.customizerToggleCalendarDom.classList.add('active');
+    //     }
+    //     console.log(this.config.showCalendar);
+    //     this.world.toggleCalendar();
+    //     this.debugObject.needsToggleCalendar = true;
+    //   });
+    // }
 
     // FORM SEND
     vars.formDom.addEventListener('submit', this.formSend);
+
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('customizer__fullscreen')) {
+        console.log('fullscreenEnabled', document.fullscreenEnabled); // can enter fullscreen?
+
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          if (document.fullscreenEnabled) {
+            document.exitFullscreen();
+          }
+        }
+      }
+    });
+  }
+
+  getRandomProp(object, plusOne = null) {
+    console.log('getRandomProp', object);
+
+    const keys = Object.keys(object);
+    if (plusOne) {
+      return keys[Math.floor(Math.random() * (keys.length - 1) + 1)];
+    } else {
+      return keys[Math.floor(Math.random() * keys.length)];
+    }
   }
 
   async formSend(e) {
     e.preventDefault();
 
-    let formData = new FormData(vars.formDom);
-    // formData.append('image', formImage.files[0]);
+    if (vars.formGiftCodeInputDom.value === vars.formGiftCodeMatch) {
+      let formData = new FormData(vars.formDom);
+      // formData.append('image', formImage.files[0]);
 
-    for (var pair of formData.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
-    }
+      for (var pair of formData.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+      }
 
-    vars.formDom.classList.add('sending');
+      vars.formDom.classList.add('sending');
 
-    let response = await fetch('sendmail.php', {
-      method: 'POST',
-      body: formData,
-    });
-    if (response.ok) {
-      let result = await response.json();
-      console.log(result.message);
-      vars.formDom.reset();
-      vars.formDom.classList.add('send');
+      let response = await fetch('sendmail.php', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        let result = await response.json();
+        // console.log(result.message);
+        vars.formDom.reset();
+        vars.formDom.classList.add('send');
+        MicroModal.close('modal-gift');
+        MicroModal.show('modal-sent');
+      } else {
+      }
     } else {
+      alert('Введен неверный код');
     }
+  }
+
+  closeControlBars() {
+    document
+      .querySelectorAll(`.${vars.customizerControlBarClass}`)
+      .forEach((bar) => {
+        bar.classList.remove(vars.visibleClass);
+      });
+    this.toggleButtons(true);
   }
 
   toggleButtons(show) {
@@ -164,8 +266,8 @@ export default class Interface {
     }
   }
 
-  setToConfig(objectType, car) {
-    this.config[objectType] = car;
+  setToConfig(objectType, value) {
+    this.config[objectType] = value;
   }
 
   customizerSwitchCar = (car) => {
@@ -183,9 +285,13 @@ export default class Interface {
     if (this.config.spritegirl == 'girl0') {
       console.log(this.config.spritegirl);
 
-      vars.customizerGirlsParamsButton.classList.add('hidden');
+      if (vars.customizerGirlsParamsButton) {
+        vars.customizerGirlsParamsButton.classList.add('hidden');
+      }
     } else {
-      vars.customizerGirlsParamsButton.classList.remove('hidden');
+      if (vars.customizerGirlsParamsButton) {
+        vars.customizerGirlsParamsButton.classList.remove('hidden');
+      }
     }
   };
   customizerSwitchSpriteGirlPose = (clothing, pose) => {
@@ -217,6 +323,9 @@ export default class Interface {
   getModelName(modelType, modelId) {
     return this.objects[modelType][modelId].name;
   }
+  getModelPreview(modelType, modelId) {
+    return this.objects[modelType][modelId].preview;
+  }
 
   renderModelList(parentElement, modelType, itemClass) {
     if (parentElement) {
@@ -224,10 +333,12 @@ export default class Interface {
 
       this.config.scene[modelType].forEach((model) => {
         const markup = `
-          <div class="customizer__control-item ${itemClass}" data-${modelType}="${model}">${this.getModelName(
+          <div class="customizer__control-item ${itemClass}" data-${modelType}="${model}">
+        <img src="${this.getModelPreview(
           modelType,
           model
-        )}</div>
+        )}" alt="${this.getModelName(modelType, model)}" />
+        </div>
           `;
 
         parentElement.insertAdjacentHTML('beforeend', markup);
@@ -241,7 +352,14 @@ export default class Interface {
 
     Object.entries(this.customizer).forEach(([scene, sceneParams]) => {
       const markup = `
-          <div class="customizer__control-item ${vars.locationClass}" data-location="${scene}">${sceneParams.name}</div>
+          <div class="customizer__control-item ${
+            vars.locationClass
+          }" data-location="${scene}">
+          <img src="${this.getModelPreview(
+            'locations',
+            scene
+          )}" alt="${this.getModelName('locations', scene)}" />
+          </div>
           `;
 
       vars.customizerLocationsDom.insertAdjacentHTML('beforeend', markup);
@@ -260,11 +378,11 @@ export default class Interface {
       ([clothingType, poseList]) => {
         markup += `<div class=" customizer__girls-param-clothing">
         <div class="customizer__girls-param-clothing-name" data-clothing="${clothingType}">Вариант ${i}</div>
-        <ul class="customizer__girls-param-pose-list">`;
+        <ul class="customizer__girls-param-sublist customizer__girls-param-pose-list">`;
 
         let j = 1;
         Object.entries(poseList).forEach(([pose, poseParams]) => {
-          markup += `<li class="customizer__control-item ${vars.girlParamsPoseClass}" data-clothing="${clothingType}" data-pose="${pose}">Поза ${j}</li>`;
+          markup += `<li class="customizer__control-subitem ${vars.girlParamsPoseClass}" data-clothing="${clothingType}" data-pose="${pose}">Поза ${j}</li>`;
           j++;
         });
 
@@ -350,18 +468,22 @@ export default class Interface {
       if (e.target.classList.contains(vars.carClass)) {
         this.customizerSwitchCar(e.target.dataset.cars);
         this.updateCustomizer();
+        this.closeControlBars();
       }
       if (e.target.classList.contains(vars.girlClass)) {
         this.customizerSwitchGirl(e.target.dataset.girls);
         this.updateCustomizer();
+        this.closeControlBars();
       }
       if (e.target.classList.contains(vars.spriteGirlClass)) {
         this.customizerSwitchSpriteGirl(e.target.dataset.spritegirls);
         this.updateCustomizer();
+        this.closeControlBars();
       }
       if (e.target.classList.contains(vars.locationClass)) {
         this.customizerSwitchLocation(e.target.dataset.location);
         this.updateCustomizer();
+        this.closeControlBars();
       }
       // click on pose
       if (e.target.classList.contains(vars.girlParamsPoseClass)) {
@@ -370,6 +492,7 @@ export default class Interface {
           e.target.dataset.pose
         );
         this.updateCustomizer();
+        this.closeControlBars();
       }
     });
   }
@@ -377,29 +500,67 @@ export default class Interface {
   /* 
   Screenshots
   */
-  takeScreenshot(screenshotWidth, screenshotHeight) {
+  takeScreenshot(screenshotWidth, screenshotHeight, type) {
     this.config.screenshotSize = {
       width: screenshotWidth,
       height: screenshotHeight,
     };
+    this.config.screenshotType = type;
+
+    if (type == 'share') {
+      this.config.showLogoSprite = true;
+      // hide calendar
+      vars.formInputCalendarCheckbox.checked = false;
+      this.config.showCalendar = false;
+    }
+    if (type == 'download') {
+      this.config.showLogoSprite = true;
+      if (vars.formInputCalendarCheckbox.checked == true) {
+        this.config.showCalendar = true;
+        // console.log('screen with calendar');
+      } else {
+        this.config.showCalendar = false;
+      }
+    }
+    if (type == 'gift') {
+      // hide logo
+      this.config.showLogoSprite = false;
+      // hide calendar
+      vars.formInputCalendarCheckbox.checked = false;
+      this.config.showCalendar = false;
+    }
 
     this.debugObject.needsScreenshot = true;
     this.debugObject.needsUpdate = true;
   }
 
   saveAsImage() {
-    let imgData;
-    let strDownloadMime = 'image/octet-stream';
+    // let screenshotImageData;
 
     try {
-      let strMime = 'image/jpeg';
-      imgData = this.renderer.domElement.toDataURL(strMime);
+      this.screenshotImageData = this.renderer.domElement.toDataURL(
+        vars.screenshotMime
+      );
 
-      const fileData = {
-        image: imgData,
+      this.screenshotFileData = {
+        image: this.screenshotImageData,
       };
-      this.sendToServer(fileData);
-      // this.saveFile(imgData.replace(strMime, strDownloadMime), 'test.jpg');
+
+      if (this.config.screenshotType == 'preview') {
+        this.showScreenshotPreview();
+      }
+      if (this.config.screenshotType == 'share') {
+        this.showScreenshotPreview();
+        this.sendScreenshotToServer();
+      }
+      if (this.config.screenshotType == 'download') {
+        this.showScreenshotPreview();
+        this.startScreenshotDownload();
+      }
+      if (this.config.screenshotType == 'gift') {
+        this.showScreenshotPreview();
+        this.sendScreenshotToServer();
+      }
       this.debugObject.needsUpdate = true; // render with original size after resize
     } catch (e) {
       console.log(e);
@@ -407,43 +568,84 @@ export default class Interface {
     }
   }
 
-  sendToServer(data) {
-    console.log(data);
+  sendScreenshotToServer() {
+    // console.log(data);
 
     fetch(this.api + '?c=save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json;charset=utf-8' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(this.screenshotFileData),
     })
       .then((res) => res.json())
-      //.then(res => res.text())
       .then((response) => {
         console.log(response);
-        document
-          .querySelector('.customizer__screenshoter-link1')
-          .setAttribute('href', response.name);
-        document.querySelector('.customizer__screenshoter-link1').innerHTML =
-          response.name;
+
+        // Update Share links
+        this.screenShotUrl = vars.screenshotUrlPart + response.tm;
 
         document
-          .querySelector('.customizer__screenshoter-link2')
-          .setAttribute('href', 'script.php?c=view&image=' + response.tm);
-        document.querySelector('.customizer__screenshoter-link2').innerHTML =
-          'Открыть страницу';
+          .querySelector('.socials__social--facebook')
+          .setAttribute(
+            'href',
+            'https://www.facebook.com/sharer/sharer.php?u=' + this.screenShotUrl
+          );
+
+        document
+          .querySelector('.socials__social--vk')
+          .setAttribute(
+            'href',
+            'https://vk.com/share.php?url=' + this.screenShotUrl
+          );
+
+        document
+          .querySelector('.socials__social--twitter')
+          .setAttribute(
+            'href',
+            'http://twitter.com/share?url=' + this.screenShotUrl
+          );
+
+        document
+          .querySelector('.socials__social--ok')
+          .setAttribute(
+            'href',
+            'https://connect.ok.ru/offer?url=' + this.screenShotUrl
+          );
+
+        // vars.screenshoterLinkImageDom.setAttribute('href', response.name);
+        // vars.screenshoterLinkImageDom.innerHTML = 'Открыть скриншот';
+
+        vars.screenshoterLinkPageDom.setAttribute(
+          'href',
+          vars.screenshotUrlPart + response.tm
+        );
+        vars.screenshoterLinkPageDom.innerHTML = 'Открыть страницу';
+
+        // Add screenshot URL to form
+        vars.formInputScreenshotDom.value = vars.domain + response.name;
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
-  saveFile(strData, filename) {
-    vars.screenshotHolderDom.src = strData;
+  showScreenshotPreview() {
+    vars.screenshotHolderDownloadDom.src = this.screenshotImageData; // Show Screenshot preview
+    vars.screenshotHolderShareDom.src = this.screenshotImageData; // Show Screenshot preview
+    vars.screenshotHolderGiftDom.src = this.screenshotImageData; // Show Screenshot preview
+  }
 
+  startScreenshotDownload() {
+    let strDownloadMime = 'image/octet-stream';
+
+    const screenshotDownloadData = this.screenshotImageData.replace(
+      vars.strMime,
+      strDownloadMime
+    );
     let link = document.createElement('a');
     if (typeof link.download === 'string') {
       document.body.appendChild(link); //Firefox requires the link to be in the body
-      link.download = filename;
-      link.href = strData;
+      link.download = 'ts-2022-screenshot.jpg';
+      link.href = screenshotDownloadData;
       link.click();
       document.body.removeChild(link); //remove the link when done
     } else {

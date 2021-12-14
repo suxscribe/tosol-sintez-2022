@@ -39,7 +39,9 @@ export default class Effects {
   constructor(_options) {
     this.renderer = _options.renderer;
     this.camera = _options.camera;
+    this.cameraOrtho = _options.cameraOrtho;
     this.scene = _options.scene;
+    this.sceneOrtho = _options.sceneOrtho;
     this.debug = _options.debug;
     this.sizes = _options.sizes;
 
@@ -51,6 +53,7 @@ export default class Effects {
     this.addBloom();
     // this.addVignette();
     // this.addGrain();
+    // this.addOrthoPass();
 
     this.addGammaCorrection(); // should be last
 
@@ -101,7 +104,7 @@ export default class Effects {
       this.smaaPass = new SMAAPass();
       this.composer.addPass(this.smaaPass);
 
-      if (this.debug) {
+      if (this.debug && debugObject.showDebug === true) {
         this.debug.add(this.smaaPass, 'enabled').onChange(() => {
           this.debugObject.needsUpdate = true;
         });
@@ -119,7 +122,7 @@ export default class Effects {
     this.unrealBloomPass.radius = 0.1;
     this.unrealBloomPass.threshold = 0.9;
 
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debugUnrealBloomFolder = this.debug.addFolder(' Unreal Bloom');
       this.debugUnrealBloomFolder
         .add(this.unrealBloomPass, 'enabled')
@@ -153,6 +156,11 @@ export default class Effects {
     }
   }
 
+  addOrthoPass() {
+    this.renderPassOrtho = new RenderPass(this.sceneOrtho, this.cameraOrtho);
+    this.composer.addPass(this.renderPassOrtho);
+  }
+
   addVignette() {
     // Vignette
     this.effectVignettePass = new ShaderPass(VignetteShader);
@@ -163,7 +171,7 @@ export default class Effects {
     this.effectVignettePass.renderToScreen = true;
     this.composer.addPass(this.effectVignettePass);
 
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debugFolderVignette = this.debug.addFolder('Vignette');
       this.debugFolderVignette
         .add(this.effectVignettePass, 'enabled')
@@ -205,7 +213,7 @@ export default class Effects {
     this.effectFilmPass.renderToScreen = true;
     this.composer.addPass(this.effectFilmPass);
 
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debugFolderFilm = this.debug.addFolder('Film');
       this.debugFolderFilm.add(this.effectFilmPass, 'enabled').onChange(() => {
         this.debugObject.needsUpdate = true;
@@ -278,7 +286,7 @@ export default class Effects {
     );
     this.composer.addPass(this.effectBloomPass);
 
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debugEffectBloomFolder = this.debug.addFolder('Bloom');
       this.debugEffectBloomFolder
         .add(this.effectBloom, 'intensity', 0.0, 3.0, 0.01)
@@ -308,7 +316,7 @@ export default class Effects {
     );
     this.composer.addPass(this.effectBrightnessPass);
 
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debugEffectBrightnessFolder = this.debug.addFolder('Brightness');
       this.debugEffectBrightnessFolder
         .add(
@@ -401,7 +409,7 @@ export default class Effects {
     this.composer.addPass(this.effectSMAAPass);
 
     // debug
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       const edgeDetectionMaterial = this.effectSMAA.edgeDetectionMaterial;
 
       const context = this.renderer.getContext();
@@ -605,7 +613,7 @@ export default class Effects {
 
     this.composer.addPass(this.ssrPass);
 
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debugSsrPass = this.debug.addFolder('SSR Pass');
       this.debugSsrPass
         .add(this.ssrPass, 'thickness')
@@ -648,7 +656,7 @@ export default class Effects {
     this.saoPass.params.saoScale = 0.5;
     this.saoPass.params.saoBias = 0.58;
     this.saoPass.params.saoKernelRadius = 80;
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debug
         .add(this.saoPass.params, 'output', {
           Beauty: SAOPass.OUTPUT.Beauty,

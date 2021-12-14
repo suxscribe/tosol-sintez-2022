@@ -53,19 +53,22 @@ export default class App {
   }
 
   initConfig() {
-    this.config = {};
+    this.config = {
+      scene: this.customizer.studio,
+      car: 'lamborgini',
+      girl: 'empty',
+      spritegirl: 'girl1',
+      envMapType: 'cube',
+      showCalendar: false,
+      showLogoSprite: false,
+      screenshotSize: { width: 1920, height: 1080 },
+      screenshotType: 'preview',
+      clothing: 'clothing1',
+      pose: 'pose1',
+    };
 
     // default config to load
     // todo get defaults from config
-    this.config.scene = this.customizer.studio;
-    this.config.car = 'lamborgini';
-    this.config.girl = 'empty';
-    this.config.spritegirl = 'girl1';
-    this.config.envMapType = 'cube';
-    this.config.showCalendar = false;
-    this.config.screenshotSize = { width: 1920, height: 1080 };
-    this.config.clothing = 'clothing1';
-    this.config.pose = 'pose1';
 
     // needed for Navigation instance
     // this.config.width = this.sizes.width;
@@ -103,6 +106,8 @@ export default class App {
     };
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
       // console.log('Loading ' + itemsLoaded + ' of ' + itemsTotal + ' total');
+      const progress = Math.ceil((itemsLoaded / itemsTotal) * 100);
+      vars.preloaderProgressDom.innerHTML = progress + '%';
     };
     this.loadingManager.onError = (url) => {
       console.log('Error loading ' + url);
@@ -112,7 +117,7 @@ export default class App {
   setRenderer() {
     // Scene
     this.scene = new THREE.Scene();
-    // this.scene.background = new THREE.Color('#eeeeee');
+    this.scene.background = new THREE.Color('#333333');
 
     // Renderer
     this.renderer = new THREE.WebGLRenderer({
@@ -125,6 +130,7 @@ export default class App {
     });
     this.renderer.setPixelRatio(this.debugObject.pixelRatio);
     this.renderer.setSize(this.sizes.width, this.sizes.height);
+    this.renderer.autoClear = false;
 
     this.renderer.physicallyCorrectLights = false; // true makes everything a bit darker
     this.renderer.outputEncoding = THREE.sRGBEncoding;
@@ -151,13 +157,26 @@ export default class App {
       time: this.time,
     });
     this.scene.add(this.camera.instance);
+
+    this.cameraOrtho = new THREE.OrthographicCamera(
+      -this.sizes.width / 2,
+      this.sizes.width / 2,
+      this.sizes.height / 2,
+      -this.sizes.height / 2,
+      1,
+      10
+    );
+    this.cameraOrtho.position.z = 10;
+    this.sceneOrtho = new THREE.Scene();
   }
 
   setEffects() {
     this.effects = new Effects({
       renderer: this.renderer,
       camera: this.camera,
+      cameraOrtho: this.cameraOrtho,
       scene: this.scene,
+      sceneOrtho: this.sceneOrtho,
       debug: this.debug,
       sizes: this.sizes,
     });
@@ -201,12 +220,19 @@ export default class App {
   }
 
   render() {
-    this.stats.begin();
+    if (this.debugObject.showStats === true) {
+      this.stats.begin();
+    }
     // this.renderer.render(this.scene, this.camera.instance); // no effects
     this.effects.composer.render(); // with effects
+    this.renderer.clearDepth();
+    this.renderer.render(this.sceneOrtho, this.cameraOrtho); // no effects
+
     // this.renderer.toneMappingExposure = this.debugObject.exposure;
     // this.effects.composer.toneMappingExposure = this.debugObject.exposure;
-    this.stats.end();
+    if (this.debugObject.showStats === true) {
+      this.stats.end();
+    }
   }
 
   resize(width = null, height = null) {
@@ -223,6 +249,23 @@ export default class App {
 
     this.camera.instance.aspect = newWidth / newHeight;
     this.camera.instance.updateProjectionMatrix();
+
+    this.cameraOrtho.left = -newWidth / 2;
+    this.cameraOrtho.right = newWidth / 2;
+    this.cameraOrtho.top = newHeight / 2;
+    this.cameraOrtho.bottom = -newHeight / 2;
+    this.cameraOrtho.updateProjectionMatrix();
+
+    if (this.debugObject.needsScreenshot === true) {
+      this.world.calendar.updateHUDSprites(
+        this.config.screenshotSize.width,
+        this.config.screenshotSize.height
+      );
+      this.world.logo.updateHUDSprites(
+        this.config.screenshotSize.width,
+        this.config.screenshotSize.height
+      );
+    }
 
     this.renderer.setSize(newWidth, newHeight);
     this.renderer.setPixelRatio(this.debugObject.pixelRatio);
@@ -247,15 +290,34 @@ export default class App {
       }
 
       // Screenshot stuff
-      if (this.debugObject.needsScreenshot) {
+      if (this.debugObject.needsScreenshot === true) {
+        // resize canvas
         this.resize(
           this.config.screenshotSize.width,
           this.config.screenshotSize.height
         );
 
+        // enable sprites
+        if (this.config.showCalendar === true) {
+          this.world.calendar.container.visible = true;
+          this.world.spriteGirl.container.position.x -= vars.spriteGirlShift;
+        }
+        if (this.config.showLogoSprite === true) {
+          this.world.logo.container.visible = true;
+        }
+
+        // render frame and make a screenshot
         this.render();
         this.debugObject.needsScreenshot = false;
         this.interface.saveAsImage();
+
+        // disable sprites
+        if (this.config.showCalendar === true) {
+          this.world.spriteGirl.container.position.x += vars.spriteGirlShift;
+          this.config.showCalendar === false;
+          this.world.calendar.container.visible = false;
+        }
+        this.world.logo.container.visible = false;
 
         // restore original renderer size
         this.resize();
@@ -263,12 +325,12 @@ export default class App {
         this.debugObject.needsUpdate = true;
       }
 
-      if (this.debugObject.needsToggleCalendar === true) {
-        // todo this should not be here
-        this.world.calendar.container.visible = this.config.showCalendar;
-        this.debugObject.needsToggleCalendar = false;
-        this.debugObject.needsUpdate = true;
-      }
+      // if (this.debugObject.needsToggleCalendar === true) {
+      //   // todo this should not be here
+      //   this.world.calendar.container.visible = this.config.showCalendar;
+      //   this.debugObject.needsToggleCalendar = false;
+      //   this.debugObject.needsUpdate = true;
+      // }
     });
 
     this.camera.on('cameraupdate', () => {
@@ -295,6 +357,8 @@ export default class App {
       debug: this.debug,
       loadingManager: this.loadingManager,
       camera: this.camera,
+      cameraOrtho: this.cameraOrtho,
+      sceneOrtho: this.sceneOrtho,
       sizes: this.sizes,
     });
   }
@@ -314,10 +378,14 @@ export default class App {
 
   // DEBUG
   setDebug() {
-    this.debug = new dat.GUI({});
     this.debugObject = debugObject;
+    if (this.debugObject.showDebug === true) {
+      this.debug = new dat.GUI({});
 
-    this.stats = new Stats();
-    this.domContainer.appendChild(this.stats.dom);
+      if (this.debugObject.showStats === true) {
+        this.stats = new Stats();
+        this.domContainer.appendChild(this.stats.dom);
+      }
+    }
   }
 }

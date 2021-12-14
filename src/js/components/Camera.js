@@ -2,6 +2,7 @@ import * as THREE from 'three';
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import CameraControls from 'camera-controls';
 import EventEmitter from './../utils/EventEmitter';
+import { debugObject } from './data/vars';
 
 export default class Camera extends EventEmitter {
   constructor(_options) {
@@ -34,7 +35,7 @@ export default class Camera extends EventEmitter {
     this.instance.position.set(21, 8, 0.5);
 
     // Debug
-    if (this.debug) {
+    if (this.debug && debugObject.showDebug === true) {
       this.debug
         .add(this.instance.position, 'x')
         .min(-50)
@@ -76,22 +77,22 @@ export default class Camera extends EventEmitter {
     this.cameraControls.truckSpeed = this.truckSpeed; // pan speed
 
     this.cameraControls.minDistance = 15;
-    this.cameraControls.maxDistance = 40;
-    this.cameraControls.minAzimuthAngle = Math.PI * 0.4;
-    this.cameraControls.maxAzimuthAngle = Math.PI * 0.8;
-    this.cameraControls.minPolarAngle = Math.PI * 0.3;
-    this.cameraControls.maxPolarAngle = Math.PI * 0.49;
+    this.cameraControls.maxDistance = 25;
+    this.cameraControls.minAzimuthAngle = Math.PI * 0.55; // clockwise
+    this.cameraControls.maxAzimuthAngle = Math.PI * 0.8; // counter clockwise
+    this.cameraControls.minPolarAngle = Math.PI * 0.43;
+    this.cameraControls.maxPolarAngle = Math.PI * 0.49; // lower
 
     this.boundary = new THREE.Box3(
-      new THREE.Vector3(-5, 0, -5),
-      new THREE.Vector3(8, 5, 5)
+      new THREE.Vector3(-1, 0, -3),
+      new THREE.Vector3(5, 3, 3)
     );
 
     this.boundaryHelper = new THREE.Box3Helper(this.boundary, 0xffff00);
 
     this.cameraControls.setBoundary(this.boundary);
     // this.cameraControls.boundaryEnclosesCamera = true;
-    this.cameraControls.setTarget(1, 3, 0);
+    this.cameraControls.setTarget(1, 2, 0);
   }
 
   setCameraControlsEvents() {
@@ -129,7 +130,7 @@ export default class Camera extends EventEmitter {
     this.cameraControls.polarRotateSpeed = 0.01;
     this.cameraControls.dollySpeed = 0.01;
 
-    this.cameraControls.setPosition(10, 5, -12, true);
+    this.cameraControls.setPosition(10, 4, -12, true);
     // restore values
     this.cameraControls.azimuthRotateSpeed = this.azimuthRotateSpeed;
     this.cameraControls.polarRotateSpeed = this.polarRotateSpeed;
