@@ -77,11 +77,11 @@ export default class Camera extends EventEmitter {
     this.cameraControls.truckSpeed = this.truckSpeed; // pan speed
 
     this.cameraControls.minDistance = 15;
-    this.cameraControls.maxDistance = 25;
-    this.cameraControls.minAzimuthAngle = Math.PI * 0.55; // clockwise
+    this.cameraControls.maxDistance = 20;
+    this.cameraControls.minAzimuthAngle = Math.PI * 0.57; // clockwise
     this.cameraControls.maxAzimuthAngle = Math.PI * 0.8; // counter clockwise
     this.cameraControls.minPolarAngle = Math.PI * 0.43;
-    this.cameraControls.maxPolarAngle = Math.PI * 0.49; // lower
+    this.cameraControls.maxPolarAngle = Math.PI * 0.495; // lower
 
     this.boundary = new THREE.Box3(
       new THREE.Vector3(-1, 0, -3),
@@ -92,7 +92,7 @@ export default class Camera extends EventEmitter {
 
     this.cameraControls.setBoundary(this.boundary);
     // this.cameraControls.boundaryEnclosesCamera = true;
-    this.cameraControls.setTarget(1, 2, 0);
+    this.cameraControls.setTarget(1, 1.5, 0);
   }
 
   setCameraControlsEvents() {
@@ -113,11 +113,11 @@ export default class Camera extends EventEmitter {
     }
 
     // test camera transition on button click
-    document
-      .querySelector('.customizer__camera-control')
-      .addEventListener('click', (e) => {
-        this.cameraControls.rotate(45 * THREE.MathUtils.DEG2RAD, 0, true);
-      });
+    // document
+    //   .querySelector('.customizer__camera-control')
+    //   .addEventListener('click', (e) => {
+    //     this.cameraControls.rotate(45 * THREE.MathUtils.DEG2RAD, 0, true);
+    //   });
 
     this.time.on('tick', () => {
       this.cameraControls.update(1 / this.time.delta);

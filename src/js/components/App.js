@@ -11,6 +11,7 @@ import Navigation from './Navigation';
 import Sizes from './Sizes.js';
 import Interface from './Interface';
 import Effects from './Effects';
+import Screenshot from './Screenshot';
 
 import World from './World';
 
@@ -45,6 +46,7 @@ export default class App {
 
     this.setWorld();
     this.setEffects();
+    this.setScreenshot();
     this.setInterface();
 
     this.setEvents();
@@ -61,10 +63,11 @@ export default class App {
       envMapType: 'cube',
       showCalendar: false,
       showLogoSprite: false,
-      screenshotSize: { width: 1920, height: 1080 },
+      screenshotSize: { width: 1366, height: 768 },
       screenshotType: 'preview',
       clothing: 'clothing1',
       pose: 'pose1',
+      carColor: vars.carColors[0][1],
     };
 
     // default config to load
@@ -145,12 +148,13 @@ export default class App {
     this.updateMaterials = new UpdateMaterials({
       scene: this.scene,
       loadingManager: this.loadingManager,
+      config: this.config,
     });
   }
 
   setCamera() {
     this.camera = new Camera({
-      fov: 36,
+      fov: 32,
       sizes: this.sizes.width / this.sizes.height,
       debug: this.debug,
       renderer: this.renderer,
@@ -291,37 +295,28 @@ export default class App {
 
       // Screenshot stuff
       if (this.debugObject.needsScreenshot === true) {
-        // resize canvas
+        // resize canvas to screenshot size
         this.resize(
           this.config.screenshotSize.width,
           this.config.screenshotSize.height
         );
 
         // enable sprites
-        if (this.config.showCalendar === true) {
-          this.world.calendar.container.visible = true;
-          this.world.spriteGirl.container.position.x -= vars.spriteGirlShift;
-        }
-        if (this.config.showLogoSprite === true) {
-          this.world.logo.container.visible = true;
-        }
+        this.world.toggleCalendar(true);
+        this.world.toggleLogo(true);
 
         // render frame and make a screenshot
         this.render();
         this.debugObject.needsScreenshot = false;
-        this.interface.saveAsImage();
+        this.screenshot.saveAsImage();
 
         // disable sprites
-        if (this.config.showCalendar === true) {
-          this.world.spriteGirl.container.position.x += vars.spriteGirlShift;
-          this.config.showCalendar === false;
-          this.world.calendar.container.visible = false;
-        }
-        this.world.logo.container.visible = false;
+        this.world.toggleCalendar(false);
+        this.world.toggleLogo(false);
 
         // restore original renderer size
-        this.resize();
 
+        this.resize();
         this.debugObject.needsUpdate = true;
       }
 
@@ -369,6 +364,15 @@ export default class App {
       world: this.world,
       renderer: this.renderer,
       updateMaterials: this.updateMaterials,
+      sizes: this.sizes,
+      screenshot: this.screenshot,
+    });
+  }
+
+  setScreenshot() {
+    this.screenshot = new Screenshot({
+      config: this.config,
+      renderer: this.renderer,
     });
   }
 

@@ -5,11 +5,11 @@
   right: 0;
   bottom: 0;
   // background-color: $color-white;
-  background: linear-gradient(180deg, rgba(27, 45, 68, 0.3) 0%, #1b2d44 100%);
+  background: linear-gradient(180deg, rgba(27, 45, 68, 1) 0%, #1b2d44 100%);
   backdrop-filter: blur(50px);
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 2000;
   flex-direction: column;
   display: flex;
 

@@ -1,11 +1,139 @@
 .screenshot {
-  margin-bottom: 30px;
   text-align: center;
-  display: flex;
-  justify-content: center;
+  // display: flex;
+  // justify-content: center;
+
+  &--download {
+    flex: 1 1 auto;
+    position: relative;
+  }
 
   &__holder {
-    max-width: 360px;
+    // max-width: 360px;
     display: block;
+    flex: 0 0 auto;
+
+    &--download {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: -2px;
+      object-fit: contain;
+    }
+  }
+
+  &__container {
+    background-color: $color-gray;
+    border-radius: 5px;
+    overflow: hidden;
+    flex: 1 0 220px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    &--download {
+      align-self: stretch;
+    }
+  }
+
+  // display: none;
+
+  &__sizes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $grid-gap;
+    flex: 1 1 66%;
+
+    @media (min-width: $breakpoint-medium) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__size {
+    background-color: $color-gray;
+    border-radius: 5px;
+    border: 2px solid rgba($color-black, 0);
+    text-align: left;
+    padding: 6px responsive-value(8px, 16px);
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+
+    transition: all var(--transition);
+    position: relative;
+
+    &:hover {
+      color: $color-black;
+    }
+
+    &.active {
+      border-color: $color-black;
+    }
+
+    & > svg {
+      // position: absolute;
+      height: 100%;
+    }
+    & > span {
+      // @include font-small;
+      flex: 1 1 auto;
+      font-size: 12px;
+      transition: opacity var(--transition);
+    }
+
+    &-svg {
+      // width: 48px;
+      width: responsive-value(24px, 48px, $mobile-min-width, $tablet-width);
+      margin-right: responsive-value(5px, 10px);
+      opacity: 1;
+      flex: 0 0 auto;
+      transition: opacity var(--transition);
+
+      @media (min-width: $tablet-width) {
+        width: 48px;
+      }
+    }
+
+    &-svg-hover {
+      display: none;
+      width: 65%;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    & > * {
+      pointer-events: none;
+    }
+  }
+
+  &__helper-links {
+    display: none;
+    flex-direction: column;
+  }
+  &__link {
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__add-calendar {
+    padding: 6px 4px 7px 8px;
+    text-align: left;
+    // @include font-small;
+    font-family: $font-family-2;
+    font-size: 12px;
+    white-space: nowrap;
+
+    & label {
+      font-family: $font-family-2;
+    }
+  }
+
+  &__download-button {
+    width: 100%;
   }
 }

@@ -31,6 +31,7 @@
     border-radius: $border-radius;
     overflow-y: auto;
     box-sizing: border-box;
+    position: relative;
 
     .modal--sent & {
       background-color: $color-white;
@@ -40,10 +41,27 @@
   }
 
   &__content {
-    padding: 36px;
+    padding: responsive-value(16px, 24px);
+    text-align: center;
 
     & > *:last-child {
       margin-bottom: 0;
+    }
+
+    & p {
+      margin-bottom: 10px;
+      font-family: $font-family-2;
+    }
+
+    &-layout {
+      display: flex;
+      gap: $grid-gap;
+      margin-bottom: $grid-gap;
+      align-items: center;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
@@ -67,12 +85,13 @@
     margin-top: 0;
     margin-bottom: 0;
     box-sizing: border-box;
-    margin-bottom: 30px;
+    margin-bottom: 12px;
     text-transform: uppercase;
   }
 
   &__close {
     position: absolute;
+    z-index: 2;
     width: $close-button-size;
     height: $close-button-size;
     border-radius: 50%;
@@ -89,9 +108,9 @@
   }
 
   &__socials {
-    margin-bottom: 50px;
+    margin-bottom: 0px;
     display: flex;
-    gap: 10px;
+    gap: $grid-gap;
     justify-content: center;
   }
 
@@ -103,15 +122,6 @@
     border-radius: 50%;
     background-color: #ccc;
     display: block;
-  }
-
-  &__content {
-    text-align: center;
-
-    & p {
-      margin-bottom: 30px;
-      font-family: $font-family-2;
-    }
   }
 
   &.micromodal-slide {

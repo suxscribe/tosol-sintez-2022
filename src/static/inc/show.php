@@ -85,13 +85,13 @@ $constructorUrl = 'https://constructor.ts-2022.ru';
           <a class="socials__social" href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode($imageURL) ?>" target="_blank" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><svg>
               <use xlink:href="#facebook"></use>
             </svg></a>
-          <a class="socials__social" href="#" target="_blank"><svg>
+          <a class="socials__social" href="https://vk.com/share.php?url=script.php?c=view&image=<?= urlencode($imageURL) ?>" target="_blank"><svg>
               <use xlink:href="#vk"></use>
             </svg></a>
-          <a class="socials__social" href="#" target="_blank"><svg>
+          <a class="socials__social" href="http://twitter.com/share?url=script.php?c=view&image=<?= urlencode($imageURL) ?>" target="_blank"><svg>
               <use xlink:href="#twitter"></use>
             </svg></a>
-          <a class="socials__social" href="#" target="_blank"><svg>
+          <a class="socials__social" href="https://connect.ok.ru/offer?url=script.php?c=view&image=<?= urlencode($imageURL) ?>" target="_blank"><svg>
               <use xlink:href="#ok"></use>
             </svg></a>
         </div>

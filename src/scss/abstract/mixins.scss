@@ -1,5 +1,5 @@
 @mixin font-h1 {
-  $fhd-base-size: 5.2 * $base-font-size;
+  $fhd-base-size: 5 * $base-font-size;
   $mobile-base-size: 2.7 * $base-font-size;
 
   font-size: $mobile-base-size;
@@ -20,7 +20,7 @@
 }
 
 @mixin font-h2 {
-  $fhd-base-size: 3.4 * $base-font-size;
+  $fhd-base-size: 3.2 * $base-font-size;
   $mobile-base-size: 2.2 * $base-font-size;
 
   font-size: $mobile-base-size;
@@ -40,7 +40,7 @@
 }
 
 @mixin font-h3 {
-  $fhd-base-size: 3 * $base-font-size;
+  $fhd-base-size: 2.4 * $base-font-size;
   $tablet-base-size: $fhd-base-size * 0.7;
 
   font-size: 1.7rem;

@@ -17,9 +17,16 @@ const PAGES = fs
 
 const config = {
   target: 'web',
-  entry: ['./src/js/index.js', './src/scss/style.scss'],
+  entry: {
+    bundle: [
+      require.resolve('core-js/stable'),
+      require.resolve('regenerator-runtime/runtime'),
+      './src/js/index.js',
+      './src/scss/style.scss',
+    ],
+  },
   output: {
-    filename: './js/bundle.js',
+    filename: './js/bundle.[contenthash].js',
     clean: true,
   },
   devtool: 'source-map',
@@ -112,7 +119,7 @@ const config = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: './css/style.bundle.css',
+      filename: './css/style.bundle.[contenthash].css',
     }),
     new CopyWebpackPlugin({
       patterns: [

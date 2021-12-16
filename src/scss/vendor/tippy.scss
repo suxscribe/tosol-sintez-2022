@@ -14,6 +14,7 @@
   white-space: normal;
   outline: 0;
   transition-property: transform, visibility, opacity;
+  font-family: $font-family-2;
 }
 .tippy-box[data-placement^='top'] > .tippy-arrow {
   bottom: 0;

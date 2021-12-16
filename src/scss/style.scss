@@ -6,6 +6,7 @@
 @import 'base/fonts';
 @import 'base/typography';
 @import 'base/animations';
+@import 'base/utils.scss';
 
 @import 'layouts/header';
 @import 'layouts/page';
@@ -22,6 +23,7 @@
 @import 'components/socials';
 
 @import 'components/modal';
+@import 'components/overlay-rotate';
 
 // @import 'tippy.js/dist/tippy.css';
 @import 'vendor/tippy.scss';

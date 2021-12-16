@@ -1,0 +1,96 @@
+section
+  #modal-wallpaper.modal.micromodal-slide(aria-hidden='true')
+    .modal__overlay(tabindex='-1', data-micromodal-close='')
+      .modal__container(role='dialog', aria-modal='true')
+        +modal-close()
+        .modal__content
+          h3.modal__title Скачать обои
+          .modal__content-layout
+            .screenshot__container.screenshot__container--download
+              .screenshot.screenshot--download
+                img.screenshot__holder.screenshot__holder--download(src="", alt="")
+              .screenshot__add-calendar.form-checkbox
+                input#screenshot-calendar(type="checkbox", value="calendar")
+                label(for="screenshot-calendar") Добавить календарную сетку
+            .screenshot__sizes
+              .screenshot__size.screenshot__size--laptop.active(data-width="1366", data-height="768")
+                +svg({name: 'screenshot-laptop'}).screenshot__size-svg
+                +svg({name:'download-hover'}).screenshot__size-svg-hover
+                span 1366x768
+              .screenshot__size.screenshot__size--fullhd(data-width="1920", data-height="1080")
+                +svg({name: 'screenshot-desktop'}).screenshot__size-svg
+                +svg({name:'download-hover'}).screenshot__size-svg-hover
+                span FullHD
+              .screenshot__size.screenshot__size--2k(data-width="2560", data-height="1440")
+                +svg({name: 'screenshot-desktop'}).screenshot__size-svg
+                +svg({name:'download-hover'}).screenshot__size-svg-hover
+                span 2K
+              .screenshot__size.screenshot__size--4k(data-width="3840", data-height="2160")
+                +svg({name: 'screenshot-desktop'}).screenshot__size-svg
+                +svg({name:'download-hover'}).screenshot__size-svg-hover
+                span 4K
+          .screenshot__helper-links 
+            a.screenshot__link.screenshot__helper-link--1(target="_blank")
+            a.screenshot__link.screenshot__helper-link--2(target="_blank")
+          button.screenshot__download-button.button.button--black Сохранить
+
+  #modal-share.modal.micromodal-slide(aria-hidden='true')
+    .modal__overlay(tabindex='-1', data-micromodal-close='')
+      .modal__container(role='dialog', aria-modal='true')
+        +modal-close()
+        .modal__content
+          h3.modal__title Поделиться в социальных сетях
+          .modal__content-layout
+            .screenshot__container
+              .screenshot.screenshot--share
+                img.screenshot__holder.screenshot__holder--share(src="", alt="")
+            .socials.modal__socials
+              a.socials__social.socials__social--facebook( target="_blank")
+                +svg({name: 'facebook'})
+              a.socials__social.socials__social--vk( target="_blank")
+                +svg({name: 'vk'})
+              a.socials__social.socials__social--twitter( target="_blank")
+                +svg({name: 'twitter'})
+              a.socials__social.socials__social--ok( target="_blank")
+                +svg({name: 'ok'})
+
+  #modal-gift.modal.micromodal-slide(aria-hidden='true')
+    .modal__overlay(tabindex='-1', data-micromodal-close='')
+      .modal__container(role='dialog', aria-modal='true')
+        +modal-close()
+        .modal__content
+          .modal__content-layout
+            .screenshot__container
+              .screenshot.screenshot--gift
+                img.screenshot__holder.screenshot__holder--gift(src="", alt="")
+            .modal__form
+              h3.modal__title Получить календарь
+              p.modal__text Уважаемые партнеры, заполните данные, мы&nbsp;напечатаем и&nbsp;пришлем ваш календарь
+              form#form-gift(action="").form
+                +form-row({name: "form-name", title: "ФИО", validate: 'empty', 'placeholder': ' ' })
+                .form__row-wrap
+                  +form-row({name: "form-phone", title: "Телефон", validate: 'phone', inputmask: "'mask': '+7 999 999 99 99', 'placeholder': ' '", placeholder: ' '})
+                  +form-row({name: "form-company", title: "Компания", validate: 'empty', 'placeholder': ' '})
+                  +form-row({name: "form-email", title: "Email", validate: 'email', 'placeholder': ' '})
+                  +form-row({name: "form-code", title: "Код с открытки", validate: '', 'placeholder': ' ', id:"form-code"})
+                input#form-screenshot(type="hidden", name="form-screenshot")
+                .form__row.form__submit
+                  button(type="submit").form__submit-button.button.button--black отправить заявку
+                  .form__submit-note 
+                    | Нажимая на&nbsp;кнопку, вы&nbsp;даете согласие на&nbsp;обработку персональных данных 
+                    |  и&nbsp;соглашаетесь&nbsp;с 
+                    a(href="https://ts-2022.ru/policy") политикой конфиденциальности
+
+  #modal-sent.modal.modal--sent.micromodal-slide(aria-hidden='true')
+    .modal__overlay(tabindex='-1', data-micromodal-close='')
+      .modal__container(role='dialog', aria-modal='true')
+        +modal-close()
+        .modal__content
+          .modal__logo 
+            img(src="/assets/images/felix-logo.svg", alt="")
+          h3.modal__title 
+            | Спасибо! 
+            br
+            | Календарь уже у нас
+          p.modal__text В ближайшее время мы свяжемся с вами для уточнения деталей
+          button(data-micromodal-close='').button.button--black Хорошо

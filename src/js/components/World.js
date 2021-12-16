@@ -9,7 +9,7 @@ import {
 } from 'three/examples/jsm/objects/Lensflare.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
-import { debugObject } from './data/vars';
+import { debugObject, vars } from './data/vars';
 
 export default class World {
   constructor(_options) {
@@ -52,81 +52,6 @@ export default class World {
     });
   }
 
-  loadEnvMap() {
-    console.log('loading envmap');
-
-    const envMapSource =
-      this.objects.locations[this.config.scene.location].envMapSource;
-    const envMapType =
-      this.objects.locations[this.config.scene.location].envMapType;
-
-    if (envMapType == 'cube') {
-      const cubeTextureLoader = new THREE.CubeTextureLoader(
-        this.loadingManager
-      );
-
-      this.debugObject.environmentMap = cubeTextureLoader.load([
-        envMapSource + 'px.jpg',
-        envMapSource + 'nx.jpg',
-        envMapSource + 'py.jpg',
-        envMapSource + 'ny.jpg',
-        envMapSource + 'pz.jpg',
-        envMapSource + 'nz.jpg',
-      ]);
-
-      this.debugObject.environmentMap.encoding = THREE.sRGBEncoding;
-
-      this.scene.environment = this.debugObject.environmentMap;
-      // this.scene.background = this.debugObject.environmentMap;
-    }
-    // LOAD EXR
-    else if (envMapType == 'exr') {
-      this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-      this.pmremGenerator.compileEquirectangularShader();
-
-      let exrEnvMapLoader = new EXRLoader(this.loadingManager);
-      exrEnvMapLoader.setDataType(THREE.UnsignedByteType);
-
-      let exrBackground;
-      let envMap;
-      let exrCubeRenderTarget;
-
-      let exrEnvMap = exrEnvMapLoader.load(envMapSource, (texture) => {
-        exrCubeRenderTarget = this.pmremGenerator.fromEquirectangular(texture);
-        exrBackground = exrCubeRenderTarget.texture;
-        envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
-
-        this.debugObject.environmentMap = envMap;
-        this.scene.background = exrBackground; // correct way to load exr background. but lowres
-
-        texture.dispose();
-      });
-      this.renderer.outputEncoding = THREE.sRGBEncoding;
-
-      this.scene.environment = exrEnvMap;
-    }
-    // EXR END
-
-    if (this.debug && debugObject.showDebug === true) {
-      this.debugFolderEnvMap = this.debug.addFolder('envMap');
-      this.debugFolderEnvMap
-        .add(this.debugObject, 'envMapIntensity')
-        .min(0)
-        .max(3)
-        .step(0.01)
-        .onChange(() => {
-          this.updateMaterials.updateAllMaterials();
-          this.debugObject.needsUpdate = true;
-        });
-
-      this.debugFolderEnvMap
-        .add(this.debugObject, 'exposure')
-        .min(0)
-        .max(3)
-        .step(0.1);
-    }
-  }
-
   loadLocation() {
     if (this.config.scene != '') {
       this.location = new Car({
@@ -152,6 +77,7 @@ export default class World {
         loadingManager: this.loadingManager,
         loader: this.gltfLoader,
         textureLoader: this.textureLoader,
+        updateMaterials: this.updateMaterials,
       });
       this.scene.add(this.car.container);
     }
@@ -174,7 +100,6 @@ export default class World {
   }
 
   loadSpriteGirl() {
-    // girl object: this.objects.spritegirls[this.config.spritegirl].clothing[this.config.clothing][this.config.pose]
     if (this.config.spriteGril != '') {
       this.spriteGirl = new Sprite({
         object: this.objects.spritegirls[this.config.spritegirl],
@@ -304,11 +229,101 @@ export default class World {
     this.loadSpriteGirl();
   }
 
-  toggleCalendar() {
+  loadEnvMap() {
+    console.log('loading envmap');
+
+    const envMapSource =
+      this.objects.locations[this.config.scene.location].envMapSource;
+    const envMapType =
+      this.objects.locations[this.config.scene.location].envMapType;
+
+    if (envMapType == 'cube') {
+      const cubeTextureLoader = new THREE.CubeTextureLoader(
+        this.loadingManager
+      );
+
+      this.debugObject.environmentMap = cubeTextureLoader.load([
+        envMapSource + 'px.jpg',
+        envMapSource + 'nx.jpg',
+        envMapSource + 'py.jpg',
+        envMapSource + 'ny.jpg',
+        envMapSource + 'pz.jpg',
+        envMapSource + 'nz.jpg',
+      ]);
+
+      this.debugObject.environmentMap.encoding = THREE.sRGBEncoding;
+
+      this.scene.environment = this.debugObject.environmentMap;
+      // this.scene.background = this.debugObject.environmentMap;
+    }
+    // LOAD EXR
+    else if (envMapType == 'exr') {
+      this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+      this.pmremGenerator.compileEquirectangularShader();
+
+      let exrEnvMapLoader = new EXRLoader(this.loadingManager);
+      exrEnvMapLoader.setDataType(THREE.UnsignedByteType);
+
+      let exrBackground;
+      let envMap;
+      let exrCubeRenderTarget;
+
+      let exrEnvMap = exrEnvMapLoader.load(envMapSource, (texture) => {
+        exrCubeRenderTarget = this.pmremGenerator.fromEquirectangular(texture);
+        exrBackground = exrCubeRenderTarget.texture;
+        envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
+
+        this.debugObject.environmentMap = envMap;
+        this.scene.background = exrBackground; // correct way to load exr background. but lowres
+
+        texture.dispose();
+      });
+      this.renderer.outputEncoding = THREE.sRGBEncoding;
+
+      this.scene.environment = exrEnvMap;
+    }
+    // EXR END
+
+    if (this.debug && debugObject.showDebug === true) {
+      this.debugFolderEnvMap = this.debug.addFolder('envMap');
+      this.debugFolderEnvMap
+        .add(this.debugObject, 'envMapIntensity')
+        .min(0)
+        .max(3)
+        .step(0.01)
+        .onChange(() => {
+          this.updateMaterials.updateAllMaterials();
+          this.debugObject.needsUpdate = true;
+        });
+
+      this.debugFolderEnvMap
+        .add(this.debugObject, 'exposure')
+        .min(0)
+        .max(3)
+        .step(0.1);
+    }
+  }
+
+  toggleCalendar(enable = false) {
     if (this.config.showCalendar === true) {
-      this.spriteGirl.container.position.x -= 0.4;
-    } else {
-      this.spriteGirl.container.position.x += 0.4;
+      if (enable === true) {
+        this.calendar.container.visible = true;
+        this.spriteGirl.container.position.x -= vars.spriteGirlShift;
+      } else {
+        this.spriteGirl.container.position.x += vars.spriteGirlShift;
+        this.config.showCalendar === false;
+        this.calendar.container.visible = false;
+      }
+    }
+  }
+  toggleLogo(enable = false) {
+    if (this.config.showLogoSprite === true) {
+      if (enable === true) {
+        this.logo.container.visible = true;
+      } else {
+        this.logo.container.visible = false;
+        this.config.showLogoSprite === false;
+      }
     }
   }
 }

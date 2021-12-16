@@ -13,6 +13,7 @@ $color-green: #95962d;
 $color-yellow: #e0e339;
 $color-dark: #1b2d44;
 $color-error: #d90e3e;
+$color-picker: #a00b17;
 
 $color-gray: rgba(241, 243, 251, 0.7);
 $color-gray-2: #5a5a5c;
@@ -67,18 +68,18 @@ $column-margin: responsive-value(
 $block-padding: responsive-value(12px, 24px);
 $block-margin: responsive-value(24px, 48px); // top bottom margin between blocks
 
-$grid-gap: responsive-value(16px, 32px);
+$grid-gap: responsive-value(8px, 12px);
 
 $border-radius: 12px;
 
 // BUTTONS
 $button-border-radius: 32px;
 $button-height: responsive-value(152px, 168px);
-$button-s-height: responsive-value(42px, 64px);
+$button-s-height: responsive-value(36px, 64px);
 $button-padding: responsive-value(24px, 36px);
 
-$button-icon-wrap-size: responsive-value(34px, 52px);
-$button-icon-size: 28px;
+$button-icon-wrap-size: responsive-value(28px, 52px);
+$button-icon-size: responsive-value(18px, 24px);
 $button-round-padding: responsive-value(4px, 6px);
 $button-max-width: 300px;
 $button-transition: cubic-bezier(0.68, -0.55, 0.265, 1.55);

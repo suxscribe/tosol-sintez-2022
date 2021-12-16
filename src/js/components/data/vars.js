@@ -1,32 +1,41 @@
 import * as THREE from 'three';
 
 export const vars = {
+  domain: 'https://constructor.ts-2022.ru/',
   canvasClass: 'webgl',
 
   customizerDom: document.querySelector('.customizer'),
-  customizerButtonsDom: document.querySelector('.customizer__buttons'),
+  customizerButtonsDom: document.querySelector('.customizer__control-buttons'),
   customizerLocationsDom: document.querySelector('.customizer__locations'),
   customizerCarsDom: document.querySelector('.customizer__cars'),
   customizerGirlsDom: document.querySelector('.customizer__girls'),
   customizerSpriteGirlsDom: document.querySelector('.customizer__sprite-girls'),
-  customizerGirlsParamsDom: document.querySelector('.customizer__girls-params'),
+  customizerGirlsParamsDom: document.querySelector(
+    '.customizer__control-girls-params-bar'
+  ),
   customizerToggleCalendarDom: document.querySelector(
     '.customizer__toggle-calendar'
   ),
-  customizerGirlsParamsButton: document.querySelector(
-    '.customizer__button--girls-params'
-  ),
-  customizerCarColorsElements: document.querySelectorAll(
-    '.customizer__car-color'
+
+  customizerGirlsParamsControlWrap: document.querySelector(
+    '.customizer__control-girls-params-wrap'
   ),
   customizerGerenateButtonDom: document.querySelector(
     '.customizer__generate-button'
   ),
+  customizerCarColorsDom: document.querySelector('.customizer__control-colors'),
+  customizerSpriteGirlsSubbarDom: document.querySelector(
+    '.customizer__control-girls-params-bar'
+  ),
+
+  fullscreenButtonDom: document.querySelector('.customizer__fullscreen'),
+  overlayRotateDom: document.querySelector('.overlay-rotate'),
+
   screenshoterLinkImageDom: document.querySelector(
-    '.customizer__screenshoter-link--1'
+    '.screenshot__helper-link--1'
   ),
   screenshoterLinkPageDom: document.querySelector(
-    '.customizer__screenshoter-link--2'
+    '.screenshot__helper-link--2'
   ),
   screenshotHolderDownloadDom: document.querySelector(
     '.screenshot__holder--download'
@@ -35,28 +44,46 @@ export const vars = {
     '.screenshot__holder--share'
   ),
   screenshotHolderGiftDom: document.querySelector('.screenshot__holder--gift'),
+
   preloaderProgressDom: document.querySelector('.preloader__progress'),
+
   formDom: document.querySelector('#form-gift'),
   formInputScreenshotDom: document.querySelector('#form-screenshot'),
   formInputCalendarCheckbox: document.querySelector('#screenshot-calendar'),
   formGiftCodeInputDom: document.querySelector('#form-code'),
   formGiftCodeMatch: 'CUSTOM',
+
   modalGiftId: 'modal-gift',
   modalSentId: 'modal-sent',
 
-  domain: 'https://constructor.ts-2022.ru/',
-
-  customizerButtonClass: 'customizer__button',
+  screenshotSizeClass: 'screenshot__size',
+  screenshotDownloadButtonClass: 'screenshot__download-button',
+  customizerButtonClass: 'customizer__control-button',
   customizerControlBarClass: 'customizer__control-bar',
+  customizerControlBarCloseClass: 'customizer__control-bar-close',
   locationClass: 'customizer__locations-item',
   carClass: 'customizer__cars-item',
+  carColorClass: 'customizer__car-color',
   girlClass: 'customizer__girls-item',
   spriteGirlClass: 'customizer__sprite-girls-item',
   girlParamsPoseClass: 'customizer__girls-pose-item',
+  customizerGirsParamsButtonClass: 'customizer__control-girls-params-button',
+  hideOnIosClass: 'hide-on-ios',
+
   visibleClass: 'visible',
   screenshotUrlPart: 'script.php?c=view&image=',
   screenshotMime: 'image/jpeg',
   spriteGirlShift: 0.3,
+  carColors: [
+    ['#d90e3e', '#a00b17'],
+    ['#d9870e', '#D9870E'],
+    ['#059b1d', '#059B1D'],
+    ['#09682f', '#09682F'],
+    ['#0596c3', '#0596C3'],
+    ['#1d307c', '#1d307c'],
+    ['#555555', '#555555'],
+    ['#000000', '#000000'],
+  ], // label color, material color
 };
 
 export const objectsData = {
@@ -162,62 +189,114 @@ export const objectsData = {
     },
     girl1: {
       name: 'Girl 1',
-      source: '/assets/textures/girl1.png',
+      source: '/assets/images/previews/girl1.jpg',
       preview: '/assets/images/previews/girl1.jpg',
       center: new THREE.Vector2(0.5, 0.5),
-      position: new THREE.Vector3(0.8, -0.05, -3),
+      position: new THREE.Vector3(0.8, -0.2, -3),
       scale: new THREE.Vector3(1, 1, 1),
       clothing: {
         clothing1: {
           pose1: {
             source: '/assets/textures/girl1/girl-1-1.webp',
+            preview: '/assets/images/previews/girl1/girl-1-1-preview.png',
           },
           pose2: {
             source: '/assets/textures/girl1/girl-1-2.webp',
+            preview: '/assets/images/previews/girl1/girl-1-2-preview.png',
           },
           pose3: {
             source: '/assets/textures/girl1/girl-1-3.webp',
+            preview: '/assets/images/previews/girl1/girl-1-3-preview.png',
           },
         },
         clothing2: {
           pose1: {
             source: '/assets/textures/girl1/girl-2-1.webp',
+            preview: '/assets/images/previews/girl1/girl-2-1-preview.png',
           },
           pose2: {
             source: '/assets/textures/girl1/girl-2-2.webp',
+            preview: '/assets/images/previews/girl1/girl-2-2-preview.png',
           },
           pose3: {
             source: '/assets/textures/girl1/girl-2-3.webp',
+            preview: '/assets/images/previews/girl1/girl-2-3-preview.png',
           },
         },
         clothing3: {
           pose1: {
             source: '/assets/textures/girl1/girl-3-1.webp',
+            preview: '/assets/images/previews/girl1/girl-3-1-preview.png',
           },
           pose2: {
             source: '/assets/textures/girl1/girl-3-2.webp',
+            preview: '/assets/images/previews/girl1/girl-3-2-preview.png',
           },
           pose3: {
             source: '/assets/textures/girl1/girl-3-3.webp',
+            preview: '/assets/images/previews/girl1/girl-3-3-preview.png',
           },
         },
       },
     },
     girl2: {
       name: 'Без девушки',
-      source: '',
+      source: '/assets/images/previews/girl2.jpg',
       preview: '/assets/images/previews/soon.jpg',
       center: new THREE.Vector2(0.5, 0.5),
-      position: new THREE.Vector3(0.8, -0.05, -3),
+      position: new THREE.Vector3(0.8, -0.2, -3),
       scale: new THREE.Vector3(1, 1, 1),
-      clothing: {},
+      clothing: {
+        clothing1: {
+          pose1: {
+            source: '/assets/textures/girl2/girl-1-1.webp',
+            preview: '/assets/images/previews/girl2/girl-1-1-preview.png',
+          },
+          pose2: {
+            source: '/assets/textures/girl2/girl-1-2.webp',
+            preview: '/assets/images/previews/girl2/girl-1-2-preview.png',
+          },
+          pose3: {
+            source: '/assets/textures/girl2/girl-1-3.webp',
+            preview: '/assets/images/previews/girl2/girl-1-3-preview.png',
+          },
+        },
+        clothing2: {
+          pose1: {
+            source: '/assets/textures/girl2/girl-2-1.webp',
+            preview: '/assets/images/previews/girl2/girl-2-1-preview.png',
+          },
+          pose2: {
+            source: '/assets/textures/girl2/girl-2-2.webp',
+            preview: '/assets/images/previews/girl2/girl-2-2-preview.png',
+          },
+          pose3: {
+            source: '/assets/textures/girl2/girl-2-3.webp',
+            preview: '/assets/images/previews/girl2/girl-2-3-preview.png',
+          },
+        },
+        clothing3: {
+          pose1: {
+            source: '/assets/textures/girl2/girl-3-1.webp',
+            preview: '/assets/images/previews/girl2/girl-3-1-preview.png',
+          },
+          pose2: {
+            source: '/assets/textures/girl2/girl-3-2.webp',
+            preview: '/assets/images/previews/girl2/girl-3-2-preview.png',
+          },
+          pose3: {
+            source: '/assets/textures/girl2/girl-3-3.webp',
+            preview: '/assets/images/previews/girl2/girl-3-3-preview.png',
+          },
+        },
+      },
     },
     girl3: {
       name: 'Без девушки',
       source: '',
       preview: '/assets/images/previews/soon.jpg',
       center: new THREE.Vector2(0.5, 0.5),
-      position: new THREE.Vector3(0.8, -0.05, -3),
+      position: new THREE.Vector3(0.8, -0.2, -3),
       scale: new THREE.Vector3(1, 1, 1),
       clothing: {},
     },
@@ -297,13 +376,27 @@ export let debugObject = {
     'disk',
     'brake',
   ],
-  giftScreenshotSize: {
-    width: 3840,
-    height: 2160,
+  screenshotSizes: {
+    gift: {
+      width: 3840,
+      height: 2160,
+    },
+    ios: {
+      width: 2560,
+      height: 1440,
+    },
+    share: {
+      width: 1366,
+      height: 768,
+    },
+    preview: {
+      width: 1366,
+      height: 768,
+    },
   },
   includedMaterials: ['paint', 'CarPaint', 'CarPaint_'],
   shadowMaterials: ['shadow', 'watter', 'Shadow_'],
   bloomIntensity: 0,
   showStats: false,
-  showDebug: false,
+  showDebug: true,
 };

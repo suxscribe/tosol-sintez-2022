@@ -43,11 +43,14 @@
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
   }
 
+  & * {
+    pointer-events: none;
+  }
+
   & svg {
   }
 
   &--round {
-    padding: 0;
     border: none;
     max-width: $button-s-height;
     position: relative;
@@ -68,16 +71,18 @@
     }
 
     &:hover {
-      max-width: $button-max-width;
+      @media (min-width: $breakpoint-medium) {
+        max-width: $button-max-width;
 
-      &:before {
-        left: -25px;
+        &:before {
+          left: -25px;
+        }
       }
     }
   }
 
   &--gift {
-    padding: 12px;
+    padding: responsive-value(8px, 12px);
     border: none;
     // width: $button-s-height;
     // justify-content: center;
@@ -120,11 +125,13 @@
     }
 
     .button--round:hover & {
-      opacity: 1;
-      max-width: $button-max-width;
-      padding-right: 10px;
-      padding-left: 20px;
-      transition: all 0.71s $button-transition;
+      @media (min-width: $breakpoint-medium) {
+        opacity: 1;
+        max-width: $button-max-width;
+        padding-right: 10px;
+        padding-left: 20px;
+        transition: all 0.71s $button-transition;
+      }
     }
   }
 }

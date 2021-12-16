@@ -149,10 +149,7 @@ export const validateForms = () => {
       } else {
         console.log('check digits field invalid');
 
-        setInvalid(
-          field,
-          'Пожалуйста введите номер телефона в формате +7 XXX XXX XX XX'
-        );
+        setInvalid(field, 'Неверный формат номера');
       }
     };
     const checkIfEmail = (field) => {
@@ -164,7 +161,7 @@ export const validateForms = () => {
         setValid(field);
         return true;
       } else {
-        setInvalid(field, 'Должно быть в формате email@domain.dom');
+        setInvalid(field, 'Неверный формат');
       }
     };
   }

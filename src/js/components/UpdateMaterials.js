@@ -7,6 +7,7 @@ export default class UpdateMaterials {
     this.scene = _options.scene;
     this.loadingManager = _options.loadingManager;
     this.debugObject = debugObject;
+    this.config = _options.config;
 
     // this.textureLoader = new TextureLoader(this.loadingManager);
   }
@@ -62,6 +63,9 @@ export default class UpdateMaterials {
           child.material.blending = THREE.MultiplyBlending;
         }
 
+        //set car color
+        this.setCarColor(child);
+
         child.material.needsUpdate = true; // this is for tonemapping
 
         debugObject.selects.push(child); // ssr
@@ -70,18 +74,24 @@ export default class UpdateMaterials {
     console.log('updateMaterials');
   }
 
-  changeCarColor(color) {
+  changeCarColor(color = null) {
     this.scene.traverse((child) => {
-      if (
-        child.material &&
-        debugObject.carPaintMaterials.includes(child.material.name)
-      ) {
-        console.log('set color', child.material.name);
-
-        child.material.color.set(color);
-      }
+      this.setCarColor(child, color);
     });
     this.debugObject.needsUpdate = true;
+  }
+
+  setCarColor(child, color) {
+    if (
+      child.material &&
+      debugObject.carPaintMaterials.includes(child.material.name)
+    ) {
+      console.log('set color', child.material.name);
+      let newColor;
+      if (color) newColor = color;
+      else newColor = this.config.carColor;
+      child.material.color.set(newColor);
+    }
   }
 
   // async loadTexture() {

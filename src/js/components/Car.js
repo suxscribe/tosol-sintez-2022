@@ -20,9 +20,11 @@ export default class Car extends EventEmitter {
     this.loadingManager = _options.loadingManager;
     this.loader = _options.loader;
     this.textureLoader = _options.textureLoader;
+    this.updateMaterials = _options.updateMaterials;
 
-    this.debugObject = this.debugObject;
     // this.updateMaterials = new UpdateMaterials({ scene: this.container });
+
+    this.carColor = 0xff00ff;
 
     this.loadCarModel();
 
@@ -164,48 +166,76 @@ export default class Car extends EventEmitter {
         .max(20)
         .step(0.05)
         .name(this.object.name + ' position x')
-        .listen();
+        .listen()
+        .onChange(() => {
+          this.setNeedsUpdate();
+        });
+
       this.debugFolder
         .add(this.container.position, 'y')
         .min(-20)
         .max(20)
         .step(0.05)
         .name(this.object.name + ' position y')
-        .listen();
+        .listen()
+        .onChange(() => {
+          this.setNeedsUpdate();
+        });
+
       this.debugFolder
         .add(this.container.position, 'z')
         .min(-20)
         .max(20)
         .step(0.05)
         .name(this.object.name + ' position z')
-        .listen();
+        .listen()
+        .onChange(() => {
+          this.setNeedsUpdate();
+        });
+
       this.debugFolder
         .add(this.container.rotation, 'x')
         .min(-Math.PI)
         .max(Math.PI)
         .step(0.001)
         .name(this.object.name + ' rotation x')
-        .listen();
+        .listen()
+        .onChange(() => {
+          this.setNeedsUpdate();
+        });
+
       this.debugFolder
         .add(this.container.rotation, 'y')
         .min(-Math.PI)
         .max(Math.PI)
         .step(0.001)
         .name(this.object.name + ' rotation y')
-        .listen();
+        .listen()
+        .onChange(() => {
+          this.setNeedsUpdate();
+        });
+
       this.debugFolder
         .add(this.container.rotation, 'z')
         .min(-Math.PI)
         .max(Math.PI)
         .step(0.001)
         .name(this.object.name + ' rotation z')
-        .listen();
+        .listen()
+        .onChange(() => {
+          this.setNeedsUpdate();
+        });
+
+      this.debugFolder.addColor(this, 'carColor').onChange(() => {
+        this.updateMaterials.changeCarColor(this.carColor);
+      });
+
       this.debugFolder.close();
     }
   }
 
   setNeedsUpdate() {
-    this.debugObject.needsUpdate = true;
+    debugObject.needsUpdate = true;
   }
 
   removeObject() {
