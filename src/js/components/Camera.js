@@ -30,7 +30,7 @@ export default class Camera extends EventEmitter {
 
   setInstance() {
     // Set Camera instance
-    this.instance = new THREE.PerspectiveCamera(this.fov, this.sizes, 0.1, 100);
+    this.instance = new THREE.PerspectiveCamera(this.fov, this.sizes, 0.1, 150);
 
     this.instance.position.set(21, 8, 0.5);
 

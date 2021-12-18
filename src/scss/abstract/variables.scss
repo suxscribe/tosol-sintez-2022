@@ -103,7 +103,7 @@ $ball-size: 26px;
   colorGray: $color-gray;
 }
 
-$close-button-size: 36px;
+$close-button-size: responsive-value(18px, 36px);
 
 $translate: 40px;
 $form-element-radius: 5px;

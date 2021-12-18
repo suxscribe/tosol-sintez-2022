@@ -6,8 +6,8 @@
 }
 .tippy-box {
   position: relative;
-  background-color: $color-gray;
-  color: $color-black;
+  background-color: rgba($color-black, 0.7);
+  color: $color-white;
   border-radius: 4px;
   // font-size: 14px;
   line-height: 1.4;

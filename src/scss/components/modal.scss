@@ -22,9 +22,9 @@
 
   &__container {
     background-color: $color-gray;
-    width: 100%;
-    max-width: 680px;
-    max-height: 100vh;
+    // width: 100%;
+    max-width: 670px;
+    max-height: 95vh;
     border: 2px solid $color-white;
     backdrop-filter: blur(50px);
 
@@ -109,7 +109,9 @@
 
   &__socials {
     margin-bottom: 0px;
-    display: flex;
+    // display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: $grid-gap;
     justify-content: center;
   }
@@ -122,6 +124,26 @@
     border-radius: 50%;
     background-color: #ccc;
     display: block;
+  }
+
+  &__tab {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+
+    &--1 {
+      width: responsive-value(300px, 560px);
+
+      @media (min-width: $breakpoint-large) {
+        width: auto;
+      }
+    }
+
+    &-next-button {
+      width: 100%;
+    }
   }
 
   &.micromodal-slide {

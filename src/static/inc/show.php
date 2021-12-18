@@ -15,7 +15,7 @@ $constructorUrl = 'https://constructor.ts-2022.ru';
 
   <meta property="og:url" content="<?= $imageURL ?>" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Транс-сигнал" />
+  <meta property="og:title" content="Tosol-Sintez" />
   <meta property="og:description" content="Конструктор календаря 2022" />
   <meta property="og:image" content="<?= 'https://' . $_SERVER['SERVER_NAME'] . '/' . $filename ?>" />
   <link href="./css/style.bundle.css" rel="stylesheet">

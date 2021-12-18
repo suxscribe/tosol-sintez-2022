@@ -33,6 +33,13 @@ export default class Interface {
     });
   }
 
+  modalSwitchToTab(tabIndex) {
+    vars.customizerModalTabs.forEach((tab) => {
+      tab.classList.remove('active');
+    });
+    vars.customizerModalTabs[tabIndex].classList.add('active');
+  }
+
   renderColorsList() {
     if (vars.customizerCarColorsDom) {
       vars.carColors.forEach((color) => {
@@ -67,10 +74,6 @@ export default class Interface {
       disableFocus: true,
       awaitOpenAnimation: true,
       awaitCloseAnimation: true,
-      onClose: function (modal, element, event) {
-        event.preventDefault();
-        event.stopPropagation();
-      },
     });
 
     // MicroModal.show('modal-gift'); // testing
@@ -128,9 +131,15 @@ export default class Interface {
       }
 
       // open gift modal and make screenshot
-      // todo uncomment
       if (e.target.classList.contains('customizer__gift')) {
         this.screenshot.takeScreenshot('gift');
+
+        this.modalSwitchToTab(0);
+      }
+
+      // switch to next tab
+      if (e.target.classList.contains(vars.modalTabButtonClass)) {
+        this.modalSwitchToTab(1);
       }
     });
 
@@ -150,7 +159,7 @@ export default class Interface {
         this.customizerSetCarColor(e.target.dataset.color);
       }
 
-      // Generate Click. Custom Car & Girl & Color Set
+      // Generate Click. Random Car & Girl & Color Set
       if (e.target.classList.contains('customizer__generate-button')) {
         console.log('random');
 
@@ -188,6 +197,8 @@ export default class Interface {
         // select random color
         const random = Math.floor(Math.random() * vars.carColors.length);
         this.customizerSetCarColor(vars.carColors[random][1]);
+
+        this.updateCustomizer();
       }
     });
 
@@ -246,7 +257,7 @@ export default class Interface {
   }
 
   getRandomProp(object, plusOne = null) {
-    console.log('getRandomProp', object);
+    // console.log('getRandomProp', object);
 
     const keys = Object.keys(object);
     if (plusOne) {
@@ -260,7 +271,7 @@ export default class Interface {
     e.preventDefault();
     const giftCodeValue = vars.formGiftCodeInputDom.value;
 
-    if (giftCodeValue.toUppercase() === vars.formGiftCodeMatch.toUpperCase()) {
+    if (giftCodeValue.toUpperCase() === vars.formGiftCodeMatch.toUpperCase()) {
       let formData = new FormData(vars.formDom);
       // formData.append('image', formImage.files[0]);
 
@@ -490,6 +501,30 @@ export default class Interface {
           element.classList.add('active');
         }
       });
+
+    // Change Bar icon
+    document
+      .querySelectorAll(`.${vars.customizerButtonClass}`)
+      .forEach((button) => {
+        if (button.dataset.bar != '') {
+          const activeItemImage = document.querySelector(
+            `.customizer__control-bar--${button.dataset.bar} .customizer__control-item.active img`
+          );
+          if (activeItemImage) {
+            button.querySelector('img').src = activeItemImage.src;
+          }
+        }
+      });
+
+    //change Girl Pose Icon
+    const girlParamsButtonImg =
+      vars.customizerGirlsParamsButtonDom.querySelector('img');
+    if (girlParamsButtonImg) {
+      const activeGirlParamImg = document.querySelector(
+        `.${vars.girlParamsPoseClass}.active img`
+      );
+      if (activeGirlParamImg) girlParamsButtonImg.src = activeGirlParamImg.src;
+    }
   }
 
   renderCustomizer() {
@@ -548,6 +583,10 @@ export default class Interface {
       const screenshotSize4k = document.querySelector('.screenshot__size--4k');
       if (screenshotSize4k) {
         screenshotSize4k.classList.add(vars.hideOnIosClass);
+      }
+
+      if (vars.customizerGerenateButtonDom) {
+        vars.customizerGerenateButtonDom.classList.add(vars.hideOnIosClass);
       }
     }
   }

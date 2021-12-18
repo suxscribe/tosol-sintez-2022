@@ -3,10 +3,6 @@ import Car from './Car';
 import Sprite from './Sprite';
 
 import { isEmptyObject } from './Utils';
-import {
-  Lensflare,
-  LensflareElement,
-} from 'three/examples/jsm/objects/Lensflare.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 import { debugObject, vars } from './data/vars';
@@ -34,9 +30,12 @@ export default class World {
     this.gltfLoader = new GLTFLoader(this.loadingManager);
 
     // // this.loadGirl();
-    this.loadLocation();
-    this.loadCar();
-    this.loadSpriteGirl();
+
+    if (window.location.hash !== '#nothing') {
+      this.loadLocation();
+      this.loadCar();
+      this.loadSpriteGirl();
+    }
 
     this.loadCustom();
 
@@ -65,7 +64,7 @@ export default class World {
       this.scene.add(this.location.container);
     }
     this.loadEnvMap();
-    // this.setModelLoadedListener(this.location); // not needed. loadingManager handles update
+    this.setModelLoadedListener(this.location); // need this on location change to update its materials
   }
 
   loadCar() {

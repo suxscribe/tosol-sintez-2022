@@ -23,11 +23,8 @@ export default class UpdateMaterials {
         // console.log(child.material.name);
         // console.log(child.material);
 
-        // todo add envMap assignment only to materials specified
-
         // Disable envMap effect on some materials
         if (this.debugObject.excludedMaterials.includes(child.material.name)) {
-          // console.log(child.material);
           child.material.envMapIntensity = 0;
         }
 
@@ -53,9 +50,6 @@ export default class UpdateMaterials {
         ) {
           child.material.envMap = this.debugObject.environmentMap; // apply env map to each child
           child.material.envMapIntensity = this.debugObject.envMapIntensity;
-
-          // child.castShadow = true;
-          // child.receiveShadow = true;
         }
 
         if (child.material.name == 'watter') {

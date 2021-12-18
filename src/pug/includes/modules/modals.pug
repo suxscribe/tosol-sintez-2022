@@ -39,9 +39,9 @@ section
       .modal__container(role='dialog', aria-modal='true')
         +modal-close()
         .modal__content
-          h3.modal__title Поделиться в социальных сетях
+          h3.modal__title Поделиться с друзьями
           .modal__content-layout
-            .screenshot__container
+            .screenshot__container.screenshot__container--share
               .screenshot.screenshot--share
                 img.screenshot__holder.screenshot__holder--share(src="", alt="")
             .socials.modal__socials
@@ -59,12 +59,14 @@ section
       .modal__container(role='dialog', aria-modal='true')
         +modal-close()
         .modal__content
-          .modal__content-layout
-            .screenshot__container
+          h3.modal__title Получить календарь
+          .modal__tab.modal__tab--1.active
+            .screenshot__container.screenshot__container--gift
               .screenshot.screenshot--gift
                 img.screenshot__holder.screenshot__holder--gift(src="", alt="")
+            button.modal__tab-next-button.button.button--black Продолжить
+          .modal__tab.modal__tab--2
             .modal__form
-              h3.modal__title Получить календарь
               p.modal__text Уважаемые партнеры, заполните данные, мы&nbsp;напечатаем и&nbsp;пришлем ваш календарь
               form#form-gift(action="").form
                 +form-row({name: "form-name", title: "ФИО", validate: 'empty', 'placeholder': ' ' })
@@ -79,7 +81,7 @@ section
                   .form__submit-note 
                     | Нажимая на&nbsp;кнопку, вы&nbsp;даете согласие на&nbsp;обработку персональных данных 
                     |  и&nbsp;соглашаетесь&nbsp;с 
-                    a(href="https://ts-2022.ru/policy") политикой конфиденциальности
+                    a(href="https://ts-2022.ru/policy", target="_blank") политикой конфиденциальности
 
   #modal-sent.modal.modal--sent.micromodal-slide(aria-hidden='true')
     .modal__overlay(tabindex='-1', data-micromodal-close='')

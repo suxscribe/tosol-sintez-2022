@@ -23,12 +23,9 @@ export default class Screenshot {
 
     this.config.screenshotType = type;
 
-    // if (type == 'preview') {
-    //   this.config.screenshotSize.width =
-    //     this.debugObject.screenshotSizes.preview.width;
-    //   this.config.screenshotSize.height =
-    //     this.debugObject.screenshotSizes.preview.height;
-    // } // this will override selected screenshot sizes resulting in wrong screenshot size.
+    if (type == 'preview') {
+      this.config.showLogoSprite = true;
+    }
 
     if (type == 'share') {
       this.config.screenshotSize.width =

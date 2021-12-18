@@ -9,13 +9,14 @@
     background-color: #fff;
     display: block;
     border-radius: $border-radius;
-    width: responsive-value(64px, 108px);
-    height: responsive-value(64px, 108px);
+    width: responsive-value(64px, 90px);
+    height: responsive-value(64px, 90px);
     display: flex;
     justify-content: center;
     align-items: center;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0);
     transition: all 0.65s $button-transition;
+    flex: 0 1 auto;
 
     & > svg,
     & > img {

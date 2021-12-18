@@ -4,12 +4,35 @@ export const vars = {
   domain: 'https://constructor.ts-2022.ru/',
   canvasClass: 'webgl',
 
+  modalGiftId: 'modal-gift',
+  modalSentId: 'modal-sent',
+
+  screenshotSizeClass: 'screenshot__size',
+  screenshotDownloadButtonClass: 'screenshot__download-button',
+  customizerButtonClass: 'customizer__control-button',
+  customizerControlBarClass: 'customizer__control-bar',
+  customizerControlBarCloseClass: 'customizer__control-bar-close',
+  locationClass: 'customizer__locations-item',
+  carClass: 'customizer__cars-item',
+  carColorClass: 'customizer__car-color',
+  girlClass: 'customizer__girls-item',
+  spriteGirlClass: 'customizer__sprite-girls-item',
+  girlParamsPoseClass: 'customizer__girls-pose-item',
+  customizerGirsParamsButtonClass: 'customizer__control-girls-params-button',
+  hideOnIosClass: 'hide-on-ios',
+  modalTabClass: 'modal__tab',
+  modalTabButtonClass: 'modal__tab-next-button',
+  visibleClass: 'visible',
+
   customizerDom: document.querySelector('.customizer'),
   customizerButtonsDom: document.querySelector('.customizer__control-buttons'),
   customizerLocationsDom: document.querySelector('.customizer__locations'),
   customizerCarsDom: document.querySelector('.customizer__cars'),
   customizerGirlsDom: document.querySelector('.customizer__girls'),
   customizerSpriteGirlsDom: document.querySelector('.customizer__sprite-girls'),
+  customizerGirlsParamsButtonDom: document.querySelector(
+    `.customizer__control-girls-params-button`
+  ),
   customizerGirlsParamsDom: document.querySelector(
     '.customizer__control-girls-params-bar'
   ),
@@ -27,6 +50,7 @@ export const vars = {
   customizerSpriteGirlsSubbarDom: document.querySelector(
     '.customizer__control-girls-params-bar'
   ),
+  customizerModalTabs: document.querySelectorAll(`.modal__tab`),
 
   fullscreenButtonDom: document.querySelector('.customizer__fullscreen'),
   overlayRotateDom: document.querySelector('.overlay-rotate'),
@@ -53,25 +77,7 @@ export const vars = {
   formGiftCodeInputDom: document.querySelector('#form-code'),
   formGiftCodeMatch: 'CUSTOM',
 
-  modalGiftId: 'modal-gift',
-  modalSentId: 'modal-sent',
-
-  screenshotSizeClass: 'screenshot__size',
-  screenshotDownloadButtonClass: 'screenshot__download-button',
-  customizerButtonClass: 'customizer__control-button',
-  customizerControlBarClass: 'customizer__control-bar',
-  customizerControlBarCloseClass: 'customizer__control-bar-close',
-  locationClass: 'customizer__locations-item',
-  carClass: 'customizer__cars-item',
-  carColorClass: 'customizer__car-color',
-  girlClass: 'customizer__girls-item',
-  spriteGirlClass: 'customizer__sprite-girls-item',
-  girlParamsPoseClass: 'customizer__girls-pose-item',
-  customizerGirsParamsButtonClass: 'customizer__control-girls-params-button',
-  hideOnIosClass: 'hide-on-ios',
-
-  visibleClass: 'visible',
-  screenshotUrlPart: 'script.php?c=view&image=',
+  screenshotUrlPart: 'https://constructor.ts-2022.ru/script.php?c=view&image=',
   screenshotMime: 'image/jpeg',
   spriteGirlShift: 0.3,
   carColors: [
@@ -100,10 +106,40 @@ export const objectsData = {
     },
     track: {
       name: 'Studio 2',
-      source: '/assets/models/loc-studio-mono.glb',
+      source: '/assets/models/loc-studio-mono-2.glb',
       preview: '/assets/images/previews/loc-studio-mono.jpg',
       position: new THREE.Vector3(-1.7, -0.02, 1.8),
-      scale: new THREE.Vector3(1.5, 1.5, 1.5),
+      scale: new THREE.Vector3(3.5, 3.5, 3.5),
+      rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
+      envMapSource: '/assets/envMaps/bw/',
+      envMapType: 'cube',
+    },
+    dark: {
+      name: 'Dark',
+      source: '/assets/models/loc-studio-dark.glb',
+      preview: '/assets/images/previews/loc-studio-dark.jpg',
+      position: new THREE.Vector3(4.8, -0.1, 2),
+      scale: new THREE.Vector3(4.5, 4.5, 4.5),
+      rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
+      envMapSource: '/assets/envMaps/bw/',
+      envMapType: 'cube',
+    },
+    beach: {
+      name: 'Beach',
+      source: '/assets/models/loc-beach.glb',
+      preview: '/assets/images/previews/loc-beach.jpg',
+      position: new THREE.Vector3(-0.81, -0.1, -1.85),
+      scale: new THREE.Vector3(4.5, 4.5, 4.5),
+      rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
+      envMapSource: '/assets/envMaps/bw/',
+      envMapType: 'cube',
+    },
+    city: {
+      name: 'City',
+      source: '/assets/models/loc-city-2.glb',
+      preview: '/assets/images/previews/loc-city.jpg',
+      position: new THREE.Vector3(-0.81, -0.1, -1.85),
+      scale: new THREE.Vector3(4.5, 4.5, 4.5),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
       envMapType: 'cube',
@@ -115,12 +151,12 @@ export const objectsData = {
       source: '/assets/models/porsche.glb',
       preview: '/assets/images/previews/car-porsche.jpg',
       position: new THREE.Vector3(0, 0, 0),
-      scale: new THREE.Vector3(0.03, 0.03, 0.03),
+      scale: new THREE.Vector3(0.029, 0.029, 0.029),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
     },
     ferrari: {
       name: 'Ferrari',
-      source: '/assets/models/ferrari.glb',
+      source: '/assets/models/ferrari-03.glb',
       preview: '/assets/images/previews/car-ferrari.jpg',
       position: new THREE.Vector3(0, 0, 0),
       scale: new THREE.Vector3(3, 3, 3),
@@ -128,12 +164,20 @@ export const objectsData = {
     },
     lamborgini: {
       name: 'Lamborgini',
-      source: '/assets/models/lamborgini-12.glb',
+      source: '/assets/models/lamborgini-14.glb',
       preview: '/assets/images/previews/car-lamborgini.jpg',
       position: new THREE.Vector3(0, 0.0, 0),
       scale: new THREE.Vector3(0.3, 0.3, 0.3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
     },
+    // challenger: {
+    //   name: 'Challenger',
+    //   source: '/assets/models/challenger.glb',
+    //   preview: '/assets/images/previews/car-lamborgini.jpg',
+    //   position: new THREE.Vector3(0, -0.2, 0),
+    //   scale: new THREE.Vector3(0.03, 0.03, 0.03),
+    //   rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
+    // },
   },
   girls: {
     girl1: {
@@ -180,7 +224,7 @@ export const objectsData = {
   spritegirls: {
     girl0: {
       name: 'Без девушки',
-      source: '',
+      source: '', // leave empty to skip loading texture
       preview: '/assets/images/previews/girl0.jpg',
       center: new THREE.Vector2(0.5, 0.5),
       position: new THREE.Vector3(0.8, -0.05, -3),
@@ -192,48 +236,57 @@ export const objectsData = {
       source: '/assets/images/previews/girl1.jpg',
       preview: '/assets/images/previews/girl1.jpg',
       center: new THREE.Vector2(0.5, 0.5),
-      position: new THREE.Vector3(0.8, -0.2, -3),
+      position: new THREE.Vector3(0.8, -0.1, -3),
       scale: new THREE.Vector3(1, 1, 1),
       clothing: {
         clothing1: {
           pose1: {
             source: '/assets/textures/girl1/girl-1-1.webp',
+            sourceFallback: '/assets/textures/girl1/girl-1-1.png',
             preview: '/assets/images/previews/girl1/girl-1-1-preview.png',
           },
           pose2: {
             source: '/assets/textures/girl1/girl-1-2.webp',
+            sourceFallback: '/assets/textures/girl1/girl-1-2.png',
             preview: '/assets/images/previews/girl1/girl-1-2-preview.png',
           },
           pose3: {
             source: '/assets/textures/girl1/girl-1-3.webp',
+            sourceFallback: '/assets/textures/girl1/girl-1-3.png',
             preview: '/assets/images/previews/girl1/girl-1-3-preview.png',
           },
         },
         clothing2: {
           pose1: {
             source: '/assets/textures/girl1/girl-2-1.webp',
+            sourceFallback: '/assets/textures/girl1/girl-2-1.png',
             preview: '/assets/images/previews/girl1/girl-2-1-preview.png',
           },
           pose2: {
             source: '/assets/textures/girl1/girl-2-2.webp',
+            sourceFallback: '/assets/textures/girl1/girl-2-2.png',
             preview: '/assets/images/previews/girl1/girl-2-2-preview.png',
           },
           pose3: {
             source: '/assets/textures/girl1/girl-2-3.webp',
+            sourceFallback: '/assets/textures/girl1/girl-2-3.png',
             preview: '/assets/images/previews/girl1/girl-2-3-preview.png',
           },
         },
         clothing3: {
           pose1: {
             source: '/assets/textures/girl1/girl-3-1.webp',
+            sourceFallback: '/assets/textures/girl1/girl-3-1.png',
             preview: '/assets/images/previews/girl1/girl-3-1-preview.png',
           },
           pose2: {
             source: '/assets/textures/girl1/girl-3-2.webp',
+            sourceFallback: '/assets/textures/girl1/girl-3-2.png',
             preview: '/assets/images/previews/girl1/girl-3-2-preview.png',
           },
           pose3: {
             source: '/assets/textures/girl1/girl-3-3.webp',
+            sourceFallback: '/assets/textures/girl1/girl-3-3.png',
             preview: '/assets/images/previews/girl1/girl-3-3-preview.png',
           },
         },
@@ -241,51 +294,60 @@ export const objectsData = {
     },
     girl2: {
       name: 'Без девушки',
-      source: '/assets/images/previews/girl2.jpg',
-      preview: '/assets/images/previews/soon.jpg',
+      source: '/assets/images/previews/girl2.jpg', // leave empty to skip loading texture
+      preview: '/assets/images/previews/girl2.jpg',
       center: new THREE.Vector2(0.5, 0.5),
-      position: new THREE.Vector3(0.8, -0.2, -3),
+      position: new THREE.Vector3(0.8, -0.1, -3),
       scale: new THREE.Vector3(1, 1, 1),
       clothing: {
         clothing1: {
           pose1: {
             source: '/assets/textures/girl2/girl-1-1.webp',
+            sourceFallback: '/assets/textures/girl2/girl-1-1.png',
             preview: '/assets/images/previews/girl2/girl-1-1-preview.png',
           },
           pose2: {
             source: '/assets/textures/girl2/girl-1-2.webp',
+            sourceFallback: '/assets/textures/girl2/girl-1-2.png',
             preview: '/assets/images/previews/girl2/girl-1-2-preview.png',
           },
           pose3: {
             source: '/assets/textures/girl2/girl-1-3.webp',
+            sourceFallback: '/assets/textures/girl2/girl-1-3.png',
             preview: '/assets/images/previews/girl2/girl-1-3-preview.png',
           },
         },
         clothing2: {
           pose1: {
             source: '/assets/textures/girl2/girl-2-1.webp',
+            sourceFallback: '/assets/textures/girl2/girl-2-1.png',
             preview: '/assets/images/previews/girl2/girl-2-1-preview.png',
           },
           pose2: {
             source: '/assets/textures/girl2/girl-2-2.webp',
+            sourceFallback: '/assets/textures/girl2/girl-2-2.png',
             preview: '/assets/images/previews/girl2/girl-2-2-preview.png',
           },
           pose3: {
             source: '/assets/textures/girl2/girl-2-3.webp',
+            sourceFallback: '/assets/textures/girl2/girl-2-3.png',
             preview: '/assets/images/previews/girl2/girl-2-3-preview.png',
           },
         },
         clothing3: {
           pose1: {
             source: '/assets/textures/girl2/girl-3-1.webp',
+            sourceFallback: '/assets/textures/girl2/girl-3-1.png',
             preview: '/assets/images/previews/girl2/girl-3-1-preview.png',
           },
           pose2: {
             source: '/assets/textures/girl2/girl-3-2.webp',
+            sourceFallback: '/assets/textures/girl2/girl-3-2.png',
             preview: '/assets/images/previews/girl2/girl-3-2-preview.png',
           },
           pose3: {
             source: '/assets/textures/girl2/girl-3-3.webp',
+            sourceFallback: '/assets/textures/girl2/girl-3-3.png',
             preview: '/assets/images/previews/girl2/girl-3-3-preview.png',
           },
         },
@@ -293,7 +355,7 @@ export const objectsData = {
     },
     girl3: {
       name: 'Без девушки',
-      source: '',
+      source: '', // leave empty to skip loading texture
       preview: '/assets/images/previews/soon.jpg',
       center: new THREE.Vector2(0.5, 0.5),
       position: new THREE.Vector3(0.8, -0.2, -3),
@@ -347,6 +409,27 @@ export const customizerData = {
     girls: ['girl1', 'girl2', 'girl3', 'helmet'],
     spritegirls: ['girl0', 'girl1', 'girl2', 'girl3'],
   },
+  dark: {
+    name: 'Dark',
+    location: 'dark',
+    cars: ['lamborgini', 'porsche', 'ferrari'],
+    girls: ['girl1', 'girl2', 'girl3', 'helmet'],
+    spritegirls: ['girl0', 'girl1', 'girl2', 'girl3'],
+  },
+  beach: {
+    name: 'Beach',
+    location: 'beach',
+    cars: ['lamborgini', 'porsche', 'ferrari'],
+    girls: ['girl1', 'girl2', 'girl3', 'helmet'],
+    spritegirls: ['girl0', 'girl1', 'girl2', 'girl3'],
+  },
+  city: {
+    name: 'City',
+    location: 'city',
+    cars: ['lamborgini', 'porsche', 'ferrari'],
+    girls: ['girl1', 'girl2', 'girl3', 'helmet'],
+    spritegirls: ['girl0', 'girl1', 'girl2', 'girl3'],
+  },
 };
 
 export let debugObject = {
@@ -355,6 +438,7 @@ export let debugObject = {
   exposure: 1,
   pixelRatio: Math.min(Math.max(window.devicePixelRatio, 2), 1),
   cameraInitMovementCompleted: false,
+  firstLoadCompleted: false,
   needsToggleCalendar: false,
   selects: [],
   carPaintMaterials: ['paint', 'CarPaint'],
@@ -375,6 +459,7 @@ export let debugObject = {
     'BG',
     'disk',
     'brake',
+    'World',
   ],
   screenshotSizes: {
     gift: {
@@ -382,8 +467,8 @@ export let debugObject = {
       height: 2160,
     },
     ios: {
-      width: 2560,
-      height: 1440,
+      width: 1920,
+      height: 1080,
     },
     share: {
       width: 1366,
@@ -395,8 +480,8 @@ export let debugObject = {
     },
   },
   includedMaterials: ['paint', 'CarPaint', 'CarPaint_'],
-  shadowMaterials: ['shadow', 'watter', 'Shadow_'],
+  shadowMaterials: ['shadow', 'watter', 'Shadow_', 'Shadow'],
   bloomIntensity: 0,
   showStats: false,
-  showDebug: true,
+  showDebug: window.location.hash === '#debug',
 };

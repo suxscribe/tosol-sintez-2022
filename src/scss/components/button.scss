@@ -88,7 +88,9 @@
     // justify-content: center;
     background-color: $color-white;
 
-    & img {
+    & .button__icon img {
+      width: responsive-value(24px, 32px);
+      height: responsive-value(24px, 32px);
     }
   }
   &--black {
@@ -99,6 +101,7 @@
     font-family: $font-family;
     text-align: center;
     justify-content: center;
+    width: 100%;
 
     &:hover {
       background-color: rgba($color-dark, 0.8);
@@ -106,7 +109,10 @@
   }
 
   &--icon {
-    padding-right: $button-round-padding;
+    border: none;
+    max-width: $button-s-height;
+
+    padding: $button-round-padding;
     @include button-svg();
   }
 

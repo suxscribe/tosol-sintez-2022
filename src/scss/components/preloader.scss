@@ -6,7 +6,7 @@
   bottom: 0;
   // background-color: $color-white;
   background: linear-gradient(180deg, rgba(27, 45, 68, 1) 0%, #1b2d44 100%);
-  backdrop-filter: blur(50px);
+  // backdrop-filter: blur(50px);
   justify-content: center;
   align-items: center;
   z-index: 2000;
@@ -24,6 +24,10 @@
     pointer-events: all;
   }
 
+  &--light {
+    background: rgba($color-black, 0.5);
+  }
+
   &__main {
     flex: 1 1 auto;
     display: flex;
@@ -37,6 +41,11 @@
     align-items: center;
     width: responsive-value(190px, 476px);
     height: responsive-value(190px, 476px);
+
+    .preloader--light & {
+      width: responsive-value(120px, 250px);
+      height: responsive-value(120px, 250px);
+    }
   }
 
   &__image {
@@ -44,9 +53,15 @@
     width: 100%;
     height: 100%;
 
-    & > img {
+    & > img,
+    & > svg {
       width: 100%;
       height: 100%;
+      fill: $color-error;
+
+      .preloader--light & {
+        fill: $color-white;
+      }
     }
   }
   &__content {
@@ -55,6 +70,10 @@
     flex-direction: column;
     align-items: center;
     transform: translateY(20%);
+
+    .preloader--light & {
+      display: none;
+    }
   }
   &__logo {
     margin-bottom: 15px;
@@ -72,5 +91,9 @@
   &__bottom {
     flex: 0 0 auto;
     margin-bottom: responsive-value(15px, 50px);
+
+    .preloader--light & {
+      display: none;
+    }
   }
 }

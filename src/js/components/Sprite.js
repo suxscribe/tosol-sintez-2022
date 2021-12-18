@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import Sizes from './Sizes.js';
 import { debugObject } from './data/vars';
+import { isIos } from './Utils.js';
 
 export default class Sprite {
   constructor(_options) {
@@ -28,7 +29,15 @@ export default class Sprite {
 
   async loadTexture() {
     if (this.clothing && this.pose) {
-      this.textureSrc = this.object.clothing[this.clothing][this.pose].source;
+      if (
+        isIos() &&
+        this.object.clothing[this.clothing][this.pose].sourceFallback !== ''
+      ) {
+        this.textureSrc =
+          this.object.clothing[this.clothing][this.pose].sourceFallback; // load png girl textures on ios devices instead of webp
+      } else {
+        this.textureSrc = this.object.clothing[this.clothing][this.pose].source; // load default texture (webp or png)
+      }
     } else {
       this.textureSrc = this.object.source;
     }

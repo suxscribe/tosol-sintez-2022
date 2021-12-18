@@ -178,6 +178,10 @@
     color: $color-black;
     text-align: center;
 
+    & a {
+      text-decoration: underline;
+    }
+
     @media (min-width: $breakpoint-small) {
       text-align: center;
     }

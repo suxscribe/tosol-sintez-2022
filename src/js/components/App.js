@@ -98,13 +98,22 @@ export default class App {
       }
 
       // hide loading screen
-      this.loadingScreen.classList.remove('preloader--active');
+      setTimeout(() => {
+        this.loadingScreen.classList.remove('preloader--active');
+
+        if (!this.debugObject.firstLoadCompleted) {
+          setTimeout(() => {
+            this.loadingScreen.classList.add('preloader--light');
+          }, 500);
+        }
+      }, 500);
 
       // Initial Camera Movement
       if (!this.debugObject.cameraInitMovementCompleted) {
         this.camera.startCameraInitialFly();
         this.debugObject.cameraInitMovementCompleted = true;
       }
+
       this.debugObject.needsUpdate = true;
     };
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
@@ -120,7 +129,7 @@ export default class App {
   setRenderer() {
     // Scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#333333');
+    this.scene.background = new THREE.Color('#000000');
 
     // Renderer
     this.renderer = new THREE.WebGLRenderer({

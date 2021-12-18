@@ -19,7 +19,7 @@ class Saver
 
   function getFilename($tm)
   {
-    return $this->config['upload_dir'] . "image_{$tm}.png";
+    return $this->config['upload_dir'] . "image_{$tm}.jpg";
   }
 
   function saveImage($base64)
