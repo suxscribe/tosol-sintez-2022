@@ -30,7 +30,7 @@ export default class Camera extends EventEmitter {
 
   setInstance() {
     // Set Camera instance
-    this.instance = new THREE.PerspectiveCamera(this.fov, this.sizes, 0.1, 150);
+    this.instance = new THREE.PerspectiveCamera(this.fov, this.sizes, 0.1, 250);
 
     this.instance.position.set(21, 8, 0.5);
 
@@ -69,8 +69,8 @@ export default class Camera extends EventEmitter {
       this.renderer.domElement
     );
 
-    this.cameraControls.dampingFactor = 0.03;
-    this.cameraControls.draggingDampingFactor = 0.03;
+    this.cameraControls.dampingFactor = 0.01;
+    this.cameraControls.draggingDampingFactor = 0.01;
     this.cameraControls.azimuthRotateSpeed = this.azimuthRotateSpeed;
     this.cameraControls.polarRotateSpeed = this.polarRotateSpeed;
     this.cameraControls.dollySpeed = this.dollySpeed;
@@ -78,7 +78,7 @@ export default class Camera extends EventEmitter {
 
     this.cameraControls.minDistance = 15;
     this.cameraControls.maxDistance = 20;
-    this.cameraControls.minAzimuthAngle = Math.PI * 0.57; // clockwise
+    this.cameraControls.minAzimuthAngle = Math.PI * 0.6; // clockwise
     this.cameraControls.maxAzimuthAngle = Math.PI * 0.8; // counter clockwise
     this.cameraControls.minPolarAngle = Math.PI * 0.43;
     this.cameraControls.maxPolarAngle = Math.PI * 0.495; // lower
@@ -105,6 +105,10 @@ export default class Camera extends EventEmitter {
       this.cameraControls.addEventListener('rest', () => {
         // console.log('cameratransitionend');
         this.trigger('cameratransitionend');
+
+        // reset damping values after Camera Initial fly. Looks ugly, but works
+        this.cameraControls.dampingFactor = 0.01;
+        this.cameraControls.draggingDampingFactor = 0.01;
       });
       this.cameraControls.addEventListener('update', () => {
         // console.log('camera update');
@@ -130,12 +134,18 @@ export default class Camera extends EventEmitter {
     this.cameraControls.polarRotateSpeed = 0.01;
     this.cameraControls.dollySpeed = 0.01;
 
+    this.cameraControls.dampingFactor = 0.001;
+    this.cameraControls.draggingDampingFactor = 0.001;
+
     this.cameraControls.setPosition(10, 4, -12, true);
     // restore values
     this.cameraControls.azimuthRotateSpeed = this.azimuthRotateSpeed;
     this.cameraControls.polarRotateSpeed = this.polarRotateSpeed;
     this.cameraControls.dollySpeed = this.dollySpeed;
     this.cameraControls.truckSpeed = this.truckSpeed;
+
+    // this.cameraControls.dampingFactor = 0.01;
+    // this.cameraControls.draggingDampingFactor = 0.01;
   }
 
   /*

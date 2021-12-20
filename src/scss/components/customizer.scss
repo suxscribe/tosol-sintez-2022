@@ -4,13 +4,13 @@
 
   $generate-button-size: responsive-value(36px, 64px);
 
-  $customizer-control-item-size: responsive-value(48px, 140px);
+  $customizer-control-item-size: responsive-value(48px, 96px);
   $customizer-control-subitem-size: responsive-value(32px, 64px);
   $customizer-control-item-radius: responsive-value(60px, 80px);
 
   $customizer-button-margin: responsive-value(7px, 15px);
 
-  $control-color-size: responsive-value(20px, 40px);
+  $control-color-size: responsive-value(18px, 36px);
 
   position: absolute;
   left: 0;
@@ -20,13 +20,17 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  pointer-events: none;
+
+  & > * {
+    pointer-events: all;
+  }
 
   &__control {
     // First Level Controls
     &-buttons {
+      @include dark-bg-border;
       margin-left: $customizer-button-margin;
-      background-color: $color-gray;
-      border: 2px solid $color-white;
       border-radius: $customizer-buttons-bar-radius;
       padding: responsive-value(2px, 6px);
 
@@ -47,7 +51,7 @@
     &-button {
       width: $customizer-button-size;
       height: $customizer-button-size;
-      background: $color-gray;
+      background: $color-gray-2;
       // border: 2px solid transparent;
       border-radius: 50%;
       text-align: center;
@@ -137,13 +141,14 @@
       }
 
       &-wrap {
-        background: $color-gray;
+        @include dark-bg-border;
         border-radius: $border-radius;
         padding: $customizer-button-margin;
-        border: 2px solid $color-white;
         backdrop-filter: blur(50px);
         overflow: auto;
-        max-height: 92vh;
+        overflow-x: hidden;
+        max-height: 98vh;
+        scrollbar-width: thin;
       }
 
       &-items {
@@ -159,9 +164,9 @@
       margin-bottom: $customizer-button-margin;
       color: $color-black;
       cursor: pointer;
-      background-color: $color-white;
+      background-color: $color-gray-2;
       // padding: $block-padding;
-      border: 2px solid $color-white;
+      border: 2px solid $color-gray;
       border-radius: 50%;
       overflow: hidden;
       text-align: center;
@@ -189,9 +194,9 @@
     &-subitem {
       width: $customizer-control-subitem-size;
       height: $customizer-control-subitem-size;
-      background-color: $color-white;
-      border-radius: 50%;
-      border: 2px solid transparent;
+      // background-color: $color-white;
+      // border-radius: 50%;
+      // border: 2px solid transparent;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -211,8 +216,7 @@
     }
 
     &-colors {
-      background-color: $color-gray;
-      border: 2px solid $color-white;
+      @include dark-bg-border;
       padding: 0 12px 0 14px;
       height: $button-s-height;
       text-transform: uppercase;
@@ -226,13 +230,17 @@
         display: flex;
         justify-content: center;
         flex: 1 0 auto;
+        gap: $customizer-button-margin;
 
-        & > * {
-          margin-right: $customizer-button-margin;
-
-          &:last-child {
-            margin-right: 0;
-          }
+        @media (min-width: $breakpoint-medium) {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-80%);
+        }
+        @media (min-width: $breakpoint-large) {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
         }
       }
 
@@ -257,9 +265,18 @@
 
         background-color: $color-gray;
         transition: all 0.2s ease;
-        box-shadow: inset -3px -3px 15px 0 rgba(0, 0, 0, 0.5),
-          inset 3px 3px 15px 0 rgba(255, 255, 255, 0.5);
+        background: linear-gradient(
+            149.04deg,
+            rgba(255, 255, 255, 0.4) 15.14%,
+            rgba(255, 255, 255, 0.096) 53.72%,
+            rgba(0, 0, 0, 0.188) 91.5%
+          ),
+          #d90e3e;
+        // box-shadow: inset -3px -3px 15px 0 rgba(0, 0, 0, 0.5), inset 3px 3px 15px 0 rgba(255, 255, 255, 0.5);
         cursor: pointer;
+
+        &:before {
+        }
 
         &:last-child {
           margin-right: 0;
@@ -270,7 +287,7 @@
         }
 
         &.active {
-          border-color: $color-white;
+          border-color: $color-gray;
           border-width: 2px;
         }
       }
@@ -315,6 +332,7 @@
           height: $button-icon-wrap-size;
           overflow: hidden;
           border-radius: 50%;
+          background-color: $color-gray-2;
         }
         & > svg {
           width: $button-icon-size;
@@ -334,11 +352,14 @@
         margin-bottom: $customizer-button-margin;
         z-index: 5;
         // margin-left: 15px;
-        background: $color-gray;
+        @include dark-bg-border;
         border-radius: $border-radius;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
 
-        padding: 16px 16px;
-        border: 2px solid $color-white;
+        // padding: 16px 16px;
+        padding: 10px 10px 0 10px;
         backdrop-filter: blur(50px);
         opacity: 0;
         transition: all var(--transition);
@@ -352,8 +373,6 @@
         }
       }
       &-clothing {
-        margin-bottom: 10px;
-
         &:last-child {
           margin-bottom: 0;
         }
@@ -366,6 +385,11 @@
       &-sublist {
         display: flex;
         gap: 6px;
+        border-bottom: 2px solid rgba($color-gray, 0.5);
+
+        &:last-child {
+          border-bottom: none;
+        }
       }
     }
     &-pose-item {
@@ -403,7 +427,7 @@
     &__center {
       justify-self: center;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       flex: 1 1 auto;
 
       & > * {
@@ -469,7 +493,7 @@
 
   &__share-button {
     @media (min-width: $breakpoint-medium) {
-      max-width: $button-max-width;
+      // max-width: $button-max-width;
     }
   }
   &__gift {
@@ -523,11 +547,23 @@
   }
 
   &__top-logo {
+    flex: 0 0 auto;
     position: absolute;
-    left: 50%;
-    top: $customizer-button-margin;
-    transform: translateX(-50%);
-    width: responsive-value(130px, 280px);
+    // left: 50%;
+    // top: $customizer-button-margin;
+    // transform: translateX(-50%);
+    // width: responsive-value(130px, 280px);
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
     pointer-events: none;
+
+    & img {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+      object-position: left top;
+    }
   }
 }

@@ -32,6 +32,8 @@
     flex: 1 1 auto;
     display: flex;
     align-items: center;
+    flex-direction: column;
+    justify-content: center;
   }
 
   &__center {
@@ -45,6 +47,22 @@
     .preloader--light & {
       width: responsive-value(120px, 250px);
       height: responsive-value(120px, 250px);
+    }
+  }
+
+  &__text {
+    display: none;
+    color: $color-error;
+    text-transform: uppercase;
+    margin-top: responsive-value(10px, 30px);
+    // @include font-h3;
+
+    &.visible {
+      display: block;
+
+      .preloader--light & {
+        display: none;
+      }
     }
   }
 

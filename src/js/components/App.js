@@ -16,6 +16,7 @@ import Screenshot from './Screenshot';
 import World from './World';
 
 import { validateForms } from '../utils/forms';
+import { isIos } from './Utils';
 
 export default class App {
   constructor(_options) {
@@ -33,6 +34,7 @@ export default class App {
 
     this.lights = {};
 
+    this.iosStuff();
     this.initConfig();
     this.setDebug();
     this.setLoadingManager();
@@ -54,9 +56,15 @@ export default class App {
     validateForms();
   }
 
+  iosStuff() {
+    if (isIos()) {
+      window.createImageBitmap = undefined;
+    }
+  }
+
   initConfig() {
     this.config = {
-      scene: this.customizer.studio,
+      scene: this.customizer.night,
       car: 'lamborgini',
       girl: 'empty',
       spritegirl: 'girl1',
@@ -119,6 +127,9 @@ export default class App {
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
       // console.log('Loading ' + itemsLoaded + ' of ' + itemsTotal + ' total');
       const progress = Math.ceil((itemsLoaded / itemsTotal) * 100);
+      if (progress > 50) {
+        document.querySelector('.preloader__text').classList.add('visible');
+      }
       vars.preloaderProgressDom.innerHTML = progress + '%';
     };
     this.loadingManager.onError = (url) => {
@@ -129,7 +140,7 @@ export default class App {
   setRenderer() {
     // Scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#000000');
+    this.scene.background = new THREE.Color('#333333');
 
     // Renderer
     this.renderer = new THREE.WebGLRenderer({

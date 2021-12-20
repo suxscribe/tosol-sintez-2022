@@ -24,7 +24,10 @@ export default class UpdateMaterials {
         // console.log(child.material);
 
         // Disable envMap effect on some materials
-        if (this.debugObject.excludedMaterials.includes(child.material.name)) {
+        if (
+          this.debugObject.excludedMaterials.includes(child.material.name) ||
+          this.debugObject.shadowMaterials.includes(child.material.name)
+        ) {
           child.material.envMapIntensity = 0;
         }
 
@@ -62,7 +65,7 @@ export default class UpdateMaterials {
 
         child.material.needsUpdate = true; // this is for tonemapping
 
-        debugObject.selects.push(child); // ssr
+        // debugObject.selects.push(child); // ssr
       }
     });
     console.log('updateMaterials');

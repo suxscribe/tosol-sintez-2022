@@ -425,9 +425,10 @@ export default class Interface {
     let i = 1;
     Object.entries(objectsData.spritegirls[girl].clothing).forEach(
       ([clothingType, poseList]) => {
-        markup += `<div class=" customizer__control-girls-params-clothing">
-        <div class="customizer__control-girls-params-clothing-name" data-clothing="${clothingType}">Вариант ${i}</div>
+        markup += `
         <ul class="customizer__control-girls-params-sublist customizer__control-girls-params-pose-list">`;
+
+        // <div class=" customizer__control-girls-params-clothing"><div class="customizer__control-girls-params-clothing-name" data-clothing="${clothingType}" > Вариант ${i} </div>;
 
         let j = 1;
         Object.entries(poseList).forEach(([pose, poseParams]) => {
@@ -437,7 +438,7 @@ export default class Interface {
           j++;
         });
 
-        markup += `</ul></div>`;
+        markup += `</ul>`; // </div>
         i++;
       }
     );

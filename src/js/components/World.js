@@ -256,7 +256,7 @@ export default class World {
       // this.scene.background = this.debugObject.environmentMap;
     }
     // LOAD EXR
-    else if (envMapType == 'exr') {
+    /* else if (envMapType == 'exr') {
       this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
       this.pmremGenerator.compileEquirectangularShader();
 
@@ -280,7 +280,7 @@ export default class World {
       this.renderer.outputEncoding = THREE.sRGBEncoding;
 
       this.scene.environment = exrEnvMap;
-    }
+    } */
     // EXR END
 
     if (this.debug && debugObject.showDebug === true) {

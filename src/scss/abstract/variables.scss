@@ -13,10 +13,12 @@ $color-green: #95962d;
 $color-yellow: #e0e339;
 $color-dark: #1b2d44;
 $color-error: #d90e3e;
-$color-picker: #a00b17;
+$color-picker: #00395f;
 
 $color-gray: rgba(241, 243, 251, 0.7);
 $color-gray-2: #5a5a5c;
+$color-gray-dark: rgba(32, 32, 32, 0.7);
+$color-button-label: #c7c7c7;
 
 :root {
   --box-shadow: 0 10px 40px #{$color-gray};

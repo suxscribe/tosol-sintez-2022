@@ -4,7 +4,7 @@
       width: $button-icon-wrap-size;
       height: $button-icon-wrap-size;
       padding: 10px;
-      background: #fff;
+      // background: #fff;
       border-radius: 50%;
       display: flex;
       position: relative;
@@ -21,8 +21,8 @@
   }
 
   @include font-body;
-  background-color: $color-gray;
-  border: 2px solid $color-white;
+  @include dark-bg-border;
+
   padding: 0 $button-padding;
   height: $button-s-height;
   text-transform: uppercase;
@@ -30,13 +30,13 @@
   white-space: nowrap;
   cursor: pointer;
   text-align: center;
+  color: $color-button-label;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0);
-  backdrop-filter: blur(50px);
   transition: all 0.65s $button-transition;
 
   &:hover {
@@ -51,7 +51,7 @@
   }
 
   &--round {
-    border: none;
+    // border: none;
     max-width: $button-s-height;
     position: relative;
     // justify-content: space-between;
@@ -83,10 +83,10 @@
 
   &--gift {
     padding: responsive-value(8px, 12px);
-    border: none;
+    // border: none;
     // width: $button-s-height;
     // justify-content: center;
-    background-color: $color-white;
+    // background-color: $color-white;
 
     & .button__icon img {
       width: responsive-value(24px, 32px);
@@ -118,6 +118,7 @@
 
   &__content {
     padding-right: 10px;
+    // transform: translateY(1px);
 
     .button--round & {
       padding-right: 0px;

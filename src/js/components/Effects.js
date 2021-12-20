@@ -120,7 +120,7 @@ export default class Effects {
     this.composer.addPass(this.unrealBloomPass);
     this.unrealBloomPass.strength = 0.7;
     this.unrealBloomPass.radius = 0.1;
-    this.unrealBloomPass.threshold = 0.9;
+    this.unrealBloomPass.threshold = 0.93;
 
     if (this.debug && debugObject.showDebug === true) {
       this.debugUnrealBloomFolder = this.debug.addFolder(' Unreal Bloom');

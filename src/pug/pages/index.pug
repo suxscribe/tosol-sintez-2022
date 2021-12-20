@@ -10,7 +10,8 @@ block content
   include ../includes/modules/overlay-rotate
   canvas.webgl
   .customizer__top-logo 
-    +svg({name: 'felix2022-logo', viewbox: '0 0 285 38'})
+    //- +svg({name: 'logo-bar', viewbox: '0 0 385 1080'})
+    img(src="/assets/images/logo-bar.png", alt="")
   .customizer__fullscreen.button.button--icon.hidden(data-tippy-content="Развернуть на полный экран")
     span.button__icon 
       +svg({name: 'fullscreen'}).customizer__fullscreen-expand
