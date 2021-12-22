@@ -1,9 +1,11 @@
 import Inputmask from 'inputmask';
 
 export const validateForms = () => {
-  Inputmask({ mask: '+7 999 999 99 99', placeholder: ' ' }).mask(
-    document.querySelectorAll('.form__phone')
-  );
+  Inputmask({
+    mask: '+7 999 999 99 99',
+    placeholder: ' ',
+    // clearIncomplete: true,
+  }).mask(document.querySelectorAll('.form__phone'));
   // validate forms
   var contactForm = document.querySelectorAll('.form');
 
@@ -12,8 +14,7 @@ export const validateForms = () => {
       // check inputs on focusout
       form.querySelectorAll('.validate--empty').forEach((input) => {
         input.addEventListener('focusout', () => {
-          if (checkIfEmpty(input)) return;
-          return true;
+          checkIfEmpty(input);
         });
       });
 
@@ -21,9 +22,8 @@ export const validateForms = () => {
       const inputEmail = form.querySelector('.validate--email');
       if (inputEmail) {
         inputEmail.addEventListener('focusout', () => {
-          if (checkIfEmpty(inputEmail)) return;
-          if (checkIfEmail(inputEmail)) return;
-          return true;
+          checkIfEmpty(inputEmail);
+          checkIfEmail(inputEmail);
         });
       }
 
@@ -33,34 +33,47 @@ export const validateForms = () => {
         inputPhone.addEventListener('input', () => {
           console.log('input');
 
-          // if (checkIfEmpty(inputPhone)) return;
-          // console.log(checkIfOnlyDigits(inputPhone));
-
-          // if (checkIfOnlyDigits(inputPhone)) return;
-          // return true;
+          checkIfEmpty(inputPhone);
+          checkIfOnlyDigits(inputPhone);
         });
 
         inputPhone.addEventListener('focusout', () => {
           console.log('focus out phone');
 
-          if (checkIfEmpty(inputPhone)) return;
-          if (checkIfOnlyDigits(inputPhone)) return;
+          checkIfEmpty(inputPhone);
+          checkIfOnlyDigits(inputPhone);
           // return true;
         });
       }
+
+      form.addEventListener(
+        'submit',
+        (e) => {
+          // console.log('form invalid');
+
+          //prevent the browser from showing default error bubble / hint
+          e.preventDefault();
+          const inputPhone = form.querySelector('.validate--phone');
+          console.log(checkIfEmpty(inputPhone));
+          console.log(checkAllFields(form));
+
+          // optionally fire off some custom validation handler
+          console.log('check all fields');
+          checkAllFields(form);
+        },
+        true
+      );
     });
 
     document.addEventListener(
       'invalid',
       (function () {
-        // console.log('form invalid');
-
         return function (e) {
-          // console.log(e);
-
+          console.log('form invalid');
           //prevent the browser from showing default error bubble / hint
           e.preventDefault();
           // optionally fire off some custom validation handler
+
           checkAllFields(e.target.form);
         };
       })(),
@@ -68,24 +81,37 @@ export const validateForms = () => {
     );
 
     const checkAllFields = (form) => {
+      let count = 0;
       form.querySelectorAll('.validate--empty').forEach((input) => {
-        if (checkIfEmpty(input)) return;
-        return true;
+        if (checkIfEmpty(input)) {
+          count++;
+        }
+        // return true;
       });
 
       const inputEmail = form.querySelector('.validate--email');
       if (inputEmail) {
-        if (checkIfEmpty(inputEmail)) return;
-        if (checkIfEmail(inputEmail)) return;
+        if (checkIfEmpty(inputEmail)) {
+          count++;
+        }
+        if (checkIfEmail(inputEmail)) {
+          count++;
+        }
         // return true;
       }
 
       const inputPhone = form.querySelector('.validate--phone');
       if (inputPhone) {
-        if (checkIfEmpty(inputPhone)) return;
-        if (checkIfOnlyDigits(inputPhone)) return;
+        if (checkIfEmpty(inputPhone)) {
+          count++;
+        }
+        if (checkIfOnlyDigits(inputPhone)) {
+          count++;
+        }
         // return true;
       }
+
+      return count;
     };
 
     const checkIfEmpty = (field) => {
@@ -150,6 +176,7 @@ export const validateForms = () => {
         console.log('check digits field invalid');
 
         setInvalid(field, 'Неверный формат номера');
+        return false;
       }
     };
     const checkIfEmail = (field) => {
@@ -162,6 +189,7 @@ export const validateForms = () => {
         return true;
       } else {
         setInvalid(field, 'Неверный формат');
+        return false;
       }
     };
   }

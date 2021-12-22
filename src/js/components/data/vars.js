@@ -179,7 +179,7 @@ export const objectsData = {
     porsche: {
       name: 'Porsche',
       source: '/assets/models/porsche-2.glb',
-      preview: '/assets/images/previews/car-porsche.png',
+      preview: '/assets/images/previews/car-porsche.jpg',
       position: new THREE.Vector3(0, 0, 0),
       scale: new THREE.Vector3(0.029, 0.029, 0.029),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -187,7 +187,7 @@ export const objectsData = {
     ferrari: {
       name: 'Ferrari',
       source: '/assets/models/ferrari-03.glb',
-      preview: '/assets/images/previews/car-ferrari.png',
+      preview: '/assets/images/previews/car-ferrari.jpg',
       position: new THREE.Vector3(0, 0, 0),
       scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -195,7 +195,7 @@ export const objectsData = {
     lamborgini: {
       name: 'Lamborgini',
       source: '/assets/models/lamborgini-17.glb',
-      preview: '/assets/images/previews/car-lamborgini.png',
+      preview: '/assets/images/previews/car-lamborgini.jpg',
       position: new THREE.Vector3(0, 0.0, 0),
       scale: new THREE.Vector3(0.3, 0.3, 0.3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
@@ -333,51 +333,51 @@ export const objectsData = {
           pose1: {
             source: '/assets/textures/girl2/girl-1-1.webp',
             sourceFallback: '/assets/textures/girl2/girl-1-1.png',
-            preview: '/assets/images/previews/girl2/girl-1-1-preview.png',
+            preview: '/assets/images/previews/girl2/girl-1-1.png',
           },
           pose2: {
             source: '/assets/textures/girl2/girl-1-2.webp',
             sourceFallback: '/assets/textures/girl2/girl-1-2.png',
-            preview: '/assets/images/previews/girl2/girl-1-2-preview.png',
+            preview: '/assets/images/previews/girl2/girl-1-2.png',
           },
           pose3: {
             source: '/assets/textures/girl2/girl-1-3.webp',
             sourceFallback: '/assets/textures/girl2/girl-1-3.png',
-            preview: '/assets/images/previews/girl2/girl-1-3-preview.png',
+            preview: '/assets/images/previews/girl2/girl-1-3.png',
           },
         },
         clothing2: {
           pose1: {
             source: '/assets/textures/girl2/girl-2-1.webp',
             sourceFallback: '/assets/textures/girl2/girl-2-1.png',
-            preview: '/assets/images/previews/girl2/girl-2-1-preview.png',
+            preview: '/assets/images/previews/girl2/girl-2-1.png',
           },
           pose2: {
             source: '/assets/textures/girl2/girl-2-2.webp',
             sourceFallback: '/assets/textures/girl2/girl-2-2.png',
-            preview: '/assets/images/previews/girl2/girl-2-2-preview.png',
+            preview: '/assets/images/previews/girl2/girl-2-2.png',
           },
           pose3: {
             source: '/assets/textures/girl2/girl-2-3.webp',
             sourceFallback: '/assets/textures/girl2/girl-2-3.png',
-            preview: '/assets/images/previews/girl2/girl-2-3-preview.png',
+            preview: '/assets/images/previews/girl2/girl-2-3.png',
           },
         },
         clothing3: {
           pose1: {
             source: '/assets/textures/girl2/girl-3-1.webp',
             sourceFallback: '/assets/textures/girl2/girl-3-1.png',
-            preview: '/assets/images/previews/girl2/girl-3-1-preview.png',
+            preview: '/assets/images/previews/girl2/girl-3-1.png',
           },
           pose2: {
             source: '/assets/textures/girl2/girl-3-2.webp',
             sourceFallback: '/assets/textures/girl2/girl-3-2.png',
-            preview: '/assets/images/previews/girl2/girl-3-2-preview.png',
+            preview: '/assets/images/previews/girl2/girl-3-2.png',
           },
           pose3: {
             source: '/assets/textures/girl2/girl-3-3.webp',
             sourceFallback: '/assets/textures/girl2/girl-3-3.png',
-            preview: '/assets/images/previews/girl2/girl-3-3-preview.png',
+            preview: '/assets/images/previews/girl2/girl-3-3.png',
           },
         },
       },

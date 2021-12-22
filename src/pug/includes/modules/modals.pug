@@ -68,13 +68,13 @@ section
           .modal__tab.modal__tab--2
             .modal__form
               p.modal__text Уважаемые партнеры, заполните данные, мы&nbsp;напечатаем и&nbsp;пришлем ваш календарь
-              form#form-gift(action="").form
-                +form-row({name: "form-name", title: "ФИО", validate: 'empty', 'placeholder': ' ' })
+              form#form-gift(action="#").form
+                +form-row({id: 'form-name',name: "form-name", title: "ФИО", validate: 'empty', 'placeholder': ' ' })
                 .form__row-wrap
-                  +form-row({name: "form-phone", title: "Телефон", validate: 'phone', inputmask: "'mask': '+7 999 999 99 99', 'placeholder': ' '", placeholder: ' '})
-                  +form-row({name: "form-company", title: "Компания", validate: 'empty', 'placeholder': ' '})
-                  +form-row({name: "form-email", title: "Email", validate: 'email', 'placeholder': ' '})
-                  +form-row({name: "form-code", title: "Код с открытки", validate: '', 'placeholder': ' ', id:"form-code"})
+                  +form-row({id:'form-phone',name: "form-phone", title: "Телефон", validate: 'phone', inputmask: "'mask': '+7 999 999 99 99', 'placeholder': ' '", placeholder: ' '})
+                  +form-row({id:'form-company',name: "form-company", title: "Компания", validate: 'empty', 'placeholder': ' '})
+                  +form-row({id:'form-email',name: "form-email", title: "Email", validate: 'email', 'placeholder': ' '})
+                  +form-row({id:'form-code',name: "form-code", title: "Код с открытки", validate: 'empty', 'placeholder': ' ', id:"form-code"})
                 input#form-screenshot(type="hidden", name="form-screenshot")
                 .form__row.form__submit
                   button(type="submit").form__submit-button.button.button--black отправить заявку

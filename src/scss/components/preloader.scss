@@ -41,8 +41,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: responsive-value(190px, 476px);
-    height: responsive-value(190px, 476px);
+    width: 180px;
+    height: 180px;
+
+    @media (min-width: $breakpoint-medium) {
+      width: responsive-value(190px, 476px);
+      height: responsive-value(190px, 476px);
+    }
 
     .preloader--light & {
       width: responsive-value(120px, 250px);
@@ -98,13 +103,17 @@
   }
   &__progress {
     color: $color-error;
-    font-size: responsive-value(24px, 48px);
+    font-size: 20px;
     -moz-text-fill-color: transparent;
     -moz-text-stroke-color: $color-error;
     -moz-text-stroke-width: 2px;
     -webkit-text-fill-color: transparent;
     -webkit-text-stroke-color: $color-error;
     -webkit-text-stroke-width: 2px;
+
+    @media (min-width: $breakpoint-medium) {
+      font-size: responsive-value(24px, 48px);
+    }
   }
   &__bottom {
     flex: 0 0 auto;

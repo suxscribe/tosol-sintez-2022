@@ -16,7 +16,7 @@ import Screenshot from './Screenshot';
 import World from './World';
 
 import { validateForms } from '../utils/forms';
-import { isIos } from './Utils';
+import { isIos, setVh } from './Utils';
 
 export default class App {
   constructor(_options) {
@@ -53,7 +53,7 @@ export default class App {
 
     this.setEvents();
 
-    validateForms();
+    // validateForms();
   }
 
   iosStuff() {
@@ -299,8 +299,10 @@ export default class App {
 
   setEvents() {
     // Window resize
+    setVh();
     this.sizes.on('resize', () => {
       this.resize();
+      setVh();
       // this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       this.debugObject.needsUpdate = true;
     });

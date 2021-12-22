@@ -5,7 +5,7 @@ mixin svg(args)
 mixin form-row(args)
   .form__row.form__row-input.stacked(class=args.class, )
     if args.textarea
-      textarea(placeholder=args.placeholder, name=args.name, class=`form__textarea validate--${args.validate}`, oninput="this.parentNode.dataset.value = this.value")
+      textarea(placeholder=args.placeholder, name=args.name, class=`form__textarea validate--${args.validate}`, id=args.name, oninput="this.parentNode.dataset.value = this.value")
     else
       input(id=args.id, type="text", placeholder=args.placeholder, name=args.name, class=`validate--${args.validate} form__${args.validate}`, required).form__input
       

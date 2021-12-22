@@ -1,5 +1,7 @@
 import tippy from 'tippy.js';
 import MicroModal from 'micromodal';
+import JustValidate from 'just-validate';
+import Inputmask from 'inputmask';
 
 import { vars, objectsData, customizerData, debugObject } from './data/vars';
 import { showRotateOverlay } from '../utils/showOverlay';
@@ -20,6 +22,8 @@ export default class Interface {
     this.debugObject = debugObject;
     this.customizer = customizerData; // Objects sets available for each scene \ location
 
+    this.setFormValidation();
+
     this.setEvents();
     this.renderCustomizer();
     this.renderColorsList();
@@ -33,36 +37,49 @@ export default class Interface {
     });
   }
 
-  modalSwitchToTab(tabIndex) {
-    vars.customizerModalTabs.forEach((tab) => {
-      tab.classList.remove('active');
-    });
-    vars.customizerModalTabs[tabIndex].classList.add('active');
-  }
+  setFormValidation() {
+    Inputmask({
+      mask: '+7 999 999 99 99',
+      placeholder: ' ',
+      // clearIncomplete: true,
+    }).mask(document.querySelectorAll('.form__phone'));
 
-  renderColorsList() {
-    if (vars.customizerCarColorsDom) {
-      vars.carColors.forEach((color) => {
-        const markup = `
-        <div class="customizer__control-colors-item customizer__car-color ${
-          color[1] === this.config.carColor ? 'active' : ''
-        }" data-color="${color[1]}" style="background-color: ${color[0]}"></div>
-          `;
-        vars.customizerCarColorsDom.insertAdjacentHTML('beforeend', markup);
+    this.validator = new JustValidate(vars.formDom, {
+      errorLabelCssClass: 'form__note',
+    });
+
+    this.validator
+      .addField('#form-name', [
+        { rule: 'required', errorMessage: 'Обязательное поле' },
+      ])
+      .addField('#form-company', [
+        { rule: 'required', errorMessage: 'Обязательное поле' },
+      ])
+      .addField('#form-code', [
+        {
+          rule: 'customRegexp',
+          value: /\bcustom\b/i,
+          errorMessage: 'Введен неверный код',
+        },
+      ])
+      .addField('#form-email', [
+        { rule: 'email', errorMessage: 'Укажите верный email' },
+      ])
+      .addField('#form-phone', [
+        {
+          rule: 'customRegexp',
+          value:
+            /^[\+]?[\s]?[0-9]{1}[\s][0-9]{3}[\s]?[0-9]{3}[-\s]?[0-9]{2}[-\s]?[0-9]{2}$/im,
+          errorMessage: 'Обязательное поле',
+        },
+      ])
+      .onSuccess((e) => {
+        e.preventDefault();
+        console.log('form passed');
+      })
+      .onFail((e) => {
+        console.log('form fail');
       });
-    }
-  }
-
-  customizerSetCarColor(color) {
-    this.config.carColor = color;
-    this.updateMaterials.changeCarColor(color);
-
-    document.querySelectorAll(`.${vars.carColorClass}`).forEach((element) => {
-      element.classList.remove('active');
-      if (element.dataset.color == this.config.carColor)
-        element.classList.add('active');
-    });
-    // e.target.classList.add('active');
   }
 
   setEvents() {
@@ -236,7 +253,10 @@ export default class Interface {
 
     // FORM SEND
     if (vars.formDom) {
-      vars.formDom.addEventListener('submit', this.formSend);
+      vars.formDom.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.formSend(e);
+      });
     }
 
     document.addEventListener('click', (e) => {
@@ -269,11 +289,14 @@ export default class Interface {
 
   async formSend(e) {
     e.preventDefault();
-    const giftCodeValue = vars.formGiftCodeInputDom.value;
 
-    if (giftCodeValue.toUpperCase() === vars.formGiftCodeMatch.toUpperCase()) {
+    if (this.validator.isValid) {
+      const giftCodeValue = vars.formGiftCodeInputDom.value;
+
+      // if (giftCodeValue.toUpperCase() === vars.formGiftCodeMatch.toUpperCase()) {
       let formData = new FormData(vars.formDom);
       // formData.append('image', formImage.files[0]);
+      // console.log(...formData);
 
       for (var pair of formData.entries()) {
         console.log(pair[0] + ', ' + pair[1]);
@@ -288,16 +311,18 @@ export default class Interface {
 
       if (response.ok) {
         let result = await response.json();
-        // console.log(result.message);
+        console.log(result.message);
         vars.formDom.reset();
         vars.formDom.classList.add('send');
         MicroModal.close('modal-gift');
         MicroModal.show('modal-sent');
       } else {
+        console.log('not sent');
       }
-    } else {
-      alert('Введен неверный код');
     }
+    // } else {
+    //   alert('Введен неверный код');
+    // }
   }
 
   closeControlBars() {
@@ -493,7 +518,7 @@ export default class Interface {
       .querySelectorAll(`.${vars.girlParamsPoseClass}`)
       .forEach((element) => {
         element.classList.remove('active');
-        console.log('GIRL POSES UPDATE');
+        // console.log('GIRL POSES UPDATE');
 
         if (
           element.dataset.clothing == this.config.clothing &&
@@ -590,6 +615,37 @@ export default class Interface {
         vars.customizerGerenateButtonDom.classList.add(vars.hideOnIosClass);
       }
     }
+  }
+
+  modalSwitchToTab(tabIndex) {
+    vars.customizerModalTabs.forEach((tab) => {
+      tab.classList.remove('active');
+    });
+    vars.customizerModalTabs[tabIndex].classList.add('active');
+  }
+
+  renderColorsList() {
+    if (vars.customizerCarColorsDom) {
+      vars.carColors.forEach((color) => {
+        const markup = `
+        <div class="customizer__control-colors-item customizer__car-color ${
+          color[1] === this.config.carColor ? 'active' : ''
+        }" data-color="${color[1]}" style="background-color: ${color[0]}"></div>
+          `;
+        vars.customizerCarColorsDom.insertAdjacentHTML('beforeend', markup);
+      });
+    }
+  }
+
+  customizerSetCarColor(color) {
+    this.config.carColor = color;
+    this.updateMaterials.changeCarColor(color);
+
+    document.querySelectorAll(`.${vars.carColorClass}`).forEach((element) => {
+      element.classList.remove('active');
+      if (element.dataset.color == this.config.carColor)
+        element.classList.add('active');
+    });
   }
 
   getModelName(modelType, modelId) {

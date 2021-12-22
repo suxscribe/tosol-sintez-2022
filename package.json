@@ -47,6 +47,7 @@
     "dat.gui": "^0.7.7",
     "gsap": "^3.8.0",
     "inputmask": "^5.0.6",
+    "just-validate": "^2.0.0",
     "micromodal": "^0.4.10",
     "normalize-wheel": "^1.0.1",
     "postprocessing": "^6.23.3",

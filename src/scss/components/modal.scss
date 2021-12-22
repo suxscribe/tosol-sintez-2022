@@ -17,14 +17,18 @@
     background-image: none;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+
+    @media (min-width: $breakpoint-medium) {
+      align-items: center;
+    }
   }
 
   &__container {
     background-color: $color-gray;
     // width: 100%;
     max-width: 670px;
-    max-height: 95vh;
+    max-height: calc(var(--vh, 1vh) * 100);
     border: 2px solid $color-white;
     backdrop-filter: blur(50px);
 
