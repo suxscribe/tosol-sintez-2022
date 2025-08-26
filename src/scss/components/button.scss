@@ -6,6 +6,7 @@
       padding: 10px;
       // background: #fff;
       border-radius: 50%;
+      flex: 0 1 auto;
       display: flex;
       position: relative;
       align-items: center;
@@ -126,7 +127,7 @@
       opacity: 0;
 
       max-width: 0;
-      flex: 0 0 auto;
+      flex: 0 1 auto;
       transition: all 0.59s $button-transition;
       overflow: hidden;
     }

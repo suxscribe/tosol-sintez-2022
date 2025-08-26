@@ -1,6 +1,7 @@
 <?
 $imageURL = 'https://' . $_SERVER['SERVER_NAME'] . '/script.php?c=view&image=' . $tm;
 $constructorUrl = 'https://constructor.ts-2022.ru';
+$landingUrl = 'https://ts-2022.ru';
 ?>
 
 <!DOCTYPE html>
@@ -13,10 +14,10 @@ $constructorUrl = 'https://constructor.ts-2022.ru';
   <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
   <link rel="icon" href="/favicon.ico">
 
-  <meta property="og:url" content="<?= $imageURL ?>" />
+  <meta property="og:url" content="<?= $landingUrl ?>" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Tosol-Sintez" />
-  <meta property="og:description" content="Конструктор календаря 2022" />
+  <meta property="og:title" content="Конструктор календаря Тосол-Синтез 2022" />
+  <meta property="og:description" content="Конструктор календаря Тосол-Синтез 2022" />
   <meta property="og:image" content="<?= 'https://' . $_SERVER['SERVER_NAME'] . '/' . $filename ?>" />
   <link href="./css/style.bundle.css" rel="stylesheet">
 </head>

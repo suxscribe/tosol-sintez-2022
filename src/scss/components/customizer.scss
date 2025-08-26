@@ -24,6 +24,7 @@
 
   & > * {
     pointer-events: all;
+    user-select: none;
   }
 
   &__control {
@@ -208,6 +209,10 @@
 
       & > * {
         pointer-events: none;
+        height: 100%;
+        width: 100%;
+        object-fit: contain;
+        object-position: bottom;
       }
 
       &.active {
@@ -413,6 +418,7 @@
     padding: responsive-value(8px, 24px);
     box-sizing: border-box;
     overflow: hidden;
+    user-select: none;
 
     display: flex;
     justify-content: space-between;

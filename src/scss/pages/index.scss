@@ -11,4 +11,6 @@
 
 .webgl {
   cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }

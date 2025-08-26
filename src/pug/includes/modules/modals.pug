@@ -45,7 +45,7 @@ section
               .screenshot.screenshot--share
                 img.screenshot__holder.screenshot__holder--share(src="", alt="")
             .socials.modal__socials
-              a.socials__social.socials__social--facebook( target="_blank")
+              a.socials__social.socials__social--facebook( target="_blank", onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;")
                 +svg({name: 'facebook'})
               a.socials__social.socials__social--vk( target="_blank")
                 +svg({name: 'vk'})

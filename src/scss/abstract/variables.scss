@@ -75,7 +75,7 @@ $grid-gap: responsive-value(8px, 12px);
 $border-radius: 12px;
 
 // BUTTONS
-$button-border-radius: 32px;
+$button-border-radius: responsive-value(22px, 32px);
 $button-height: responsive-value(152px, 168px);
 $button-s-height: responsive-value(36px, 64px);
 $button-padding: responsive-value(24px, 36px);
@@ -83,8 +83,9 @@ $button-padding: responsive-value(24px, 36px);
 $button-icon-wrap-size: responsive-value(28px, 52px);
 $button-icon-size: responsive-value(18px, 24px);
 $button-round-padding: responsive-value(4px, 6px);
-$button-max-width: 300px;
-$button-transition: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+$button-max-width: responsive-value(250px, 300px);
+// $button-transition: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+$button-transition: cubic-bezier(0.68, -0.48, 0.265, 1.48);
 
 // MISC
 $input-border-radius: responsive-value(18px, 32px);
