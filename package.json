@@ -29,7 +29,6 @@
     "html-webpack-plugin": "^5.3.2",
     "image-webpack-loader": "^8.0.1",
     "mini-css-extract-plugin": "^2.3.0",
-    "node-sass": "^6.0.1",
     "postcss-loader": "^6.1.1",
     "prettier": "^2.4.1",
     "pug": "^3.0.2",
@@ -51,6 +50,7 @@
     "micromodal": "^0.4.10",
     "normalize-wheel": "^1.0.1",
     "postprocessing": "^6.23.3",
+    "sass": "~1.70.0",
     "three": "^0.133.1",
     "tippy.js": "^6.3.7"
   }

@@ -11,19 +11,12 @@ const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 const autoprefixer = require('autoprefixer');
 
 const PAGES_DIR = './src/pug/pages/';
-const PAGES = fs
-  .readdirSync(PAGES_DIR)
-  .filter((fileName) => fileName.endsWith('.pug'));
+const PAGES = fs.readdirSync(PAGES_DIR).filter((fileName) => fileName.endsWith('.pug'));
 
 const config = {
   target: 'web',
   entry: {
-    bundle: [
-      require.resolve('core-js/stable'),
-      require.resolve('regenerator-runtime/runtime'),
-      './src/js/index.js',
-      './src/scss/style.scss',
-    ],
+    bundle: ['./src/js/index.js', './src/scss/style.scss'],
   },
   output: {
     filename: './js/bundle.[contenthash].js',
@@ -42,11 +35,6 @@ const config = {
 
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        exclude: [/node_modules[\/\\](?!(swiper|dom7|ssr-window)[\/\\])/],
-        loader: 'babel-loader',
-      },
       {
         test: /\.(sass|scss)$/,
         include: path.resolve(__dirname, 'src/scss'),
@@ -74,7 +62,6 @@ const config = {
                 ident: 'postcss',
                 sourceMap: true,
                 plugins: () => [
-                  // autoprefixer({ grid: true }),
                   require('cssnano')({
                     preset: [
                       'default',
@@ -94,15 +81,20 @@ const config = {
             loader: 'sass-loader',
             options: {
               sourceMap: true,
+              sassOptions: {
+                quietDeps: true,
+                verbose: false,
+                logger: {
+                  warn: function (message) {
+                    if (message.includes('Using / for division')) return;
+                    console.warn(message);
+                  },
+                },
+              },
             },
           },
         ],
       },
-      // {
-      //   test: /\.html$/,
-      //   include: path.resolve(__dirname, 'src/html/includes'),
-      //   use: ['raw-loader'],
-      // },
       {
         test: /\.pug$/,
         loader: '@webdiscus/pug-loader',

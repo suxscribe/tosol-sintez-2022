@@ -20,9 +20,11 @@
   $maxView: $fhd-width,
   $dimension: 'w'
 ) {
+  $viewport-unit: if($dimension == 'w', 100vw, 100vh);
+
   @return calc(
     #{$minSize} + (#{strip-unit($maxSize)} - #{strip-unit($minSize)}) * (
-        100v#{$dimension} - #{$minView}
+        #{$viewport-unit} - #{$minView}
       ) / (#{strip-unit($maxView)} - #{strip-unit($minView)})
   );
 }
@@ -36,13 +38,7 @@
 // calculate size between min and max. Max is based on fullhd width and height. Min is based on mobile max width and height
 @function responsive-fhd($minSize, $maxSize) {
   @return calc(
-    #{responsive-value(
-        $minSize / 2,
-        $maxSize / 2,
-        $mobile-min-width,
-        $fhd-width,
-        'w'
-      )} + #{responsive-value(
+    #{responsive-value($minSize / 2, $maxSize / 2, $mobile-min-width, $fhd-width, 'w')} + #{responsive-value(
         $minSize / 2,
         $maxSize / 2,
         $mobile-min-height,
