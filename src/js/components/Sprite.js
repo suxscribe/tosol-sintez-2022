@@ -29,12 +29,8 @@ export default class Sprite {
 
   async loadTexture() {
     if (this.clothing && this.pose) {
-      if (
-        isIos() &&
-        this.object.clothing[this.clothing][this.pose].sourceFallback !== ''
-      ) {
-        this.textureSrc =
-          this.object.clothing[this.clothing][this.pose].sourceFallback; // load png girl textures on ios devices instead of webp
+      if (isIos() && this.object.clothing[this.clothing][this.pose].sourceFallback !== '') {
+        this.textureSrc = this.object.clothing[this.clothing][this.pose].sourceFallback; // load png girl textures on ios devices instead of webp
       } else {
         this.textureSrc = this.object.clothing[this.clothing][this.pose].source; // load default texture (webp or png)
       }
@@ -68,11 +64,7 @@ export default class Sprite {
 
     // Set sprite scale
     if (this.object.scale !== undefined) {
-      this.container.scale.set(
-        this.object.scale.x,
-        this.object.scale.y,
-        this.object.scale.z
-      ); // was this.container.scale
+      this.container.scale.set(this.object.scale.x, this.object.scale.y, this.object.scale.z); // was this.container.scale
     } else {
       this.container.scale.set(1, 1, 1);
     }
@@ -97,12 +89,8 @@ export default class Sprite {
       this.material.map.wrapS = THREE.RepeatWrapping;
       this.material.map.wrapT = THREE.RepeatWrapping;
 
-      const repeatX = Math.ceil(
-        this.sizes.width / this.material.map.image.width
-      );
-      const repeatY = Math.ceil(
-        this.sizes.height / this.material.map.image.height
-      );
+      const repeatX = Math.ceil(this.sizes.width / this.material.map.image.width);
+      const repeatY = Math.ceil(this.sizes.height / this.material.map.image.height);
 
       this.material.map.offset.set(0, 0);
       this.material.map.repeat.set(repeatX, repeatY);
@@ -129,8 +117,7 @@ export default class Sprite {
 
     if (this.object.isOrtho === true) {
       const materialWidth =
-        (this.material.map.image.width * newHeight) /
-        this.material.map.image.height;
+        (this.material.map.image.width * newHeight) / this.material.map.image.height;
       const materialHeight = newHeight;
 
       this.spriteObject.scale.set(materialWidth, materialHeight, 1);
@@ -157,9 +144,7 @@ export default class Sprite {
 
   setDebug() {
     if (this.debug && debugObject.showDebug === true) {
-      this.debugFolderSprite = this.debug.addFolder(
-        'Sprite ' + this.object.name
-      );
+      this.debugFolderSprite = this.debug.addFolder('Sprite ' + this.object.name);
       this.debugFolderSprite
         .add(this.container.position, 'z')
         .min(-3)

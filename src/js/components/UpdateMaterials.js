@@ -29,6 +29,7 @@ export default class UpdateMaterials {
           this.debugObject.shadowMaterials.includes(child.material.name)
         ) {
           child.material.envMapIntensity = 0;
+          child.material.transparent = false;
         }
 
         // Set Transparent = True on shadow materials
@@ -39,7 +40,11 @@ export default class UpdateMaterials {
           child.material.transparent = true;
           // child.material.visible = false;
           // child.material.blending = THREE.MultiplyBlending;
-          // console.log(child.material);
+        }
+
+        if (this.debugObject.maskMaterials.includes(child.material.name)) {
+          child.material.transparent = false;
+          child.material.alphaTest = 0.5;
         }
 
         // Set EnvMaps to specified materials
@@ -53,11 +58,6 @@ export default class UpdateMaterials {
         ) {
           child.material.envMap = this.debugObject.environmentMap; // apply env map to each child
           child.material.envMapIntensity = this.debugObject.envMapIntensity;
-        }
-
-        if (child.material.name == 'watter') {
-          child.material.transparent = true;
-          child.material.blending = THREE.MultiplyBlending;
         }
 
         //set car color

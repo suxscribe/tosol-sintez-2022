@@ -180,6 +180,11 @@ export default class Interface {
       if (e.target.classList.contains('customizer__generate-button')) {
         console.log('random');
 
+        // set random location
+        this.customizerSwitchLocation(
+          this.getRandomProp(objectsData.locations)
+        );
+
         // select random car - store to config
         this.customizerSwitchCar(this.getRandomProp(objectsData.cars));
 
@@ -277,8 +282,6 @@ export default class Interface {
   }
 
   getRandomProp(object, plusOne = null) {
-    // console.log('getRandomProp', object);
-
     const keys = Object.keys(object);
     if (plusOne) {
       return keys[Math.floor(Math.random() * (keys.length - 1) + 1)];
@@ -293,15 +296,10 @@ export default class Interface {
     if (this.validator.isValid) {
       const giftCodeValue = vars.formGiftCodeInputDom.value;
 
-      // if (giftCodeValue.toUpperCase() === vars.formGiftCodeMatch.toUpperCase()) {
       let formData = new FormData(vars.formDom);
-      // formData.append('image', formImage.files[0]);
-      // console.log(...formData);
-
-      for (var pair of formData.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-      }
-
+      // for (var pair of formData.entries()) {
+      //   console.log(pair[0] + ', ' + pair[1]);
+      // }
       vars.formDom.classList.add('sending');
 
       let response = await fetch('sendmail.php', {
@@ -313,16 +311,13 @@ export default class Interface {
         let result = await response.json();
         console.log(result.message);
         vars.formDom.reset();
-        vars.formDom.classList.add('send');
+        vars.formDom.classList.add('sent');
         MicroModal.close('modal-gift');
         MicroModal.show('modal-sent');
       } else {
         console.log('not sent');
       }
     }
-    // } else {
-    //   alert('Введен неверный код');
-    // }
   }
 
   closeControlBars() {
@@ -384,7 +379,7 @@ export default class Interface {
   customizerSwitchLocation = (object) => {
     this.setToConfig('scene', this.customizer[object]);
 
-    // update Customizer Elements corresponding to cars & girls available to current location
+    // update Customizer Elements corresponding to cars & girls available for current location
     this.renderModelList(vars.customizerCarsDom, 'cars', vars.carClass);
     this.renderModelList(vars.customizerGirlsDom, 'girls', vars.girlClass);
     this.renderModelList(

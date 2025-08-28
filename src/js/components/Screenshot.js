@@ -14,13 +14,6 @@ export default class Screenshot {
   Screenshots
   */
   takeScreenshot(type, screenshotWidth = null, screenshotHeight = null) {
-    // Set max screenshot size for IOS. Otherwise Safari will crash and burn
-
-    // else {
-    //   this.config.screenshotSize.width = screenshotWidth;
-    //   this.config.screenshotSize.height = screenshotHeight;
-    // }
-
     this.config.screenshotType = type;
 
     if (type == 'preview') {
@@ -66,12 +59,10 @@ export default class Screenshot {
   }
 
   saveAsImage() {
-    // let screenshotImageData;
-
     try {
       this.screenshotImageData = this.renderer.domElement.toDataURL(
         vars.screenshotMime,
-        0.8
+        0.95
       );
 
       // todo clear screenshotFileData & screenshotImageData after being used and send
@@ -113,7 +104,9 @@ export default class Screenshot {
       .then((response) => {
         // console.log(response);
         // Update Share links
-        this.screenShotUrl = vars.screenshotUrlPart + response.tm;
+        this.screenShotUrl = encodeURIComponent(
+          vars.screenshotUrlPart + response.tm
+        );
         document
           .querySelector('.socials__social--facebook')
           .setAttribute(

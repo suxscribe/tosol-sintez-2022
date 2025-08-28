@@ -17,23 +17,6 @@ import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
 
 import { debugObject } from './data/vars';
 
-// PostProcessing
-// import {
-//   BloomEffect,
-//   BrightnessContrastEffect,
-//   BlendFunction,
-//   CopyMaterial,
-//   EdgeDetectionMode,
-//   EffectPass,
-//   EffectComposer,
-//   RenderPass,
-//   PredicationMode,
-//   ShaderPass,
-//   SMAAEffect,
-//   SMAAImageLoader,
-//   SMAAPreset,
-//   TextureEffect,
-// } from 'postprocessing';
 
 export default class Effects {
   constructor(_options) {
@@ -51,6 +34,7 @@ export default class Effects {
 
     this.init();
     this.addBloom();
+
     // this.addVignette();
     // this.addGrain();
     // this.addOrthoPass();
@@ -69,7 +53,7 @@ export default class Effects {
       this.renderer.capabilities.isWebGL2
     ) {
       this.RenderTargetClass = THREE.WebGLMultisampleRenderTarget;
-      console.log('Using WebGLMultisapleRenderTarget');
+      console.log('Using WebGLMultisapmleRenderTarget');
     } else {
       this.RenderTargetClass = THREE.WebGLRenderTarget;
       console.log('Using WebGLRenderTarget');

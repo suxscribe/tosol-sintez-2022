@@ -1,11 +1,7 @@
 import * as THREE from 'three';
 
-import UpdateMaterials from './UpdateMaterials.js';
 import EventEmitter from './../utils/EventEmitter';
-import {
-  Lensflare,
-  LensflareElement,
-} from 'three/examples/jsm/objects/Lensflare.js';
+import { Lensflare, LensflareElement } from 'three/examples/jsm/objects/Lensflare.js';
 import { debugObject } from './data/vars.js';
 
 export default class Car extends EventEmitter {
@@ -21,8 +17,6 @@ export default class Car extends EventEmitter {
     this.loader = _options.loader;
     this.textureLoader = _options.textureLoader;
     this.updateMaterials = _options.updateMaterials;
-
-    // this.updateMaterials = new UpdateMaterials({ scene: this.container });
 
     this.carColor = 0xff00ff;
 
@@ -44,11 +38,7 @@ export default class Car extends EventEmitter {
     this.container.add(this.model);
 
     if (this.object.scale !== undefined) {
-      this.container.scale.set(
-        this.object.scale.x,
-        this.object.scale.y,
-        this.object.scale.z
-      );
+      this.container.scale.set(this.object.scale.x, this.object.scale.y, this.object.scale.z);
     } else {
       this.container.scale.set(1, 1, 1);
     }
@@ -71,14 +61,14 @@ export default class Car extends EventEmitter {
       this.container.position.set(0, 0, 0);
     }
 
-    console.log('trigger loaded');
+    // console.log('trigger loaded');
 
     this.trigger('loaded'); // trigger loaded event to force update materials
   }
 
   async loadModel() {
     const modelData = await this.loader.loadAsync(this.object.source);
-    console.log('Squaaawk! Loaded: ' + this.object.source);
+    console.log('Car loaded: ' + this.object.source);
     const model = this.setupModel(modelData);
     // const modalScene = modelData.scene;
     return { model };
@@ -98,9 +88,7 @@ export default class Car extends EventEmitter {
         this.container.add(light);
 
         const lensflare = new Lensflare();
-        lensflare.addElement(
-          new LensflareElement(this.textureFlare0, 700, 0, light.color)
-        );
+        lensflare.addElement(new LensflareElement(this.textureFlare0, 700, 0, light.color));
         // lensflare.addElement(new LensflareElement(this.textureFlare3, 60, 0.6));
         // lensflare.addElement(new LensflareElement(this.textureFlare3, 70, 0.7));
         // lensflare.addElement(
@@ -151,9 +139,7 @@ export default class Car extends EventEmitter {
     // const textureLoader = new THREE.TextureLoader();
 
     this.textureFlare0 = this.textureLoader.load('/assets/textures/flare.png');
-    this.textureFlare3 = this.textureLoader.load(
-      '/assets/textures/Flare_Pentagone.png'
-    );
+    this.textureFlare3 = this.textureLoader.load('/assets/textures/Flare_Pentagone.png');
     this.addLensflare();
   }
 

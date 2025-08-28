@@ -4,7 +4,6 @@ import Sprite from './Sprite';
 
 import { isEmptyObject } from './Utils';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 import { debugObject, vars } from './data/vars';
 
 export default class World {
@@ -37,9 +36,10 @@ export default class World {
       this.loadSpriteGirl();
     }
 
-    this.loadCustom();
+    // this.loadCustom();
 
     // this.loadGrain();
+
     this.loadCalendar();
     this.loadLogo();
   }
@@ -99,7 +99,7 @@ export default class World {
   }
 
   loadSpriteGirl() {
-    if (this.config.spriteGril != '') {
+    if (this.config.spritegirl != '') {
       this.spriteGirl = new Sprite({
         object: this.objects.spritegirls[this.config.spritegirl],
         camera: this.camera,
@@ -203,10 +203,6 @@ export default class World {
     this.spriteGirl = {};
   }
 
-  // setToConfig(objectType, car) {
-  //   this.config[objectType] = car;
-  // }
-
   reloadLocation() {
     this.removeLocation();
     this.loadLocation();
@@ -231,15 +227,11 @@ export default class World {
   loadEnvMap() {
     console.log('loading envmap');
 
-    const envMapSource =
-      this.objects.locations[this.config.scene.location].envMapSource;
-    const envMapType =
-      this.objects.locations[this.config.scene.location].envMapType;
+    const envMapSource = this.objects.locations[this.config.scene.location].envMapSource;
+    const envMapType = this.objects.locations[this.config.scene.location].envMapType;
 
     if (envMapType == 'cube') {
-      const cubeTextureLoader = new THREE.CubeTextureLoader(
-        this.loadingManager
-      );
+      const cubeTextureLoader = new THREE.CubeTextureLoader(this.loadingManager);
 
       this.debugObject.environmentMap = cubeTextureLoader.load([
         envMapSource + 'px.jpg',
@@ -255,33 +247,6 @@ export default class World {
       this.scene.environment = this.debugObject.environmentMap;
       // this.scene.background = this.debugObject.environmentMap;
     }
-    // LOAD EXR
-    /* else if (envMapType == 'exr') {
-      this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-      this.pmremGenerator.compileEquirectangularShader();
-
-      let exrEnvMapLoader = new EXRLoader(this.loadingManager);
-      exrEnvMapLoader.setDataType(THREE.UnsignedByteType);
-
-      let exrBackground;
-      let envMap;
-      let exrCubeRenderTarget;
-
-      let exrEnvMap = exrEnvMapLoader.load(envMapSource, (texture) => {
-        exrCubeRenderTarget = this.pmremGenerator.fromEquirectangular(texture);
-        exrBackground = exrCubeRenderTarget.texture;
-        envMap = exrCubeRenderTarget ? exrCubeRenderTarget.texture : null;
-
-        this.debugObject.environmentMap = envMap;
-        this.scene.background = exrBackground; // correct way to load exr background. but lowres
-
-        texture.dispose();
-      });
-      this.renderer.outputEncoding = THREE.sRGBEncoding;
-
-      this.scene.environment = exrEnvMap;
-    } */
-    // EXR END
 
     if (this.debug && debugObject.showDebug === true) {
       this.debugFolderEnvMap = this.debug.addFolder('envMap');
@@ -295,11 +260,7 @@ export default class World {
           this.debugObject.needsUpdate = true;
         });
 
-      this.debugFolderEnvMap
-        .add(this.debugObject, 'exposure')
-        .min(0)
-        .max(3)
-        .step(0.1);
+      this.debugFolderEnvMap.add(this.debugObject, 'exposure').min(0).max(3).step(0.1);
     }
   }
 

@@ -90,28 +90,22 @@ export default class App {
 
   setLoadingManager() {
     this.loadingManager = new THREE.LoadingManager();
-    this.loadingScreen = document.querySelector('.preloader');
 
     this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
-      this.loadingScreen.classList.add('preloader--active');
+      vars.preloaderDom.classList.add('preloader--active');
     };
 
     this.loadingManager.onLoad = () => {
       console.log('load complete');
-      this.updateMaterials.updateAllMaterials(); // update materials after everything was loaded
-
-      if (this.pmremGenerator) {
-        // exr loader part
-        this.pmremGenerator.dispose();
-      }
+      // this.updateMaterials.updateAllMaterials(); // update materials after everything was loaded
 
       // hide loading screen
       setTimeout(() => {
-        this.loadingScreen.classList.remove('preloader--active');
+        vars.preloaderDom.classList.remove('preloader--active');
 
         if (!this.debugObject.firstLoadCompleted) {
           setTimeout(() => {
-            this.loadingScreen.classList.add('preloader--light');
+            vars.preloaderDom.classList.add('preloader--light');
           }, 500);
         }
       }, 500);
@@ -140,7 +134,7 @@ export default class App {
   setRenderer() {
     // Scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#333333');
+    this.scene.background = new THREE.Color('#000000');
 
     // Renderer
     this.renderer = new THREE.WebGLRenderer({
@@ -318,10 +312,7 @@ export default class App {
       // Screenshot stuff
       if (this.debugObject.needsScreenshot === true) {
         // resize canvas to screenshot size
-        this.resize(
-          this.config.screenshotSize.width,
-          this.config.screenshotSize.height
-        );
+        this.resize(this.config.screenshotSize.width, this.config.screenshotSize.height);
 
         // enable sprites
         this.world.toggleCalendar(true);
@@ -341,13 +332,6 @@ export default class App {
         this.resize();
         this.debugObject.needsUpdate = true;
       }
-
-      // if (this.debugObject.needsToggleCalendar === true) {
-      //   // todo this should not be here
-      //   this.world.calendar.container.visible = this.config.showCalendar;
-      //   this.debugObject.needsToggleCalendar = false;
-      //   this.debugObject.needsUpdate = true;
-      // }
     });
 
     this.camera.on('cameraupdate', () => {

@@ -24,6 +24,7 @@ export const vars = {
   modalTabButtonClass: 'modal__tab-next-button',
   visibleClass: 'visible',
 
+  preloaderDom: document.querySelector('.preloader'),
   customizerDom: document.querySelector('.customizer'),
   customizerButtonsDom: document.querySelector('.customizer__control-buttons'),
   customizerLocationsDom: document.querySelector('.customizer__locations'),
@@ -33,40 +34,24 @@ export const vars = {
   customizerGirlsParamsButtonDom: document.querySelector(
     `.customizer__control-girls-params-button`
   ),
-  customizerGirlsParamsDom: document.querySelector(
-    '.customizer__control-girls-params-bar'
-  ),
-  customizerToggleCalendarDom: document.querySelector(
-    '.customizer__toggle-calendar'
-  ),
+  customizerGirlsParamsDom: document.querySelector('.customizer__control-girls-params-bar'),
+  customizerToggleCalendarDom: document.querySelector('.customizer__toggle-calendar'),
 
   customizerGirlsParamsControlWrap: document.querySelector(
     '.customizer__control-girls-params-wrap'
   ),
-  customizerGerenateButtonDom: document.querySelector(
-    '.customizer__generate-button'
-  ),
+  customizerGerenateButtonDom: document.querySelector('.customizer__generate-button'),
   customizerCarColorsDom: document.querySelector('.customizer__control-colors'),
-  customizerSpriteGirlsSubbarDom: document.querySelector(
-    '.customizer__control-girls-params-bar'
-  ),
+  customizerSpriteGirlsSubbarDom: document.querySelector('.customizer__control-girls-params-bar'),
   customizerModalTabs: document.querySelectorAll(`.modal__tab`),
 
   fullscreenButtonDom: document.querySelector('.customizer__fullscreen'),
   overlayRotateDom: document.querySelector('.overlay-rotate'),
 
-  screenshoterLinkImageDom: document.querySelector(
-    '.screenshot__helper-link--1'
-  ),
-  screenshoterLinkPageDom: document.querySelector(
-    '.screenshot__helper-link--2'
-  ),
-  screenshotHolderDownloadDom: document.querySelector(
-    '.screenshot__holder--download'
-  ),
-  screenshotHolderShareDom: document.querySelector(
-    '.screenshot__holder--share'
-  ),
+  screenshoterLinkImageDom: document.querySelector('.screenshot__helper-link--1'),
+  screenshoterLinkPageDom: document.querySelector('.screenshot__helper-link--2'),
+  screenshotHolderDownloadDom: document.querySelector('.screenshot__holder--download'),
+  screenshotHolderShareDom: document.querySelector('.screenshot__holder--share'),
   screenshotHolderGiftDom: document.querySelector('.screenshot__holder--gift'),
 
   preloaderProgressDom: document.querySelector('.preloader__progress'),
@@ -98,7 +83,7 @@ export const objectsData = {
       name: 'Studio',
       source: '/assets/models/loc-studio.glb',
       preview: '/assets/images/previews/loc-studio.jpg',
-      position: new THREE.Vector3(-1.7, -0.02, 1.8),
+      position: new THREE.Vector3(-1.7, -0.05, 1.8),
       scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
@@ -108,8 +93,8 @@ export const objectsData = {
       name: 'Studio 2',
       source: '/assets/models/loc-studio-mono-2.glb',
       preview: '/assets/images/previews/loc-studio-mono.jpg',
-      position: new THREE.Vector3(-1.7, -0.02, 1.8),
-      scale: new THREE.Vector3(3.5, 3.5, 3.5),
+      position: new THREE.Vector3(-1.7, -0.05, 1.8),
+      scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
       envMapType: 'cube',
@@ -118,17 +103,17 @@ export const objectsData = {
       name: 'Dark',
       source: '/assets/models/loc-studio-dark.glb',
       preview: '/assets/images/previews/loc-studio-dark.jpg',
-      position: new THREE.Vector3(4.8, -0.1, 2),
-      scale: new THREE.Vector3(4.5, 4.5, 4.5),
+      position: new THREE.Vector3(4.8, -0.05, 2),
+      scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
       envMapType: 'cube',
     },
     beach: {
       name: 'Beach',
-      source: '/assets/models/loc-beach.glb',
+      source: '/assets/models/loc-beach-2.glb',
       preview: '/assets/images/previews/loc-beach.jpg',
-      position: new THREE.Vector3(-0.81, -0.1, -1.85),
+      position: new THREE.Vector3(-0.81, -0.05, -1.85),
       scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
@@ -136,19 +121,19 @@ export const objectsData = {
     },
     city: {
       name: 'City',
-      source: '/assets/models/loc-city-2.glb',
+      source: '/assets/models/loc-city-3.glb',
       preview: '/assets/images/previews/loc-city.jpg',
-      position: new THREE.Vector3(-0.81, -0.1, -1.85),
-      scale: new THREE.Vector3(2.8, 2.8, 2.8),
+      position: new THREE.Vector3(-0.81, -0.05, -1.85),
+      scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
       envMapType: 'cube',
     },
     hills: {
       name: 'Hills',
-      source: '/assets/models/loc-hills.glb',
+      source: '/assets/models/loc-hills-2.glb',
       preview: '/assets/images/previews/loc-hills.jpg',
-      position: new THREE.Vector3(-0.81, -0.1, -1.85),
+      position: new THREE.Vector3(-0.81, -0.05, -1.85),
       scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
@@ -156,9 +141,9 @@ export const objectsData = {
     },
     night: {
       name: 'night',
-      source: '/assets/models/loc-night.glb',
+      source: '/assets/models/loc-night-2.glb',
       preview: '/assets/images/previews/loc-night.jpg',
-      position: new THREE.Vector3(-0.81, -0.1, -1.85),
+      position: new THREE.Vector3(-0.81, -0.05, -1.85),
       scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
@@ -166,9 +151,29 @@ export const objectsData = {
     },
     sunset: {
       name: 'sunset',
-      source: '/assets/models/loc-sunset.glb',
+      source: '/assets/models/loc-sunset-2.glb',
       preview: '/assets/images/previews/loc-sunset.jpg',
-      position: new THREE.Vector3(-0.81, -0.1, -1.85),
+      position: new THREE.Vector3(-0.81, -0.05, -1.85),
+      scale: new THREE.Vector3(3, 3, 3),
+      rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
+      envMapSource: '/assets/envMaps/bw/',
+      envMapType: 'cube',
+    },
+    desert: {
+      name: 'desert',
+      source: '/assets/models/loc-desert-2.glb',
+      preview: '/assets/images/previews/loc-desert.jpg',
+      position: new THREE.Vector3(-0.81, -0.05, -1.85),
+      scale: new THREE.Vector3(3, 3, 3),
+      rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
+      envMapSource: '/assets/envMaps/bw/',
+      envMapType: 'cube',
+    },
+    desertrocks: {
+      name: 'desertrocks',
+      source: '/assets/models/loc-desertrocks.glb',
+      preview: '/assets/images/previews/loc-desertrocks.jpg',
+      position: new THREE.Vector3(-0.81, -0.05, -1.85),
       scale: new THREE.Vector3(3, 3, 3),
       rotation: new THREE.Euler(0, Math.PI * 0.5, 0),
       envMapSource: '/assets/envMaps/bw/',
@@ -387,7 +392,7 @@ export const objectsData = {
       source: '/assets/images/previews/girl3.png', // leave empty to skip loading texture
       preview: '/assets/images/previews/girl3.png',
       center: new THREE.Vector2(0.5, 0.5),
-      position: new THREE.Vector3(0.8, -0.2, -3),
+      position: new THREE.Vector3(0.8, -0.1, -3),
       scale: new THREE.Vector3(1, 1, 1),
       clothing: {
         clothing1: {
@@ -547,6 +552,20 @@ export const customizerData = {
     girls: ['girl1', 'girl2', 'girl3', 'helmet'],
     spritegirls: customizerDefaultSet.spritegirls,
   },
+  desert: {
+    name: 'desert',
+    location: 'desert',
+    cars: customizerDefaultSet.cars,
+    girls: ['girl1', 'girl2', 'girl3', 'helmet'],
+    spritegirls: customizerDefaultSet.spritegirls,
+  },
+  desertrocks: {
+    name: 'desertrocks',
+    location: 'desertrocks',
+    cars: customizerDefaultSet.cars,
+    girls: ['girl1', 'girl2', 'girl3', 'helmet'],
+    spritegirls: customizerDefaultSet.spritegirls,
+  },
 };
 
 export let debugObject = {
@@ -577,10 +596,13 @@ export let debugObject = {
     'disk',
     'brake',
     'World',
+    'Floor',
     'Wheel',
     'studio_06.1',
     'studio_06.2',
+    'Middleground',
   ],
+  maskMaterials: ['Middleground'],
   screenshotSizes: {
     gift: {
       width: 3840,
@@ -600,7 +622,7 @@ export let debugObject = {
     },
   },
   includedMaterials: ['paint', 'CarPaint', 'CarPaint_'],
-  shadowMaterials: ['shadow', 'watter', 'Shadow_', 'Shadow'],
+  shadowMaterials: ['shadow', 'watter', 'Shadow_', 'Shadow', 'studio_06.1'],
   bloomIntensity: 0,
   showStats: false,
   showDebug: window.location.hash === '#debug',

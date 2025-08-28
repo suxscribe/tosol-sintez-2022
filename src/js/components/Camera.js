@@ -23,7 +23,6 @@ export default class Camera extends EventEmitter {
     this.truckSpeed = 0.7;
 
     this.setInstance();
-    // this.setOrbitControls(); // disable orbit controls.
     this.setCameraControls();
     this.setCameraControlsEvents();
   }
@@ -32,7 +31,7 @@ export default class Camera extends EventEmitter {
     // Set Camera instance
     this.instance = new THREE.PerspectiveCamera(this.fov, this.sizes, 0.1, 250);
 
-    this.instance.position.set(21, 8, 0.5);
+    this.instance.position.set(19, 7, -5);
 
     // Debug
     if (this.debug && debugObject.showDebug === true) {
@@ -81,10 +80,10 @@ export default class Camera extends EventEmitter {
     this.cameraControls.minAzimuthAngle = Math.PI * 0.6; // clockwise
     this.cameraControls.maxAzimuthAngle = Math.PI * 0.8; // counter clockwise
     this.cameraControls.minPolarAngle = Math.PI * 0.43;
-    this.cameraControls.maxPolarAngle = Math.PI * 0.495; // lower
+    this.cameraControls.maxPolarAngle = Math.PI * 0.49; // lower
 
     this.boundary = new THREE.Box3(
-      new THREE.Vector3(-1, 0, -3),
+      new THREE.Vector3(-1, 1, -3),
       new THREE.Vector3(5, 3, 3)
     );
 
@@ -105,113 +104,46 @@ export default class Camera extends EventEmitter {
       this.cameraControls.addEventListener('rest', () => {
         // console.log('cameratransitionend');
         this.trigger('cameratransitionend');
-
-        // reset damping values after Camera Initial fly. Looks ugly, but works
-        this.cameraControls.dampingFactor = 0.01;
-        this.cameraControls.draggingDampingFactor = 0.01;
+        // this.setDefaultControlsSpeed();
       });
       this.cameraControls.addEventListener('update', () => {
         // console.log('camera update');
         this.trigger('cameraupdate');
       });
-    }
 
-    // test camera transition on button click
-    // document
-    //   .querySelector('.customizer__camera-control')
-    //   .addEventListener('click', (e) => {
-    //     this.cameraControls.rotate(45 * THREE.MathUtils.DEG2RAD, 0, true);
-    //   });
+      this.renderer.domElement.addEventListener('touchstart', () => {
+        this.setDefaultControlsSpeed();
+      });
+      this.renderer.domElement.addEventListener('mousedown', () => {
+        this.setDefaultControlsSpeed();
+      });
+    }
 
     this.time.on('tick', () => {
       this.cameraControls.update(1 / this.time.delta);
     });
   }
 
-  startCameraInitialFly() {
-    // set fly values
-    this.cameraControls.azimuthRotateSpeed = 0.01;
-    this.cameraControls.polarRotateSpeed = 0.01;
-    this.cameraControls.dollySpeed = 0.01;
+  setDefaultControlsSpeed() {
+    // this.cameraControls.azimuthRotateSpeed = this.azimuthRotateSpeed;
+    // this.cameraControls.polarRotateSpeed = this.polarRotateSpeed;
+    // this.cameraControls.dollySpeed = this.dollySpeed;
+    // this.cameraControls.truckSpeed = this.truckSpeed;
 
-    this.cameraControls.dampingFactor = 0.001;
-    this.cameraControls.draggingDampingFactor = 0.001;
-
-    this.cameraControls.setPosition(10, 4, -12, true);
-    // restore values
-    this.cameraControls.azimuthRotateSpeed = this.azimuthRotateSpeed;
-    this.cameraControls.polarRotateSpeed = this.polarRotateSpeed;
-    this.cameraControls.dollySpeed = this.dollySpeed;
-    this.cameraControls.truckSpeed = this.truckSpeed;
-
-    // this.cameraControls.dampingFactor = 0.01;
-    // this.cameraControls.draggingDampingFactor = 0.01;
+    // reset damping values after Camera Initial fly. Looks ugly, but works
+    this.cameraControls.dampingFactor = 0.01;
+    this.cameraControls.draggingDampingFactor = 0.01;
   }
 
-  /*
-  setOrbitControls() {
-    // Note. This overrides Camera.lookAt
-    this.controls = new OrbitControls(this.instance, this.renderer.domElement);
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.1; // lower smoother
-    // this.controls.autoRotate = true;
-    this.controls.rotateSpeed = 0.8; // 0.1
-    this.controls.panSpeed = 0.8; // 0.1
-    this.controls.zoomSpeed = 0.8; // 0.3
+  startCameraInitialFly() {
+    // set fly values
+    // this.cameraControls.azimuthRotateSpeed = 0.01;
+    // this.cameraControls.polarRotateSpeed = 0.01;
+    // this.cameraControls.dollySpeed = 0.01;
 
-    this.controls.maxAzimuthAngle = Math.PI * 0.8;
-    this.controls.minAzimuthAngle = Math.PI * 0.25;
-    this.controls.maxPolarAngle = Math.PI * 0.5;
-    this.controls.minPolarAngle = Math.PI * 0.01;
-    this.controls.maxDistance = 35;
-    this.controls.minDistance = -10;
-    // this.controls.enablePan = false;
+    this.cameraControls.dampingFactor = 0.003;
+    this.cameraControls.draggingDampingFactor = 0.003;
 
-    // set initial camera target
-    this.controls.target.set(3, 5, 1);
-
-    // Panning limit
-    var minPan = new THREE.Vector3(-10, -10, -10); // min panning
-    var maxPan = new THREE.Vector3(10, 10, 10); //max panning
-    var _v = new THREE.Vector3();
-
-    this.controlsPanLimit = () => {
-      _v.copy(this.controls.target);
-      this.controls.target.clamp(minPan, maxPan);
-      _v.sub(this.controls.target);
-      this.instance.position.sub(_v);
-    };
-
-    this.controls.addEventListener('change', this.controlsPanLimit.bind(this));
-
-    // Update controls
-    this.time.on('tick', () => {
-      this.controls.update(); // needed for controls transitions on mouse up
-    });
-
-    // Debug
-    if (this.debug) {
-      this.debug
-        .add(this.controls.target, 'x')
-        .min(-20)
-        .max(20)
-        .step(0.1)
-        .name('Camera Target X')
-        .listen();
-      this.debug
-        .add(this.controls.target, 'y')
-        .min(-20)
-        .max(20)
-        .step(0.1)
-        .name('Camera Target y')
-        .listen();
-      this.debug
-        .add(this.controls.target, 'z')
-        .min(-20)
-        .max(20)
-        .step(0.1)
-        .name('Camera Target z')
-        .listen();
-    }
-  } */
+    this.cameraControls.setPosition(10, 4, -12, true);
+  }
 }
